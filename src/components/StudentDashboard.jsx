@@ -412,7 +412,7 @@ export default function StudentDashboard({
           </div>
 
           {/* 📚 SECTION 2: Course Dropdown & Branch Radio Buttons Selection */}
-          {/* 📚 SECTION 2: 2 Options - Course Selection & Branch Selection */}
+          {/* 📚 SECTION 2: Academic Course & Branch Selection */}
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-200/80 shadow-sm glass-panel-glow space-y-6">
             
             {/* Header */}
@@ -423,7 +423,7 @@ export default function StudentDashboard({
                 </div>
                 <div>
                   <h3 className="text-xl font-black text-slate-900">Academic Course & Branch Selection</h3>
-                  <p className="text-xs text-slate-500 font-medium">Select your course and branch from the 2 options below</p>
+                  <p className="text-xs text-slate-500 font-medium">Select your course and branch from the options below</p>
                 </div>
               </div>
 
@@ -432,109 +432,135 @@ export default function StudentDashboard({
               </span>
             </div>
 
-            {/* ✌️ 2 OPTIONS CONTAINER (Option 1: Course | Option 2: Branch) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* 🎓 PART 1: 3 COURSES DISPLAY (Engineering, Polytechnic, Pharmacy) */}
+            <div className="space-y-3">
+              <label className="text-xs font-black uppercase tracking-wider text-purple-900 flex items-center gap-2">
+                <Layers className="w-4 h-4 text-purple-600" />
+                <span>1. Select Course *</span>
+              </label>
 
-              {/* 📌 OPTION 1: ACADEMIC COURSE OPTION */}
-              <div className="bg-purple-50/60 p-5 rounded-2xl border-2 border-purple-200 space-y-4 shadow-sm flex flex-col justify-between">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-black uppercase tracking-wider text-purple-950 flex items-center gap-2">
-                      <Layers className="w-4.5 h-4.5 text-purple-600" />
-                      <span>Option 1: Select Academic Course *</span>
-                    </label>
-                    <span className="text-[10px] font-black bg-purple-600 text-white px-2 py-0.5 rounded-md">
-                      OPTION 1
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-600 font-medium">Choose your degree or diploma course stream</p>
-                </div>
-
-                <div className="space-y-3 pt-2">
-                  <select
-                    value={selectedCourse}
-                    onChange={(e) => handleCourseChange(e.target.value)}
-                    className="w-full px-4 py-3.5 rounded-xl border-2 border-purple-300 text-sm font-extrabold text-slate-900 bg-white focus:ring-4 focus:ring-purple-500/20 focus:border-purple-600 focus:outline-none cursor-pointer shadow-sm"
-                  >
-                    <option value="Engineering">Engineering (B.Tech / B.E.)</option>
-                    <option value="Polytechnic">Polytechnic (Diploma)</option>
-                    <option value="Pharmacy">Pharmacy (B.Pharm / D.Pharm)</option>
-                  </select>
-
-                  {/* Selected Course Quick Badge Bar */}
-                  <div className="p-3 bg-white rounded-xl border border-purple-200 text-xs font-extrabold text-purple-900 flex items-center justify-between">
-                    <span>Active Course:</span>
-                    <span className="text-purple-700 font-black">🎓 {selectedCourse}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* 🌿 OPTION 2: BRANCH SELECTION OPTION */}
-              <div className="bg-gradient-to-br from-pink-50/60 via-purple-50/40 to-white p-5 rounded-2xl border-2 border-pink-200 space-y-4 shadow-sm flex flex-col justify-between">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-black uppercase tracking-wider text-pink-950 flex items-center gap-2">
-                      <Zap className="w-4.5 h-4.5 text-pink-600" />
-                      <span>Option 2: Select Branch *</span>
-                    </label>
-                    <span className="text-[10px] font-black bg-pink-600 text-white px-2 py-0.5 rounded-md">
-                      OPTION 2
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-600 font-medium">
-                    {selectedCourse === 'Engineering' ? 'Choose your specialization branch' : 'Direct program branch'}
-                  </p>
-                </div>
-
-                <div className="space-y-3 pt-2">
-                  {selectedCourse === 'Engineering' ? (
-                    <select
-                      value={selectedBranch}
-                      onChange={(e) => {
-                        const newBranch = e.target.value;
-                        setSelectedBranch(newBranch);
-                        onSaveStudent({
-                          ...existingProfile,
-                          email: currentUser?.email || existingProfile?.email,
-                          fullName: fullName || existingProfile?.fullName,
-                          rollNo: rollNo || existingProfile?.rollNo,
-                          prnNo: prnNo || existingProfile?.prnNo,
-                          mobile: mobileInput,
-                          branch: newBranch,
-                          course: selectedCourse,
-                          educationDetails: {
-                            course: selectedCourse,
-                            branch: newBranch,
-                            year,
-                            semester,
-                            mobile: mobileInput
-                          }
-                        });
-                      }}
-                      className="w-full px-4 py-3.5 rounded-xl border-2 border-pink-300 text-sm font-extrabold text-slate-900 bg-white focus:ring-4 focus:ring-pink-500/20 focus:border-pink-600 focus:outline-none cursor-pointer shadow-sm"
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                {[
+                  { id: 'Engineering', title: 'Engineering (B.Tech / B.E.)', icon: '🎓', badge: '6 Branches' },
+                  { id: 'Polytechnic', title: 'Polytechnic (Diploma)', icon: '🏫', badge: 'Diploma' },
+                  { id: 'Pharmacy', title: 'Pharmacy (B.Pharm / D.Pharm)', icon: '🧪', badge: 'Pharmacy' }
+                ].map((course) => {
+                  const isSelected = selectedCourse === course.id;
+                  return (
+                    <div
+                      key={course.id}
+                      onClick={() => handleCourseChange(course.id)}
+                      className={`p-4 rounded-2xl border-2 transition-all cursor-pointer select-none flex items-center gap-3.5 ${
+                        isSelected
+                          ? 'bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border-purple-600 shadow-md ring-2 ring-purple-500/20'
+                          : 'bg-white border-slate-200 hover:border-purple-300 hover:bg-purple-50/20'
+                      }`}
                     >
-                      {(COURSE_BRANCHES['Engineering'] || []).map((branchObj) => (
-                        <option key={branchObj.id} value={branchObj.label}>
-                          {branchObj.label} ({branchObj.code})
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <div className="px-4 py-3.5 rounded-xl border-2 border-emerald-300 text-sm font-extrabold text-emerald-950 bg-emerald-50 flex items-center justify-between">
-                      <span>{selectedCourse} Direct Curriculum</span>
-                      <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                      <span className="text-2xl shrink-0">{course.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-xs font-black truncate ${isSelected ? 'text-purple-950' : 'text-slate-800'}`}>
+                          {course.title}
+                        </p>
+                        <span className={`text-[10px] font-bold ${isSelected ? 'text-purple-700' : 'text-slate-500'}`}>
+                          {course.badge}
+                        </span>
+                      </div>
+                      {isSelected && <CheckCircle2 className="w-5 h-5 text-purple-600 shrink-0" />}
                     </div>
-                  )}
+                  );
+                })}
+              </div>
+            </div>
 
-                  {/* Selected Branch Quick Badge Bar */}
-                  <div className="p-3 bg-white rounded-xl border border-pink-200 text-xs font-extrabold text-pink-900 flex items-center justify-between">
-                    <span>Active Branch:</span>
-                    <span className="text-pink-700 font-black">🌿 {selectedBranch}</span>
+            {/* ⚡ PART 2: ENGINEERING BRANCHES DISPLAY (Radio Buttons Grid - Only for Engineering) */}
+            {selectedCourse === 'Engineering' ? (
+              <div className="space-y-3 pt-4 border-t border-purple-100 animate-fadeIn">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-black uppercase tracking-wider text-pink-900 flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-pink-600" />
+                    <span>2. Select Engineering Branch (Radio Buttons) *</span>
+                  </label>
+                  <span className="text-[11px] font-extrabold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200">
+                    6 Branches Available
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                  {(COURSE_BRANCHES['Engineering'] || []).map((branchObj) => {
+                    const isSelected = selectedBranch === branchObj.label || 
+                      (selectedBranch && branchObj.label.toLowerCase().includes(selectedBranch.toLowerCase()));
+
+                    return (
+                      <label
+                        key={branchObj.id}
+                        onClick={() => {
+                          setSelectedBranch(branchObj.label);
+                          onSaveStudent({
+                            ...existingProfile,
+                            email: currentUser?.email || existingProfile?.email,
+                            fullName: fullName || existingProfile?.fullName,
+                            rollNo: rollNo || existingProfile?.rollNo,
+                            prnNo: prnNo || existingProfile?.prnNo,
+                            mobile: mobileInput,
+                            branch: branchObj.label,
+                            course: selectedCourse,
+                            educationDetails: {
+                              course: selectedCourse,
+                              branch: branchObj.label,
+                              year,
+                              semester,
+                              mobile: mobileInput
+                            }
+                          });
+                        }}
+                        className={`flex items-center gap-3.5 p-4 rounded-2xl border-2 transition-all cursor-pointer select-none ${
+                          isSelected
+                            ? 'bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border-purple-600 shadow-md ring-2 ring-purple-500/20'
+                            : 'bg-white border-slate-200 hover:border-purple-300 hover:bg-purple-50/20'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="studentBranchSelection"
+                          value={branchObj.label}
+                          checked={isSelected}
+                          onChange={() => {}}
+                          className="w-4.5 h-4.5 text-purple-600 focus:ring-purple-500 border-slate-300 cursor-pointer accent-purple-600 shrink-0"
+                        />
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1">
+                            <p className={`text-xs font-black truncate ${isSelected ? 'text-purple-950' : 'text-slate-800'}`}>
+                              {branchObj.label}
+                            </p>
+                            <span className="text-[9px] font-mono font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded shrink-0">
+                              {branchObj.code}
+                            </span>
+                          </div>
+                        </div>
+
+                        {isSelected && (
+                          <CheckCircle2 className="w-5 h-5 text-purple-600 shrink-0" />
+                        )}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              /* DIRECT PROGRAM BANNER FOR POLYTECHNIC & PHARMACY */
+              <div className="pt-4 border-t border-purple-100 animate-fadeIn">
+                <div className="bg-emerald-50/80 border-2 border-emerald-200 p-4 rounded-2xl flex items-center gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
+                  <div>
+                    <h4 className="text-sm font-black text-emerald-950">{selectedCourse} Selected</h4>
+                    <p className="text-xs font-semibold text-emerald-800">
+                      Standard direct course layout active. No sub-branches required for {selectedCourse}.
+                    </p>
                   </div>
                 </div>
               </div>
-
-            </div>
+            )}
 
           </div>
 

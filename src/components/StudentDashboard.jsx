@@ -74,6 +74,32 @@ export default function StudentDashboard({
     }
   }, [currentUser, existingProfile]);
 
+  // 🛡️ BROWSER BACK BUTTON (POPSTATE) HANDLER - Prevents website from closing abruptly on Back Arrow click
+  useEffect(() => {
+    // Push an initial history entry into browser history
+    window.history.pushState({ appSection: 'student-portal' }, '');
+
+    const handlePopState = (e) => {
+      if (showEditForm) {
+        // If edit modal/form is open, close edit form and stay on dashboard
+        setShowEditForm(false);
+        window.history.pushState({ appSection: 'student-dashboard' }, '');
+      } else if (isMobileSubmitted) {
+        // If on main dashboard, go back to initial Student Information submission form
+        setIsMobileSubmitted(false);
+        window.history.pushState({ appSection: 'student-form' }, '');
+      } else {
+        // If on initial form, keep user on form instead of exiting website
+        window.history.pushState({ appSection: 'student-portal' }, '');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [isMobileSubmitted, showEditForm]);
+
   const handleCourseChange = (newCourse) => {
     setSelectedCourse(newCourse);
     if (newCourse === 'Engineering') {
@@ -114,6 +140,7 @@ export default function StudentDashboard({
     };
 
     onSaveStudent(updatedData);
+    window.history.pushState({ appSection: 'dashboard' }, '');
     setIsMobileSubmitted(true);
     setShowEditForm(false);
   };

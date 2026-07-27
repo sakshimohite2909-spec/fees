@@ -90,26 +90,26 @@ export default function AdminDashboard({
   return (
     <div className="space-y-8 animate-fadeIn">
       
-      {/* Admin Top Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-slate-900 text-white p-8 soft-shadow">
-        <div className="absolute right-0 top-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+      {/* Admin Top Header Banner (Light Pastel Theme) */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-100/90 via-pink-50/80 to-purple-100/90 text-slate-900 p-8 border-2 border-purple-200/90 shadow-sm animate-fadeIn">
+        <div className="absolute right-0 top-0 w-96 h-96 bg-purple-200/30 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-bold uppercase tracking-wider">
-              <ShieldCheck className="w-4 h-4 text-purple-400" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 text-purple-900 border border-purple-200 text-xs font-black uppercase tracking-wider shadow-sm">
+              <ShieldCheck className="w-4 h-4 text-purple-600" />
               <span>Admin Management Portal</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight">
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900">
               Fee Control & Excel Student Database
             </h1>
-            <p className="text-slate-400 text-sm max-w-xl font-medium">
+            <p className="text-slate-600 text-sm max-w-xl font-medium">
               Upload Excel sheet files, manually add student records, configure fee amounts, and track Razorpay payments in real-time.
             </p>
           </div>
 
-          <div className="bg-slate-800/80 p-5 rounded-2xl border border-slate-700 text-right">
-            <p className="text-xs text-slate-400 font-semibold uppercase">Total Fee Collection</p>
-            <p className="text-3xl font-black text-emerald-400">₹{totalCollected.toLocaleString('en-IN')}</p>
+          <div className="bg-white/90 p-5 rounded-2xl border border-purple-200 text-right shadow-sm">
+            <p className="text-xs text-purple-900 font-extrabold uppercase tracking-wider">Total Fee Collection</p>
+            <p className="text-3xl font-black text-emerald-600">₹{totalCollected.toLocaleString('en-IN')}</p>
           </div>
         </div>
       </div>
@@ -286,9 +286,9 @@ export default function AdminDashboard({
 
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-gradient-to-r from-purple-700 to-pink-600 hover:from-purple-800 hover:to-pink-700 text-white font-extrabold text-xs shadow-md shadow-purple-600/30 transition-all shimmer-btn"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-gradient-to-r from-purple-100 via-pink-100 to-purple-100 hover:from-purple-200 hover:to-pink-200 text-purple-950 font-black text-xs border-2 border-purple-300 shadow-sm transition-all cursor-pointer"
               >
-                <Save className="w-4 h-4" />
+                <Save className="w-4 h-4 text-purple-700" />
                 <span>Save Fee Config</span>
               </button>
 
@@ -314,7 +314,7 @@ export default function AdminDashboard({
                 {/* 📤 Upload Excel Button */}
                 <button
                   onClick={() => setIsExcelModalOpen(true)}
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-900 font-extrabold text-xs border border-purple-200 shadow-sm transition-all"
+                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-950 font-extrabold text-xs border border-purple-300 shadow-sm transition-all cursor-pointer"
                 >
                   <FileSpreadsheet className="w-4 h-4 text-purple-700" />
                   <span>Upload Excel Sheet</span>
@@ -323,9 +323,9 @@ export default function AdminDashboard({
                 {/* ➕ Add Student Manually Button */}
                 <button
                   onClick={() => setIsAddModalOpen(true)}
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-700 to-pink-600 hover:from-purple-800 hover:to-pink-700 text-white font-extrabold text-xs shadow-md shadow-purple-600/20 transition-all shimmer-btn"
+                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-100 via-pink-100 to-purple-100 hover:from-purple-200 hover:to-pink-200 text-purple-950 font-extrabold text-xs border-2 border-purple-300 shadow-sm transition-all cursor-pointer"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-4 h-4 text-purple-700" />
                   <span>Add Student</span>
                 </button>
 

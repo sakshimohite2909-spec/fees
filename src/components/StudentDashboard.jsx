@@ -173,49 +173,49 @@ export default function StudentDashboard({
   return (
     <div className="space-y-8 animate-slide-up">
       
-      {/* 🚀 Hero Header Banner (Light Pastel Theme) */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-100/90 via-pink-50/80 to-purple-100/90 text-slate-900 p-8 sm:p-10 border-2 border-purple-200/90 shadow-sm animate-fadeIn card-attractive-hover">
+      {/* 🚀 Hero Header Banner (Compact Light Pastel Theme) */}
+      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-purple-100/90 via-pink-50/80 to-purple-100/90 text-slate-900 p-5 sm:p-7 border border-purple-200/90 shadow-sm animate-fadeIn card-attractive-hover">
         
         {/* Glowing Soft Orbs */}
-        <div className="absolute -top-12 -right-12 w-80 h-80 bg-purple-200/30 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute -bottom-16 left-1/3 w-64 h-64 bg-pink-200/30 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="absolute -top-12 -right-12 w-64 h-64 bg-purple-200/30 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute -bottom-16 left-1/3 w-48 h-48 bg-pink-200/30 rounded-full blur-2xl pointer-events-none"></div>
 
-        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-          <div className="space-y-3 max-w-2xl">
+        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+          <div className="space-y-2 max-w-xl">
             
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 text-xs font-black tracking-wider uppercase text-purple-900 border border-purple-200 shadow-sm">
-              <Sparkles className="w-4 h-4 text-purple-600 animate-pulse" />
-              <span>Student Online Fee Portal • Academic Session {feesConfig.academicYear || '2026-2027'}</span>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 text-[11px] font-black tracking-wider uppercase text-purple-900 border border-purple-200 shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-purple-600 animate-pulse" />
+              <span>Student Online Fee Portal • Session {feesConfig.academicYear || '2026-2027'}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-slate-900">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-snug text-slate-900">
               Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 via-pink-600 to-purple-800">{fullName || currentUser?.fullName || 'Student'}</span> 👋
             </h1>
           </div>
 
           {/* Quick Payment Status Overview */}
-          <div className="w-full lg:w-auto bg-white/90 p-5 sm:p-6 rounded-3xl border border-purple-200/90 shadow-md min-w-[290px] card-hover-3d">
-            <div className="flex items-center justify-between mb-3 text-xs">
-              <span className="text-purple-950 font-black uppercase tracking-wider">Fee Payment Progress</span>
-              <span className="font-extrabold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full">{completionPercentage}% Paid</span>
+          <div className="w-full lg:w-auto bg-white/90 p-4 rounded-2xl border border-purple-200/90 shadow-sm min-w-[270px] card-hover-3d">
+            <div className="flex items-center justify-between mb-2 text-xs">
+              <span className="text-purple-950 font-black uppercase tracking-wider text-[11px]">Fee Payment Progress</span>
+              <span className="font-extrabold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full text-[11px]">{completionPercentage}% Paid</span>
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full bg-purple-100 rounded-full h-3 mb-4 p-0.5 border border-purple-200 overflow-hidden">
+            <div className="w-full bg-purple-100 rounded-full h-2.5 mb-3 p-0.5 border border-purple-200 overflow-hidden">
               <div 
-                className="bg-gradient-to-r from-purple-600 via-pink-500 to-emerald-500 h-full rounded-full transition-all duration-1000 ease-out shadow-sm"
+                className="bg-gradient-to-r from-purple-600 via-pink-500 to-emerald-500 h-full rounded-full transition-all duration-1000 ease-out shadow-xs"
                 style={{ width: `${completionPercentage}%` }}
               ></div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 text-xs pt-1">
-              <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
-                <p className="text-emerald-900 font-extrabold text-[10px] uppercase">Total Paid</p>
-                <p className="text-lg font-black text-emerald-700">₹{totalPaidAmount.toLocaleString('en-IN')}</p>
+            <div className="grid grid-cols-2 gap-2 text-xs pt-0.5">
+              <div className="bg-emerald-50 p-2 rounded-xl border border-emerald-200">
+                <p className="text-emerald-900 font-extrabold text-[9px] uppercase">Total Paid</p>
+                <p className="text-base font-black text-emerald-700">₹{totalPaidAmount.toLocaleString('en-IN')}</p>
               </div>
-              <div className="bg-amber-50 p-2.5 rounded-xl border border-amber-200">
-                <p className="text-amber-900 font-extrabold text-[10px] uppercase">Remaining Due</p>
-                <p className="text-lg font-black text-amber-700">₹{remainingDues.toLocaleString('en-IN')}</p>
+              <div className="bg-amber-50 p-2 rounded-xl border border-amber-200">
+                <p className="text-amber-900 font-extrabold text-[9px] uppercase">Remaining Due</p>
+                <p className="text-base font-black text-amber-700">₹{remainingDues.toLocaleString('en-IN')}</p>
               </div>
             </div>
           </div>
@@ -225,19 +225,19 @@ export default function StudentDashboard({
 
       {/* 📱 STEP 1: MOBILE NUMBER SUBMISSION FORM (Direct Page when mobile not submitted or clicking edit) */}
       {(!isMobileSubmitted || showEditForm) && (
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-200 shadow-lg glass-panel-glow relative overflow-hidden animate-fadeIn card-attractive-hover">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-purple-200 shadow-md glass-panel-glow relative overflow-hidden animate-fadeIn card-attractive-hover max-w-2xl mx-auto">
           
-          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-purple-700 via-violet-600 to-pink-600"></div>
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-700 via-violet-600 to-pink-600"></div>
 
-          <div className="max-w-3xl mx-auto space-y-6">
+          <div className="space-y-4">
             
-            <div className="flex items-center gap-4 border-b border-purple-100 pb-5">
-              <div className="w-14 h-14 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold shadow-inner border border-purple-200 shrink-0 animate-bounce-short">
-                <User className="w-7 h-7 text-purple-600" />
+            <div className="flex items-center gap-3 border-b border-purple-100 pb-4">
+              <div className="w-11 h-11 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold shadow-inner border border-purple-200 shrink-0">
+                <User className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <h2 className="text-2xl font-black text-slate-900">Student Information</h2>
-                <p className="text-xs text-slate-500 font-medium">Please enter your student details to view your profile and fee breakdown page.</p>
+                <h2 className="text-xl font-black text-slate-900">Student Information</h2>
+                <p className="text-[11px] text-slate-500 font-medium">Please enter your student details to view your profile and fee breakdown page.</p>
               </div>
             </div>
 

@@ -58,7 +58,7 @@ export default function Navbar({ currentUser, activeRole, onSwitchRole, onOpenAu
 
           {/* User Account Controls */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {currentUser ? (
+            {currentUser && (
               <div className="flex items-center gap-2 sm:gap-3 bg-purple-50/50 pl-2.5 sm:pl-3.5 pr-1.5 sm:pr-2 py-1 sm:py-1.5 rounded-2xl border border-purple-200/80 shadow-sm">
                 <div className="text-right hidden sm:block">
                   <p className="text-xs font-black text-slate-900">{currentUser.fullName || currentUser.email.split('@')[0]}</p>
@@ -73,22 +73,6 @@ export default function Navbar({ currentUser, activeRole, onSwitchRole, onOpenAu
                   className="p-1.5 sm:p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <button
-                  onClick={() => onOpenAuth('login')}
-                  className="px-2.5 sm:px-4 py-2 text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-purple-50 rounded-xl transition-colors"
-                >
-                  Login
-                </button>
-                <button
-                  onClick={() => onOpenAuth('signup')}
-                  className="flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 text-xs font-extrabold text-white bg-gradient-to-r from-purple-700 via-violet-600 to-pink-600 hover:from-purple-800 hover:to-pink-700 rounded-xl sm:rounded-2xl shadow-md shadow-purple-600/25 transition-all shimmer-btn"
-                >
-                  <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300 shrink-0" />
-                  <span>Register <span className="hidden sm:inline">/ Login</span></span>
                 </button>
               </div>
             )}

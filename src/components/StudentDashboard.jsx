@@ -471,28 +471,29 @@ export default function StudentDashboard({
               </div>
             </div>
 
-            {/* ⚡ ENGINEERING BRANCHES (DIRECTLY BELOW ENGINEERING) */}
+            {/* ⚡ ENGINEERING BRANCHES (HORIZONTAL SEGMENTED TAB BAR) */}
             {selectedCourse === 'Engineering' ? (
-              <div className="bg-purple-50/40 p-5 rounded-2xl border-2 border-purple-200 space-y-4 animate-fadeIn">
+              <div className="bg-purple-50/50 p-5 rounded-2xl border border-purple-200/80 space-y-4 animate-fadeIn">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-black uppercase tracking-wider text-purple-950 flex items-center gap-2">
                     <Zap className="w-4 h-4 text-pink-600" />
-                    <span>Engineering Branches (Select Branch Below) *</span>
+                    <span>Select Engineering Branch (Segmented Tab Bar) *</span>
                   </label>
                   <span className="text-[11px] font-extrabold text-purple-700 bg-white px-2.5 py-0.5 rounded-full border border-purple-200">
                     Selected: {selectedBranch}
                   </span>
                 </div>
 
-                {/* 3-Column Radio Cards Grid for Branches */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                {/* 🎛️ HORIZONTAL SEGMENTED TAB SLIDER */}
+                <div className="bg-slate-200/60 p-1.5 rounded-2xl flex flex-wrap lg:flex-nowrap gap-1.5 border border-slate-200 shadow-inner">
                   {(COURSE_BRANCHES['Engineering'] || []).map((branchObj) => {
                     const isSelected = selectedBranch === branchObj.label || 
                       (selectedBranch && branchObj.label.toLowerCase().includes(selectedBranch.toLowerCase()));
 
                     return (
-                      <label
+                      <button
                         key={branchObj.id}
+                        type="button"
                         onClick={() => {
                           setSelectedBranch(branchObj.label);
                           onSaveStudent({
@@ -513,36 +514,19 @@ export default function StudentDashboard({
                             }
                           });
                         }}
-                        className={`flex items-center gap-3.5 p-4 rounded-2xl border-2 transition-all cursor-pointer select-none ${
+                        className={`flex-1 min-w-[150px] px-3.5 py-3 rounded-xl font-extrabold text-xs transition-all duration-200 flex items-center justify-between gap-2 select-none ${
                           isSelected
-                            ? 'bg-gradient-to-r from-purple-100/80 via-pink-50 to-purple-50 border-purple-600 shadow-md ring-2 ring-purple-500/20'
-                            : 'bg-white border-slate-200 hover:border-purple-300 hover:bg-purple-50/20'
+                            ? 'bg-gradient-to-r from-purple-700 to-pink-600 text-white shadow-lg shadow-purple-600/30 scale-[1.02]'
+                            : 'bg-white/80 text-slate-700 hover:bg-white hover:text-slate-900 border border-slate-200/50'
                         }`}
                       >
-                        <input
-                          type="radio"
-                          name="studentBranchSelection"
-                          value={branchObj.label}
-                          checked={isSelected}
-                          onChange={() => {}}
-                          className="w-4.5 h-4.5 text-purple-600 focus:ring-purple-500 border-slate-300 cursor-pointer accent-purple-600 shrink-0"
-                        />
-
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-1">
-                            <p className={`text-xs font-black truncate ${isSelected ? 'text-purple-950' : 'text-slate-800'}`}>
-                              {branchObj.label}
-                            </p>
-                            <span className="text-[9px] font-mono font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded shrink-0">
-                              {branchObj.code}
-                            </span>
-                          </div>
-                        </div>
-
-                        {isSelected && (
-                          <CheckCircle2 className="w-5 h-5 text-purple-600 shrink-0" />
-                        )}
-                      </label>
+                        <span className="truncate">{branchObj.label}</span>
+                        <span className={`text-[9px] font-mono font-black px-1.5 py-0.5 rounded shrink-0 ${
+                          isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+                        }`}>
+                          {branchObj.code}
+                        </span>
+                      </button>
                     );
                   })}
                 </div>

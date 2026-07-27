@@ -173,49 +173,49 @@ export default function StudentDashboard({
   return (
     <div className="space-y-8 animate-slide-up">
       
-      {/* 🚀 Hero Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-900 via-violet-800 to-pink-700 text-white p-8 sm:p-10 soft-shadow animate-gradient-bg">
+      {/* 🚀 Hero Header Banner (Light Pastel Theme) */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-100/90 via-pink-50/80 to-purple-100/90 text-slate-900 p-8 sm:p-10 border-2 border-purple-200/90 shadow-sm animate-fadeIn">
         
-        {/* Glowing Orbs */}
-        <div className="absolute -top-12 -right-12 w-80 h-80 bg-white/15 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute -bottom-16 left-1/3 w-64 h-64 bg-pink-400/20 rounded-full blur-2xl pointer-events-none"></div>
+        {/* Glowing Soft Orbs */}
+        <div className="absolute -top-12 -right-12 w-80 h-80 bg-purple-200/30 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute -bottom-16 left-1/3 w-64 h-64 bg-pink-200/30 rounded-full blur-2xl pointer-events-none"></div>
 
         <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
           <div className="space-y-3 max-w-2xl">
             
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-xs font-black tracking-wider uppercase text-purple-100 border border-white/30 shadow-sm">
-              <Sparkles className="w-4 h-4 text-amber-300" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 text-xs font-black tracking-wider uppercase text-purple-900 border border-purple-200 shadow-sm">
+              <Sparkles className="w-4 h-4 text-purple-600" />
               <span>Student Online Fee Portal • Academic Session {feesConfig.academicYear || '2026-2027'}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
-              Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-rose-100 to-pink-200">{fullName || currentUser?.fullName || 'Student'}</span> 👋
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-slate-900">
+              Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 via-pink-600 to-purple-800">{fullName || currentUser?.fullName || 'Student'}</span> 👋
             </h1>
           </div>
 
           {/* Quick Payment Status Overview */}
-          <div className="w-full lg:w-auto bg-white/10 backdrop-blur-xl p-5 sm:p-6 rounded-3xl border border-white/25 shadow-2xl min-w-[290px]">
+          <div className="w-full lg:w-auto bg-white/90 p-5 sm:p-6 rounded-3xl border border-purple-200/90 shadow-md min-w-[290px]">
             <div className="flex items-center justify-between mb-3 text-xs">
-              <span className="text-purple-100 font-bold uppercase tracking-wider">Fee Payment Progress</span>
-              <span className="font-extrabold text-amber-300 bg-white/20 px-2.5 py-0.5 rounded-full">{completionPercentage}% Paid</span>
+              <span className="text-purple-950 font-black uppercase tracking-wider">Fee Payment Progress</span>
+              <span className="font-extrabold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full">{completionPercentage}% Paid</span>
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full bg-black/25 rounded-full h-3 mb-4 p-0.5 border border-white/20 overflow-hidden">
+            <div className="w-full bg-purple-100 rounded-full h-3 mb-4 p-0.5 border border-purple-200 overflow-hidden">
               <div 
-                className="bg-gradient-to-r from-emerald-400 via-pink-400 to-amber-300 h-full rounded-full transition-all duration-1000 ease-out shadow-sm"
+                className="bg-gradient-to-r from-purple-600 via-pink-500 to-emerald-500 h-full rounded-full transition-all duration-1000 ease-out shadow-sm"
                 style={{ width: `${completionPercentage}%` }}
               ></div>
             </div>
 
             <div className="grid grid-cols-2 gap-3 text-xs pt-1">
-              <div className="bg-white/10 p-2.5 rounded-xl border border-white/15">
-                <p className="text-purple-200 font-semibold">Total Paid</p>
-                <p className="text-lg font-black text-emerald-300">₹{totalPaidAmount.toLocaleString('en-IN')}</p>
+              <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
+                <p className="text-emerald-900 font-extrabold text-[10px] uppercase">Total Paid</p>
+                <p className="text-lg font-black text-emerald-700">₹{totalPaidAmount.toLocaleString('en-IN')}</p>
               </div>
-              <div className="bg-white/10 p-2.5 rounded-xl border border-white/15">
-                <p className="text-purple-200 font-semibold">Remaining Due</p>
-                <p className="text-lg font-black text-amber-200">₹{remainingDues.toLocaleString('en-IN')}</p>
+              <div className="bg-amber-50 p-2.5 rounded-xl border border-amber-200">
+                <p className="text-amber-900 font-extrabold text-[10px] uppercase">Remaining Due</p>
+                <p className="text-lg font-black text-amber-700">₹{remainingDues.toLocaleString('en-IN')}</p>
               </div>
             </div>
           </div>

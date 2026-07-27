@@ -53,20 +53,24 @@ export default function StudentDashboard({
   const [year, setYear] = useState(existingProfile?.educationDetails?.year || '3rd Year');
   const [semester, setSemester] = useState(existingProfile?.educationDetails?.semester || '5th Semester');
 
-  // Direct Student Dashboard View (No redundant 2nd login page)
+  // Track if mobile number has been submitted to open the student details page
+  const [isMobileSubmitted, setIsMobileSubmitted] = useState(!!existingProfile?.mobile);
   const [showEditForm, setShowEditForm] = useState(false);
 
   // Sync state if currentUser changes
   useEffect(() => {
-    if (existingProfile || currentUser) {
-      setMobileInput(existingProfile?.mobile || currentUser?.mobile || '9876543210');
-      setSelectedCourse(getNormalizedCourse(existingProfile?.educationDetails?.course));
-      setSelectedBranch(existingProfile?.educationDetails?.branch || 'Computer Engineering');
-      setFullName(existingProfile?.fullName || currentUser?.fullName || 'Student');
-      setRollNo(existingProfile?.rollNo || 'CS2026-042');
-      setPrnNo(existingProfile?.prnNo || '20240325001192');
-      setYear(existingProfile?.educationDetails?.year || '3rd Year');
-      setSemester(existingProfile?.educationDetails?.semester || '5th Semester');
+    if (existingProfile) {
+      setMobileInput(existingProfile.mobile || existingProfile.educationDetails?.mobile || '');
+      setSelectedCourse(getNormalizedCourse(existingProfile.educationDetails?.course));
+      setSelectedBranch(existingProfile.educationDetails?.branch || 'Computer Engineering');
+      setFullName(existingProfile.fullName || currentUser?.fullName || '');
+      setRollNo(existingProfile.rollNo || '');
+      setPrnNo(existingProfile.prnNo || '');
+      setYear(existingProfile.educationDetails?.year || '3rd Year');
+      setSemester(existingProfile.educationDetails?.semester || '5th Semester');
+      if (existingProfile.mobile) {
+        setIsMobileSubmitted(true);
+      }
     }
   }, [currentUser, existingProfile]);
 
@@ -196,8 +200,8 @@ export default function StudentDashboard({
         </div>
       </div>
 
-      {/* 📱 EDIT PROFILE MODAL / FORM (Only visible when student clicks Update Mobile / Profile) */}
-      {showEditForm && (
+      {/* 📱 STEP 1: MOBILE NUMBER SUBMISSION FORM (Direct Page when mobile not submitted or clicking edit) */}
+      {(!isMobileSubmitted || showEditForm) && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-200 shadow-lg glass-panel-glow relative overflow-hidden animate-fadeIn">
           
           <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-purple-700 via-violet-600 to-pink-600"></div>
@@ -209,8 +213,8 @@ export default function StudentDashboard({
                 <Phone className="w-7 h-7" />
               </div>
               <div>
-                <h2 className="text-2xl font-black text-slate-900">Update Student Mobile & Profile Info</h2>
-                <p className="text-xs text-slate-500 font-medium">Update your registered mobile number and profile details below.</p>
+                <h2 className="text-2xl font-black text-slate-900">Student Mobile Number & Info Submission</h2>
+                <p className="text-xs text-slate-500 font-medium">Enter your registered mobile number below to access your student profile & fees structure page.</p>
               </div>
             </div>
 
@@ -304,22 +308,24 @@ export default function StudentDashboard({
                 </div>
               </div>
 
-              {/* Save & Cancel Buttons */}
+              {/* Submit Button */}
               <div className="flex gap-3 pt-2">
                 <button
                   type="submit"
                   className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-purple-700 via-violet-600 to-pink-600 hover:from-purple-800 hover:to-pink-700 text-white font-black text-sm shadow-xl shadow-purple-600/30 transition-all shimmer-btn"
                 >
                   <CheckCircle className="w-5 h-5" />
-                  <span>Save Profile Details</span>
+                  <span>Submit Mobile Number & View Information Page</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setShowEditForm(false)}
-                  className="px-6 py-4 rounded-2xl border border-slate-300 font-bold text-xs hover:bg-slate-50 transition-colors text-slate-700"
-                >
-                  Cancel
-                </button>
+                {showEditForm && (
+                  <button
+                    type="button"
+                    onClick={() => setShowEditForm(false)}
+                    className="px-6 py-4 rounded-2xl border border-slate-300 font-bold text-xs hover:bg-slate-50 transition-colors text-slate-700"
+                  >
+                    Cancel
+                  </button>
+                )}
               </div>
 
             </form>
@@ -329,8 +335,8 @@ export default function StudentDashboard({
         </div>
       )}
 
-      {/* 🎓 MAIN STUDENT DASHBOARD PAGE */}
-      {!showEditForm && (
+      {/* 🎓 STEP 2: MAIN STUDENT DASHBOARD PAGE (Visible after Mobile Number Submit) */}
+      {(isMobileSubmitted && !showEditForm) && (
         <div className="space-y-8 animate-fadeIn">
           
           {/* 📋 SECTION 1: Student Information Display Card (with Mobile Number) */}

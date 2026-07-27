@@ -271,20 +271,20 @@ export default function InvoiceModal({ isOpen, onClose, transaction }) {
             Close
           </button>
 
-          {/* Download PDF Button (Light Theme Gradient) */}
+          {/* Download PDF Button (Light Pastel Theme Gradient) */}
           <button
             onClick={handleDownloadPDF}
             disabled={isDownloading}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-700 via-violet-600 to-pink-600 hover:from-purple-800 hover:to-pink-700 text-white font-black text-sm shadow-md shadow-purple-600/25 hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 cursor-pointer"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-100 via-pink-100 to-purple-100 hover:from-purple-200 hover:to-pink-200 text-purple-950 font-black text-sm border-2 border-purple-300 shadow-sm hover:shadow transition-all disabled:opacity-60 cursor-pointer"
           >
             {isDownloading ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin text-white" />
+                <Loader2 className="w-4 h-4 animate-spin text-purple-700" />
                 <span>Generating PDF...</span>
               </>
             ) : (
               <>
-                <Download className="w-4 h-4 text-white" />
+                <Download className="w-4 h-4 text-purple-700" />
                 <span>Download PDF Receipt</span>
               </>
             )}

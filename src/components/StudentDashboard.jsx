@@ -382,16 +382,16 @@ export default function StudentDashboard({
               <div className="flex gap-3 pt-2">
                 <button
                   type="submit"
-                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-purple-700 via-violet-600 to-pink-600 hover:from-purple-800 hover:to-pink-700 text-white font-black text-sm shadow-xl shadow-purple-600/30 transition-all shimmer-btn"
+                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-purple-100 via-pink-100 to-purple-100 hover:from-purple-200 hover:via-pink-200 hover:to-purple-200 text-purple-950 font-black text-base border-2 border-purple-300 shadow-sm hover:shadow transition-all cursor-pointer"
                 >
-                  <CheckCircle className="w-5 h-5" />
-                  <span>Submit Mobile Number & View Information Page</span>
+                  <CheckCircle className="w-5 h-5 text-purple-700" />
+                  <span>Login</span>
                 </button>
                 {showEditForm && (
                   <button
                     type="button"
                     onClick={() => setShowEditForm(false)}
-                    className="px-6 py-4 rounded-2xl border border-slate-300 font-bold text-xs hover:bg-slate-50 transition-colors text-slate-700"
+                    className="px-6 py-4 rounded-2xl border border-purple-200 font-bold text-xs hover:bg-purple-50 transition-colors text-purple-900 bg-white"
                   >
                     Cancel
                   </button>
@@ -545,7 +545,7 @@ export default function StudentDashboard({
                 {isExamPaid ? (
                   <button
                     onClick={() => onViewInvoice(examPaymentRecord)}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-extrabold text-xs border border-emerald-200 transition-all shadow-sm"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-extrabold text-xs border border-emerald-200 transition-all shadow-sm cursor-pointer"
                   >
                     <Download className="w-4 h-4 text-emerald-600" />
                     <span>Download Exam Fee Receipt</span>
@@ -557,10 +557,10 @@ export default function StudentDashboard({
                       feeTitle: 'Exam Fee',
                       amount: examAmount
                     })}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-600 hover:from-indigo-800 hover:to-pink-700 text-white font-black text-xs shadow-lg shadow-indigo-600/30 transition-all shimmer-btn"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-100 via-purple-100 to-indigo-100 hover:from-indigo-200 hover:to-purple-200 text-indigo-950 font-black text-xs border-2 border-indigo-300 shadow-sm transition-all cursor-pointer"
                   >
                     <span>Pay ₹{examAmount.toLocaleString('en-IN')} via Razorpay</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-4 h-4 text-indigo-700" />
                   </button>
                 )}
               </div>
@@ -610,7 +610,7 @@ export default function StudentDashboard({
                 {isTuitionPaid ? (
                   <button
                     onClick={() => onViewInvoice(tuitionPaymentRecord)}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-extrabold text-xs border border-emerald-200 transition-all shadow-sm"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-extrabold text-xs border border-emerald-200 transition-all shadow-sm cursor-pointer"
                   >
                     <Download className="w-4 h-4 text-emerald-600" />
                     <span>Download Tuition Fee Receipt</span>
@@ -622,10 +622,10 @@ export default function StudentDashboard({
                       feeTitle: 'Tuition Fee',
                       amount: tuitionAmount
                     })}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-purple-700 via-violet-600 to-pink-600 hover:from-purple-800 hover:to-pink-700 text-white font-black text-xs shadow-lg shadow-purple-600/30 transition-all shimmer-btn"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-purple-100 via-pink-100 to-purple-100 hover:from-purple-200 hover:to-pink-200 text-purple-950 font-black text-xs border-2 border-purple-300 shadow-sm transition-all cursor-pointer"
                   >
                     <span>Pay ₹{tuitionAmount.toLocaleString('en-IN')} via Razorpay</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-4 h-4 text-purple-700" />
                   </button>
                 )}
               </div>

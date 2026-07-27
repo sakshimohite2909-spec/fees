@@ -59,12 +59,12 @@ export default function StudentDashboard({
   const [semester, setSemester] = useState(existingProfile?.educationDetails?.semester || '5th Semester');
 
   // Track if mobile number has been submitted to open the student details page
-  const [isMobileSubmitted, setIsMobileSubmitted] = useState(!!existingProfile?.mobile);
+  const [isMobileSubmitted, setIsMobileSubmitted] = useState(!!currentUser && !!existingProfile?.mobile);
   const [showEditForm, setShowEditForm] = useState(false);
 
-  // Sync state if currentUser changes
+  // Sync state if currentUser changes or when user logs out
   useEffect(() => {
-    if (existingProfile) {
+    if (currentUser && existingProfile) {
       setMobileInput(existingProfile.mobile || existingProfile.educationDetails?.mobile || '');
       setSelectedCourse(getNormalizedCourse(existingProfile.educationDetails?.course));
       setSelectedBranch(existingProfile.educationDetails?.branch || 'Computer Engineering');
@@ -76,6 +76,14 @@ export default function StudentDashboard({
       if (existingProfile.mobile) {
         setIsMobileSubmitted(true);
       }
+    } else if (!currentUser) {
+      // 🚀 Reset view back to Search & Login screen on Logout!
+      setIsMobileSubmitted(false);
+      setShowEditForm(false);
+      setShowRegistrationForm(false);
+      setSearchQueryInput('');
+      setFullName('');
+      setMobileInput('');
     }
   }, [currentUser, existingProfile]);
 

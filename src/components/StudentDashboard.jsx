@@ -251,8 +251,51 @@ export default function StudentDashboard({
                     placeholder="Enter Student Name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:ring-2 focus:ring-purple-500 focus:outline-none bg-white"
                   />
+                </div>
+
+                {/* 🎓 Academic Course Selection Dropdown */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                    <BookOpen className="w-3.5 h-3.5 text-purple-600" />
+                    <span>Select Academic Course *</span>
+                  </label>
+                  <select
+                    value={selectedCourse}
+                    onChange={(e) => handleCourseChange(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-purple-300 text-xs font-extrabold text-slate-900 bg-purple-50/40 focus:ring-2 focus:ring-purple-500 focus:outline-none cursor-pointer"
+                  >
+                    <option value="Engineering">Engineering (B.Tech / B.E.)</option>
+                    <option value="Polytechnic">Polytechnic (Diploma)</option>
+                    <option value="Pharmacy">Pharmacy (B.Pharm / D.Pharm)</option>
+                  </select>
+                </div>
+
+                {/* 🌿 Branch Selection Field */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                    <Zap className="w-3.5 h-3.5 text-pink-600" />
+                    <span>Select Branch *</span>
+                  </label>
+                  {selectedCourse === 'Engineering' ? (
+                    <select
+                      value={selectedBranch}
+                      onChange={(e) => setSelectedBranch(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-pink-300 text-xs font-extrabold text-slate-900 bg-pink-50/40 focus:ring-2 focus:ring-pink-500 focus:outline-none cursor-pointer"
+                    >
+                      {(COURSE_BRANCHES['Engineering'] || []).map((branchObj) => (
+                        <option key={branchObj.id} value={branchObj.label}>
+                          {branchObj.label} ({branchObj.code})
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div className="px-3.5 py-2 rounded-xl border border-emerald-300 bg-emerald-50 text-xs font-extrabold text-emerald-950 flex items-center justify-between">
+                      <span>{selectedCourse} Direct Program</span>
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -262,7 +305,7 @@ export default function StudentDashboard({
                     placeholder="e.g. CS2026-042"
                     value={rollNo}
                     onChange={(e) => setRollNo(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold text-purple-700 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold text-purple-700 focus:ring-2 focus:ring-purple-500 focus:outline-none bg-white"
                   />
                 </div>
 
@@ -273,7 +316,7 @@ export default function StudentDashboard({
                     placeholder="e.g. 20240325001192"
                     value={prnNo}
                     onChange={(e) => setPrnNo(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none bg-white"
                   />
                 </div>
 
@@ -283,7 +326,7 @@ export default function StudentDashboard({
                     <select
                       value={year}
                       onChange={(e) => setYear(e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white"
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white cursor-pointer"
                     >
                       <option>1st Year</option>
                       <option>2nd Year</option>
@@ -293,7 +336,7 @@ export default function StudentDashboard({
                     <select
                       value={semester}
                       onChange={(e) => setSemester(e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white"
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white cursor-pointer"
                     >
                       <option>1st Semester</option>
                       <option>2nd Semester</option>

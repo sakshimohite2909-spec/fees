@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { 
   CreditCard, CheckCircle, Clock, FileText, 
   Sparkles, Award, ArrowRight, ShieldCheck, Download, Edit3, Save, Check,
-  Phone, BookOpen, Layers, Zap, Building2, CheckCircle2, ChevronRight, User, Hash
+  Phone, BookOpen, Layers, Zap, Building2, CheckCircle2, ChevronRight, User, Hash,
+  Search, UserPlus, AlertCircle
 } from 'lucide-react';
 
 export default function StudentDashboard({ 
@@ -44,6 +45,10 @@ export default function StudentDashboard({
   const defaultBranch = existingProfile?.educationDetails?.branch || 'Computer Engineering';
 
   // Form & view state
+  const [searchQueryInput, setSearchQueryInput] = useState('');
+  const [searchError, setSearchError] = useState('');
+  const [showRegistrationForm, setShowRegistrationForm] = useState(false);
+
   const [mobileInput, setMobileInput] = useState(defaultMobile);
   const [selectedCourse, setSelectedCourse] = useState(defaultCourse);
   const [selectedBranch, setSelectedBranch] = useState(defaultBranch);
@@ -74,22 +79,21 @@ export default function StudentDashboard({
     }
   }, [currentUser, existingProfile]);
 
-  // 🛡️ BROWSER BACK BUTTON (POPSTATE) HANDLER - Prevents website from closing abruptly on Back Arrow click
+  // 🛡️ BROWSER BACK BUTTON (POPSTATE) HANDLER
   useEffect(() => {
-    // Push an initial history entry into browser history
     window.history.pushState({ appSection: 'student-portal' }, '');
 
     const handlePopState = (e) => {
       if (showEditForm) {
-        // If edit modal/form is open, close edit form and stay on dashboard
         setShowEditForm(false);
         window.history.pushState({ appSection: 'student-dashboard' }, '');
+      } else if (showRegistrationForm) {
+        setShowRegistrationForm(false);
+        window.history.pushState({ appSection: 'student-search' }, '');
       } else if (isMobileSubmitted) {
-        // If on main dashboard, go back to initial Student Information submission form
         setIsMobileSubmitted(false);
         window.history.pushState({ appSection: 'student-form' }, '');
       } else {
-        // If on initial form, keep user on form instead of exiting website
         window.history.pushState({ appSection: 'student-portal' }, '');
       }
     };
@@ -98,7 +102,7 @@ export default function StudentDashboard({
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [isMobileSubmitted, showEditForm]);
+  }, [isMobileSubmitted, showEditForm, showRegistrationForm]);
 
   const handleCourseChange = (newCourse) => {
     setSelectedCourse(newCourse);
@@ -113,7 +117,54 @@ export default function StudentDashboard({
     }
   };
 
-  // Handle Mobile Number Submission (opens main details & fees page)
+  // 🔍 Smart Search & Login Handler (Search by Mobile, PRN, or Roll No)
+  const handleSmartSearchLogin = (e) => {
+    e.preventDefault();
+    const query = searchQueryInput.trim().toLowerCase();
+    if (!query) return;
+
+    setSearchError('');
+
+    // Search in students database (Excel / Registered list)
+    const match = students.find(s => {
+      const mob = (s.mobile || s.educationDetails?.mobile || '').toLowerCase();
+      const prn = (s.prnNo || '').toLowerCase();
+      const roll = (s.rollNo || '').toLowerCase();
+      const name = (s.fullName || '').toLowerCase();
+      return mob.includes(query) || prn.includes(query) || roll.includes(query) || name.includes(query);
+    });
+
+    if (match) {
+      // Record found in Excel / Database! Auto-fill and login!
+      const matchedMobile = match.mobile || match.educationDetails?.mobile || searchQueryInput;
+      const matchedCourse = getNormalizedCourse(match.course || match.educationDetails?.course);
+      const matchedBranch = match.branch || match.educationDetails?.branch || 'Computer Engineering';
+
+      setFullName(match.fullName || 'Student');
+      setMobileInput(matchedMobile);
+      setSelectedCourse(matchedCourse);
+      setSelectedBranch(matchedBranch);
+      if (match.rollNo) setRollNo(match.rollNo);
+      if (match.prnNo) setPrnNo(match.prnNo);
+
+      onSaveStudent({
+        ...match,
+        mobile: matchedMobile,
+        branch: matchedBranch,
+        course: matchedCourse
+      });
+
+      window.history.pushState({ appSection: 'dashboard' }, '');
+      setIsMobileSubmitted(true);
+      setShowEditForm(false);
+      setShowRegistrationForm(false);
+    } else {
+      // Record NOT found in database! Show error and option to register as New Student
+      setSearchError(`No record found for "${searchQueryInput}". If you are a new student, please click '+ New Student Registration' below to fill your details.`);
+    }
+  };
+
+  // Handle New Student Registration Form Submission
   const handleMobileSubmit = (e) => {
     e.preventDefault();
     if (!mobileInput.trim()) return;
@@ -143,6 +194,7 @@ export default function StudentDashboard({
     window.history.pushState({ appSection: 'dashboard' }, '');
     setIsMobileSubmitted(true);
     setShowEditForm(false);
+    setShowRegistrationForm(false);
   };
 
   // Payment Status checks for student
@@ -223,130 +275,223 @@ export default function StudentDashboard({
         </div>
       </div>
 
-      {/* 📱 STEP 1: MOBILE NUMBER SUBMISSION FORM (Direct Page when mobile not submitted or clicking edit) */}
+      {/* 📱 STEP 1: SMART SEARCH LOGIN OR NEW STUDENT REGISTRATION FORM */}
       {(!isMobileSubmitted || showEditForm) && (
-        <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-purple-200 shadow-md glass-panel-glow relative overflow-hidden animate-fadeIn card-attractive-hover max-w-2xl mx-auto">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-purple-200 shadow-md glass-panel-glow relative overflow-hidden animate-fadeIn card-attractive-hover max-w-2xl mx-auto">
           
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-700 via-violet-600 to-pink-600"></div>
 
-          <div className="space-y-4">
-            
-            <div className="flex items-center gap-3 border-b border-purple-100 pb-4">
-              <div className="w-11 h-11 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold shadow-inner border border-purple-200 shrink-0">
-                <User className="w-5 h-5 text-purple-600" />
-              </div>
-              <div>
-                <h2 className="text-xl font-black text-slate-900">Student Information</h2>
-                <p className="text-[11px] text-slate-500 font-medium">Please enter your student details to view your profile and fee breakdown page.</p>
-              </div>
-            </div>
-
-            <form onSubmit={handleMobileSubmit} className="space-y-6">
+          {/* VIEW A: SMART SEARCH & QUICK LOGIN (Search by Mobile Number, PRN No, or Roll No) */}
+          {!showRegistrationForm && !showEditForm ? (
+            <div className="space-y-5">
               
-              {/* Basic Student Information Inputs Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
-                {/* 1. Student Full Name */}
+              <div className="flex items-center gap-3 border-b border-purple-100 pb-4">
+                <div className="w-11 h-11 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold shadow-inner border border-purple-200 shrink-0">
+                  <Search className="w-5 h-5 text-purple-600" />
+                </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Student Full Name *</label>
+                  <h2 className="text-xl font-black text-slate-900">Student Search & Quick Login</h2>
+                  <p className="text-[11px] text-slate-500 font-medium">Enter Mobile Number, PRN Number, or Roll Number to access your fee portal.</p>
+                </div>
+              </div>
+
+              <form onSubmit={handleSmartSearchLogin} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                    <Search className="w-3.5 h-3.5 text-purple-600" />
+                    <span>Enter Mobile No / PRN No / Roll No *</span>
+                  </label>
                   <input
                     type="text"
                     required
-                    placeholder="Enter Student Name"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:ring-2 focus:ring-purple-500 focus:outline-none bg-white transition-all hover:border-purple-300"
+                    placeholder="e.g. 9876543210 or PRN 20240325001192 or CS2026-042"
+                    value={searchQueryInput}
+                    onChange={(e) => {
+                      setSearchQueryInput(e.target.value);
+                      if (searchError) setSearchError('');
+                    }}
+                    className="w-full px-4 py-3 rounded-xl border border-purple-300 text-xs font-extrabold text-slate-900 focus:ring-2 focus:ring-purple-500 focus:outline-none bg-purple-50/30 transition-all hover:border-purple-400 placeholder:font-medium"
                   />
                 </div>
 
-                {/* 2. Mobile Number (Next to Student Full Name!) */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                    <Phone className="w-3.5 h-3.5 text-purple-600" />
-                    <span>Mobile Number *</span>
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-purple-600">+91</span>
-                    <input
-                      type="tel"
-                      required
-                      maxLength={10}
-                      placeholder="Enter 10-digit Mobile Number"
-                      value={mobileInput}
-                      onChange={(e) => setMobileInput(e.target.value.replace(/\D/g, ''))}
-                      className="w-full pl-12 pr-3 py-2.5 rounded-xl border border-purple-300 text-xs font-extrabold text-slate-900 focus:ring-2 focus:ring-purple-500 focus:outline-none bg-white transition-all hover:border-purple-400"
-                    />
+                {/* Search Error Alert with + New Student Registration Button */}
+                {searchError && (
+                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl space-y-2 animate-fadeIn">
+                    <p className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+                      <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                      <span>{searchError}</span>
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setShowRegistrationForm(true)}
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs shadow-sm transition-all cursor-pointer"
+                    >
+                      <UserPlus className="w-4 h-4" />
+                      <span>+ Register as New Student Now</span>
+                    </button>
+                  </div>
+                )}
+
+                {/* Submit Search & Login Button */}
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-purple-100 via-pink-100 to-purple-100 hover:from-purple-200 hover:via-pink-200 hover:to-purple-200 text-purple-950 font-black text-sm border-2 border-purple-300 shadow-sm hover:shadow-lg transition-all cursor-pointer transform hover:-translate-y-0.5"
+                >
+                  <Search className="w-4 h-4 text-purple-700" />
+                  <span>Search & Login</span>
+                </button>
+              </form>
+
+              {/* Secondary Option: Direct Link for New Students */}
+              <div className="pt-3 border-t border-purple-100 text-center">
+                <p className="text-xs text-slate-500 font-medium mb-2">Not in college database or first time user?</p>
+                <button
+                  type="button"
+                  onClick={() => setShowRegistrationForm(true)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-purple-50 text-purple-700 hover:bg-purple-100 font-extrabold text-xs border border-purple-200 transition-all cursor-pointer"
+                >
+                  <UserPlus className="w-4 h-4 text-purple-600" />
+                  <span>+ Register / Fill Student Details</span>
+                </button>
+              </div>
+
+            </div>
+          ) : (
+            /* VIEW B: NEW STUDENT REGISTRATION FORM / EDIT PROFILE FORM */
+            <div className="space-y-4">
+              
+              <div className="flex items-center justify-between border-b border-purple-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold shadow-inner border border-purple-200 shrink-0">
+                    <UserPlus className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-slate-900">
+                      {showEditForm ? 'Update Student Profile' : 'New Student Registration'}
+                    </h2>
+                    <p className="text-[11px] text-slate-500 font-medium">
+                      {showEditForm ? 'Update your student details & branch' : 'Fill your basic details to create profile & access fee portal.'}
+                    </p>
                   </div>
                 </div>
 
-                {/* 3. Academic Course Selection Dropdown */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                    <BookOpen className="w-3.5 h-3.5 text-purple-600" />
-                    <span>Select Academic Course *</span>
-                  </label>
-                  <select
-                    value={selectedCourse}
-                    onChange={(e) => handleCourseChange(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-purple-300 text-xs font-extrabold text-slate-900 bg-purple-50/40 focus:ring-2 focus:ring-purple-500 focus:outline-none cursor-pointer transition-all hover:border-purple-400"
-                  >
-                    <option value="Engineering">Engineering (B.Tech / B.E.)</option>
-                    <option value="Polytechnic">Polytechnic (Diploma)</option>
-                    <option value="Pharmacy">Pharmacy (B.Pharm / D.Pharm)</option>
-                  </select>
-                </div>
-
-                {/* 4. Branch Selection Field */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                    <Zap className="w-3.5 h-3.5 text-pink-600" />
-                    <span>Select Branch *</span>
-                  </label>
-                  {selectedCourse === 'Engineering' ? (
-                    <select
-                      value={selectedBranch}
-                      onChange={(e) => setSelectedBranch(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-pink-300 text-xs font-extrabold text-slate-900 bg-pink-50/40 focus:ring-2 focus:ring-pink-500 focus:outline-none cursor-pointer transition-all hover:border-pink-400"
-                    >
-                      {(COURSE_BRANCHES['Engineering'] || []).map((branchObj) => (
-                        <option key={branchObj.id} value={branchObj.label}>
-                          {branchObj.label} ({branchObj.code})
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <div className="px-3.5 py-2 rounded-xl border border-emerald-300 bg-emerald-50 text-xs font-extrabold text-emerald-950 flex items-center justify-between">
-                      <span>{selectedCourse} Direct Program</span>
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    </div>
-                  )}
-                </div>
-
-              </div>
-
-              {/* Submit Button */}
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="submit"
-                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-purple-100 via-pink-100 to-purple-100 hover:from-purple-200 hover:via-pink-200 hover:to-purple-200 text-purple-950 font-black text-base border-2 border-purple-300 shadow-sm hover:shadow-lg transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
-                >
-                  <CheckCircle className="w-5 h-5 text-purple-700" />
-                  <span>Login</span>
-                </button>
-                {showEditForm && (
+                {!showEditForm && (
                   <button
                     type="button"
-                    onClick={() => setShowEditForm(false)}
-                    className="px-6 py-4 rounded-2xl border border-purple-200 font-bold text-xs hover:bg-purple-50 transition-colors text-purple-900 bg-white"
+                    onClick={() => setShowRegistrationForm(false)}
+                    className="text-xs font-bold text-purple-700 hover:underline px-2 py-1 rounded bg-purple-50"
                   >
-                    Cancel
+                    ← Back to Search
                   </button>
                 )}
               </div>
 
-            </form>
+              <form onSubmit={handleMobileSubmit} className="space-y-5">
+                
+                {/* Basic Student Information Inputs Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  
+                  {/* 1. Student Full Name */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Student Full Name *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Enter Student Name"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:ring-2 focus:ring-purple-500 focus:outline-none bg-white transition-all hover:border-purple-300"
+                    />
+                  </div>
 
-          </div>
+                  {/* 2. Mobile Number */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                      <Phone className="w-3.5 h-3.5 text-purple-600" />
+                      <span>Mobile Number *</span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-purple-600">+91</span>
+                      <input
+                        type="tel"
+                        required
+                        maxLength={10}
+                        placeholder="Enter 10-digit Mobile Number"
+                        value={mobileInput}
+                        onChange={(e) => setMobileInput(e.target.value.replace(/\D/g, ''))}
+                        className="w-full pl-12 pr-3 py-2.5 rounded-xl border border-purple-300 text-xs font-extrabold text-slate-900 focus:ring-2 focus:ring-purple-500 focus:outline-none bg-white transition-all hover:border-purple-400"
+                      />
+                    </div>
+                  </div>
+
+                  {/* 3. Academic Course Selection Dropdown */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                      <BookOpen className="w-3.5 h-3.5 text-purple-600" />
+                      <span>Select Academic Course *</span>
+                    </label>
+                    <select
+                      value={selectedCourse}
+                      onChange={(e) => handleCourseChange(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-purple-300 text-xs font-extrabold text-slate-900 bg-purple-50/40 focus:ring-2 focus:ring-purple-500 focus:outline-none cursor-pointer transition-all hover:border-purple-400"
+                    >
+                      <option value="Engineering">Engineering (B.Tech / B.E.)</option>
+                      <option value="Polytechnic">Polytechnic (Diploma)</option>
+                      <option value="Pharmacy">Pharmacy (B.Pharm / D.Pharm)</option>
+                    </select>
+                  </div>
+
+                  {/* 4. Branch Selection Field */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                      <Zap className="w-3.5 h-3.5 text-pink-600" />
+                      <span>Select Branch *</span>
+                    </label>
+                    {selectedCourse === 'Engineering' ? (
+                      <select
+                        value={selectedBranch}
+                        onChange={(e) => setSelectedBranch(e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-pink-300 text-xs font-extrabold text-slate-900 bg-pink-50/40 focus:ring-2 focus:ring-pink-500 focus:outline-none cursor-pointer transition-all hover:border-pink-400"
+                      >
+                        {(COURSE_BRANCHES['Engineering'] || []).map((branchObj) => (
+                          <option key={branchObj.id} value={branchObj.label}>
+                            {branchObj.label} ({branchObj.code})
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className="px-3.5 py-2 rounded-xl border border-emerald-300 bg-emerald-50 text-xs font-extrabold text-emerald-950 flex items-center justify-between">
+                        <span>{selectedCourse} Direct Program</span>
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+
+                {/* Submit Buttons */}
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="submit"
+                    className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-purple-100 via-pink-100 to-purple-100 hover:from-purple-200 hover:via-pink-200 hover:to-purple-200 text-purple-950 font-black text-base border-2 border-purple-300 shadow-sm hover:shadow-lg transition-all cursor-pointer transform hover:-translate-y-0.5"
+                  >
+                    <CheckCircle className="w-5 h-5 text-purple-700" />
+                    <span>Save & Login</span>
+                  </button>
+                  {showEditForm && (
+                    <button
+                      type="button"
+                      onClick={() => setShowEditForm(false)}
+                      className="px-6 py-3.5 rounded-2xl border border-purple-200 font-bold text-xs hover:bg-purple-50 transition-colors text-purple-900 bg-white cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+
+              </form>
+            </div>
+          )}
 
         </div>
       )}

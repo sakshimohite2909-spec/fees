@@ -213,44 +213,44 @@ export default function InvoiceModal({ isOpen, onClose, transaction }) {
 
           </div>
 
-          {/* Fee Itemization Table (Light Theme) */}
-          <div className="border-2 border-purple-300 rounded-2xl overflow-hidden mb-5 shadow-sm">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-gradient-to-r from-purple-700 via-violet-700 to-pink-600 text-white font-black uppercase tracking-wider">
+          {/* Fee Itemization Table (Light Theme - Mobile Responsive) */}
+          <div className="border-2 border-purple-300 rounded-2xl overflow-hidden mb-5 shadow-sm w-full overflow-x-auto">
+            <table className="w-full text-left text-xs min-w-[320px]">
+              <thead className="bg-gradient-to-r from-purple-700 via-violet-700 to-pink-600 text-white font-black uppercase tracking-wider text-[10px] sm:text-xs">
                 <tr>
-                  <th className="py-3 px-4 w-12 text-center">Sr.</th>
-                  <th className="py-3 px-4">Fee Particulars & Description</th>
-                  <th className="py-3 px-4 text-center">Session</th>
-                  <th className="py-3 px-4 text-right">Amount (INR)</th>
+                  <th className="py-2.5 px-2 sm:px-4 w-8 sm:w-12 text-center">Sr.</th>
+                  <th className="py-2.5 px-2 sm:px-4">Fee Particulars & Description</th>
+                  <th className="py-2.5 px-2 sm:px-4 text-center">Session</th>
+                  <th className="py-2.5 px-2 sm:px-4 text-right">Amount</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-purple-100 font-semibold text-slate-800">
+              <tbody className="divide-y divide-purple-100 font-semibold text-slate-800 text-xs">
                 <tr className="bg-white">
-                  <td className="py-3.5 px-4 text-center font-black text-purple-600">01</td>
-                  <td className="py-3.5 px-4">
-                    <p className="font-black text-purple-950 text-sm">{transaction.feeTitle || 'Academic Tuition Fee'}</p>
-                    <p className="text-[11px] text-slate-500 mt-0.5 font-medium">Official B.Tech Academic Course Fee & Department Charges</p>
+                  <td className="py-3 px-2 sm:px-4 text-center font-black text-purple-600">01</td>
+                  <td className="py-3 px-2 sm:px-4">
+                    <p className="font-black text-purple-950 text-xs sm:text-sm">{transaction.feeTitle || 'Academic Tuition Fee'}</p>
+                    <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 font-medium leading-tight">Official B.Tech Academic Course Fee & Department Charges</p>
                   </td>
-                  <td className="py-3.5 px-4 text-center text-purple-900 font-bold">2026-27</td>
-                  <td className="py-3.5 px-4 text-right font-black text-purple-950 text-base">
+                  <td className="py-3 px-2 sm:px-4 text-center text-purple-900 font-bold text-xs">2026-27</td>
+                  <td className="py-3 px-2 sm:px-4 text-right font-black text-purple-950 text-sm sm:text-base whitespace-nowrap">
                     ₹{Number(transaction.amount || 0).toLocaleString('en-IN')}
                   </td>
                 </tr>
                 
                 {/* Summary Rows (Light Theme) */}
                 <tr className="bg-purple-50/60 font-bold border-t-2 border-purple-200">
-                  <td colSpan="3" className="py-3 px-4 text-right text-purple-900 uppercase text-[10px] tracking-wider">
+                  <td colSpan="3" className="py-2.5 px-2 sm:px-4 text-right text-purple-900 uppercase text-[9px] sm:text-[10px] tracking-wider">
                     Sub-Total Amount
                   </td>
-                  <td className="py-3 px-4 text-right text-purple-950 font-black text-sm">
+                  <td className="py-2.5 px-2 sm:px-4 text-right text-purple-950 font-black text-xs sm:text-sm whitespace-nowrap">
                     ₹{Number(transaction.amount || 0).toLocaleString('en-IN')}
                   </td>
                 </tr>
                 <tr className="bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-900 text-white font-extrabold">
-                  <td colSpan="3" className="py-3.5 px-4 text-right uppercase tracking-wider text-xs text-amber-300">
+                  <td colSpan="3" className="py-3 px-2 sm:px-4 text-right uppercase tracking-wider text-[10px] sm:text-xs text-amber-300">
                     Grand Total Paid
                   </td>
-                  <td className="py-3.5 px-4 text-right text-amber-300 font-black text-lg">
+                  <td className="py-3 px-2 sm:px-4 text-right text-amber-300 font-black text-base sm:text-lg whitespace-nowrap">
                     ₹{Number(transaction.amount || 0).toLocaleString('en-IN')}
                   </td>
                 </tr>
@@ -258,15 +258,13 @@ export default function InvoiceModal({ isOpen, onClose, transaction }) {
             </table>
           </div>
 
-
-
         </div>
 
-        {/* Modal Bottom Actions (Hidden when printing) */}
-        <div className="bg-slate-50 px-6 py-4 border-t border-purple-100 flex items-center justify-between gap-3 print:hidden">
+        {/* Modal Bottom Actions (Mobile Responsive Stacked Buttons) */}
+        <div className="bg-slate-50 px-4 sm:px-6 py-3.5 border-t border-purple-100 flex flex-col-reverse sm:flex-row items-center justify-between gap-2.5 print:hidden">
           <button
             onClick={onClose}
-            className="px-4 py-2.5 text-sm font-extrabold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl transition-all shadow-sm"
+            className="w-full sm:w-auto px-5 py-2.5 text-xs sm:text-sm font-extrabold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl transition-all shadow-xs cursor-pointer"
           >
             Close
           </button>
@@ -275,7 +273,7 @@ export default function InvoiceModal({ isOpen, onClose, transaction }) {
           <button
             onClick={handleDownloadPDF}
             disabled={isDownloading}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-100 via-pink-100 to-purple-100 hover:from-purple-200 hover:to-pink-200 text-purple-950 font-black text-sm border-2 border-purple-300 shadow-sm hover:shadow transition-all disabled:opacity-60 cursor-pointer"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-100 via-pink-100 to-purple-100 hover:from-purple-200 hover:to-pink-200 text-purple-950 font-black text-xs sm:text-sm border-2 border-purple-300 shadow-sm hover:shadow transition-all disabled:opacity-60 cursor-pointer"
           >
             {isDownloading ? (
               <>

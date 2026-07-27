@@ -11,16 +11,16 @@ export default function Navbar({ currentUser, activeRole, onSwitchRole, onOpenAu
         <div className="flex items-center justify-between h-14 sm:h-16 gap-2">
           
           {/* Logo & Title */}
-          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-purple-700 via-pink-600 to-violet-600 flex items-center justify-center text-white shadow-md shadow-purple-500/25 shrink-0 transform hover:scale-105 transition-transform">
-              <GraduationCap className="w-5 h-5 sm:w-5 sm:h-5 text-white" />
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-purple-700 via-pink-600 to-violet-600 flex items-center justify-center text-white shadow-md shadow-purple-500/25 shrink-0 transform hover:scale-105 transition-transform">
+              <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-black text-xl sm:text-2xl tracking-tight text-slate-900">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="font-black text-lg sm:text-2xl tracking-tight text-slate-900">
                   Edu<span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-pink-600">Pay</span>
                 </span>
-                <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border shadow-2xs ${
+                <span className={`text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2 sm:px-2.5 py-0.5 rounded-full border shadow-2xs hidden sm:inline-block ${
                   activeRole === 'admin' 
                     ? 'bg-pink-100/80 text-pink-800 border-pink-300' 
                     : 'bg-purple-100/80 text-purple-900 border-purple-300'
@@ -60,23 +60,23 @@ export default function Navbar({ currentUser, activeRole, onSwitchRole, onOpenAu
           </div>
 
           {/* User Account Controls & Logout Button */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             {currentUser && (
-              <div className="flex items-center gap-2 sm:gap-2.5 bg-purple-50/60 pl-3 pr-1.5 py-1 rounded-xl border border-purple-200/80 shadow-xs">
-                <div className="text-right">
-                  <p className="text-xs sm:text-sm font-black text-slate-900 leading-none">
+              <div className="flex items-center gap-1.5 sm:gap-2.5 bg-purple-50/70 pl-2.5 sm:pl-3 pr-1 sm:pr-1.5 py-1 rounded-xl border border-purple-200/80 shadow-2xs">
+                <div className="text-right max-w-[75px] sm:max-w-[140px] truncate">
+                  <p className="text-xs sm:text-sm font-black text-slate-900 leading-none truncate">
                     {currentUser.fullName || 'Student'}
                   </p>
                 </div>
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center font-black text-white text-xs shadow-xs">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center font-black text-white text-xs shadow-xs shrink-0">
                   {(currentUser.fullName?.[0] || 'S').toUpperCase()}
                 </div>
                 <button
                   onClick={onLogout}
                   title="Logout"
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-xs border border-rose-200 transition-all cursor-pointer shadow-2xs"
+                  className="flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-[11px] sm:text-xs border border-rose-200 transition-all cursor-pointer shadow-2xs shrink-0"
                 >
-                  <LogOut className="w-3.5 h-3.5 text-rose-600" />
+                  <LogOut className="w-3.5 h-3.5 text-rose-600 shrink-0" />
                   <span>Logout</span>
                 </button>
               </div>

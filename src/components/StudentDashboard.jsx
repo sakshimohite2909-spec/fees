@@ -160,8 +160,18 @@ export default function StudentDashboard({
       setShowRegistrationForm(false);
     } else {
       // Record NOT found in database! Show error and option to register as New Student
-      setSearchError(`No record found for "${searchQueryInput}". If you are a new student, please click '+ New Student Registration' below to fill your details.`);
+      setSearchError(`No record found for "${searchQueryInput}". If you are a new student, please click '+ Register as New Student Now' below.`);
     }
+  };
+
+  // Open New Student Registration Form with a clean blank form!
+  const handleOpenNewStudentRegistration = () => {
+    setFullName('');
+    const digitsOnly = searchQueryInput.replace(/\D/g, '');
+    setMobileInput(digitsOnly.length === 10 ? digitsOnly : '');
+    setSelectedCourse('Engineering');
+    setSelectedBranch('Computer Engineering');
+    setShowRegistrationForm(true);
   };
 
   // Handle New Student Registration Form Submission
@@ -323,7 +333,7 @@ export default function StudentDashboard({
                     </p>
                     <button
                       type="button"
-                      onClick={() => setShowRegistrationForm(true)}
+                      onClick={handleOpenNewStudentRegistration}
                       className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs shadow-sm transition-all cursor-pointer"
                     >
                       <UserPlus className="w-4 h-4" />
@@ -347,7 +357,7 @@ export default function StudentDashboard({
                 <p className="text-xs text-slate-500 font-medium mb-2">Not in college database or first time user?</p>
                 <button
                   type="button"
-                  onClick={() => setShowRegistrationForm(true)}
+                  onClick={handleOpenNewStudentRegistration}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-purple-50 text-purple-700 hover:bg-purple-100 font-extrabold text-xs border border-purple-200 transition-all cursor-pointer"
                 >
                   <UserPlus className="w-4 h-4 text-purple-600" />

@@ -98,7 +98,17 @@
 
 .card-hover-3d:hover {
   transform: translateY(-5px) scale(1.01);
-  box-shadow: 0 22px 45px -12px rgba(124, 58, 237, 0.22), 0 10px 20px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgba(124, 58, 237, 0.1), 0 8px 10px -6px rgba(124, 58, 237, 0.1);
+}
+
+.card-attractive-hover {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-attractive-hover:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 22px 35px -10px rgba(147, 51, 234, 0.18), 0 10px 15px -5px rgba(236, 72, 153, 0.12);
+  border-color: rgba(192, 132, 252, 0.9);
 }
 
 /* Custom Scrollbars */

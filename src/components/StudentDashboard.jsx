@@ -174,7 +174,7 @@ export default function StudentDashboard({
     <div className="space-y-8 animate-slide-up">
       
       {/* 🚀 Hero Header Banner (Light Pastel Theme) */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-100/90 via-pink-50/80 to-purple-100/90 text-slate-900 p-8 sm:p-10 border-2 border-purple-200/90 shadow-sm animate-fadeIn">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-100/90 via-pink-50/80 to-purple-100/90 text-slate-900 p-8 sm:p-10 border-2 border-purple-200/90 shadow-sm animate-fadeIn card-attractive-hover">
         
         {/* Glowing Soft Orbs */}
         <div className="absolute -top-12 -right-12 w-80 h-80 bg-purple-200/30 rounded-full blur-3xl pointer-events-none"></div>
@@ -184,7 +184,7 @@ export default function StudentDashboard({
           <div className="space-y-3 max-w-2xl">
             
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 text-xs font-black tracking-wider uppercase text-purple-900 border border-purple-200 shadow-sm">
-              <Sparkles className="w-4 h-4 text-purple-600" />
+              <Sparkles className="w-4 h-4 text-purple-600 animate-pulse" />
               <span>Student Online Fee Portal • Academic Session {feesConfig.academicYear || '2026-2027'}</span>
             </div>
 
@@ -194,7 +194,7 @@ export default function StudentDashboard({
           </div>
 
           {/* Quick Payment Status Overview */}
-          <div className="w-full lg:w-auto bg-white/90 p-5 sm:p-6 rounded-3xl border border-purple-200/90 shadow-md min-w-[290px]">
+          <div className="w-full lg:w-auto bg-white/90 p-5 sm:p-6 rounded-3xl border border-purple-200/90 shadow-md min-w-[290px] card-hover-3d">
             <div className="flex items-center justify-between mb-3 text-xs">
               <span className="text-purple-950 font-black uppercase tracking-wider">Fee Payment Progress</span>
               <span className="font-extrabold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full">{completionPercentage}% Paid</span>
@@ -225,15 +225,15 @@ export default function StudentDashboard({
 
       {/* 📱 STEP 1: MOBILE NUMBER SUBMISSION FORM (Direct Page when mobile not submitted or clicking edit) */}
       {(!isMobileSubmitted || showEditForm) && (
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-200 shadow-lg glass-panel-glow relative overflow-hidden animate-fadeIn">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-200 shadow-lg glass-panel-glow relative overflow-hidden animate-fadeIn card-attractive-hover">
           
           <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-purple-700 via-violet-600 to-pink-600"></div>
 
           <div className="max-w-3xl mx-auto space-y-6">
             
             <div className="flex items-center gap-4 border-b border-purple-100 pb-5">
-              <div className="w-14 h-14 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold shadow-inner border border-purple-200 shrink-0">
-                <User className="w-7 h-7" />
+              <div className="w-14 h-14 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold shadow-inner border border-purple-200 shrink-0 animate-bounce-short">
+                <User className="w-7 h-7 text-purple-600" />
               </div>
               <div>
                 <h2 className="text-2xl font-black text-slate-900">Student Information</h2>
@@ -255,7 +255,7 @@ export default function StudentDashboard({
                     placeholder="Enter Student Name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:ring-2 focus:ring-purple-500 focus:outline-none bg-white"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:ring-2 focus:ring-purple-500 focus:outline-none bg-white transition-all hover:border-purple-300"
                   />
                 </div>
 
@@ -274,7 +274,7 @@ export default function StudentDashboard({
                       placeholder="Enter 10-digit Mobile Number"
                       value={mobileInput}
                       onChange={(e) => setMobileInput(e.target.value.replace(/\D/g, ''))}
-                      className="w-full pl-12 pr-3 py-2.5 rounded-xl border border-purple-300 text-xs font-extrabold text-slate-900 focus:ring-2 focus:ring-purple-500 focus:outline-none bg-white"
+                      className="w-full pl-12 pr-3 py-2.5 rounded-xl border border-purple-300 text-xs font-extrabold text-slate-900 focus:ring-2 focus:ring-purple-500 focus:outline-none bg-white transition-all hover:border-purple-400"
                     />
                   </div>
                 </div>
@@ -288,7 +288,7 @@ export default function StudentDashboard({
                   <select
                     value={selectedCourse}
                     onChange={(e) => handleCourseChange(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-purple-300 text-xs font-extrabold text-slate-900 bg-purple-50/40 focus:ring-2 focus:ring-purple-500 focus:outline-none cursor-pointer"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-purple-300 text-xs font-extrabold text-slate-900 bg-purple-50/40 focus:ring-2 focus:ring-purple-500 focus:outline-none cursor-pointer transition-all hover:border-purple-400"
                   >
                     <option value="Engineering">Engineering (B.Tech / B.E.)</option>
                     <option value="Polytechnic">Polytechnic (Diploma)</option>
@@ -306,7 +306,7 @@ export default function StudentDashboard({
                     <select
                       value={selectedBranch}
                       onChange={(e) => setSelectedBranch(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-pink-300 text-xs font-extrabold text-slate-900 bg-pink-50/40 focus:ring-2 focus:ring-pink-500 focus:outline-none cursor-pointer"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-pink-300 text-xs font-extrabold text-slate-900 bg-pink-50/40 focus:ring-2 focus:ring-pink-500 focus:outline-none cursor-pointer transition-all hover:border-pink-400"
                     >
                       {(COURSE_BRANCHES['Engineering'] || []).map((branchObj) => (
                         <option key={branchObj.id} value={branchObj.label}>
@@ -328,7 +328,7 @@ export default function StudentDashboard({
               <div className="flex gap-3 pt-2">
                 <button
                   type="submit"
-                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-purple-100 via-pink-100 to-purple-100 hover:from-purple-200 hover:via-pink-200 hover:to-purple-200 text-purple-950 font-black text-base border-2 border-purple-300 shadow-sm hover:shadow transition-all cursor-pointer"
+                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-purple-100 via-pink-100 to-purple-100 hover:from-purple-200 hover:via-pink-200 hover:to-purple-200 text-purple-950 font-black text-base border-2 border-purple-300 shadow-sm hover:shadow-lg transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
                 >
                   <CheckCircle className="w-5 h-5 text-purple-700" />
                   <span>Login</span>
@@ -356,7 +356,7 @@ export default function StudentDashboard({
         <div className="space-y-8 animate-fadeIn">
           
           {/* 📋 SECTION 1: Student Information Display Card (with Mobile Number) */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-purple-200 shadow-sm glass-panel-glow relative overflow-hidden">
+          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-purple-200 shadow-sm glass-panel-glow relative overflow-hidden card-attractive-hover">
             
             <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500"></div>
 
@@ -378,7 +378,7 @@ export default function StudentDashboard({
 
               <button
                 onClick={() => setShowEditForm(true)}
-                className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-extrabold text-purple-700 hover:bg-purple-50 rounded-xl transition-colors border border-purple-200"
+                className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-extrabold text-purple-700 hover:bg-purple-100 rounded-xl transition-all border border-purple-200 shadow-xs hover:shadow"
               >
                 <Edit3 className="w-4 h-4 text-purple-600" />
                 <span>Update Mobile / Profile</span>
@@ -438,7 +438,7 @@ export default function StudentDashboard({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               
               {/* CARD 1: EXAM FEE */}
-              <div className={`relative bg-white rounded-3xl p-6 border transition-all glass-panel-glow flex flex-col justify-between ${
+              <div className={`relative bg-white rounded-3xl p-6 border transition-all glass-panel-glow flex flex-col justify-between card-attractive-hover ${
                 isExamPaid ? 'border-emerald-300 ring-2 ring-emerald-500/20' : 'border-purple-200'
               }`}>
                 <div>
@@ -458,7 +458,7 @@ export default function StudentDashboard({
                   </div>
 
                   <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-100 text-indigo-700 flex items-center justify-center font-bold mb-4 shadow-sm border border-indigo-200">
-                    <FileText className="w-6 h-6 text-indigo-600" />
+                    <FileText className="w-6 h-6 text-indigo-600 animate-pulse" />
                   </div>
 
                   <h4 className="text-xl font-black text-slate-900 mb-1">Exam Fee</h4>
@@ -494,7 +494,7 @@ export default function StudentDashboard({
                       feeTitle: 'Exam Fee',
                       amount: examAmount
                     })}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-100 via-purple-100 to-indigo-100 hover:from-indigo-200 hover:to-purple-200 text-indigo-950 font-black text-xs border-2 border-indigo-300 shadow-sm transition-all cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-100 via-purple-100 to-indigo-100 hover:from-indigo-200 hover:to-purple-200 text-indigo-950 font-black text-xs border-2 border-indigo-300 shadow-sm transition-all cursor-pointer transform hover:-translate-y-0.5"
                   >
                     <span>Pay ₹{examAmount.toLocaleString('en-IN')} via Razorpay</span>
                     <ArrowRight className="w-4 h-4 text-indigo-700" />
@@ -503,7 +503,7 @@ export default function StudentDashboard({
               </div>
 
               {/* CARD 2: TUITION FEE */}
-              <div className={`relative bg-white rounded-3xl p-6 border transition-all glass-panel-glow flex flex-col justify-between ${
+              <div className={`relative bg-white rounded-3xl p-6 border transition-all glass-panel-glow flex flex-col justify-between card-attractive-hover ${
                 isTuitionPaid ? 'border-emerald-300 ring-2 ring-emerald-500/20' : 'border-purple-200'
               }`}>
                 <div>
@@ -523,7 +523,7 @@ export default function StudentDashboard({
                   </div>
 
                   <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-100 text-purple-600 flex items-center justify-center font-bold mb-4 shadow-sm border border-purple-200">
-                    <CreditCard className="w-6 h-6 text-purple-600" />
+                    <CreditCard className="w-6 h-6 text-purple-600 animate-pulse" />
                   </div>
 
                   <h4 className="text-xl font-black text-slate-900 mb-1">Tuition Fee</h4>
@@ -559,7 +559,7 @@ export default function StudentDashboard({
                       feeTitle: 'Tuition Fee',
                       amount: tuitionAmount
                     })}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-purple-100 via-pink-100 to-purple-100 hover:from-purple-200 hover:to-pink-200 text-purple-950 font-black text-xs border-2 border-purple-300 shadow-sm transition-all cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-purple-100 via-pink-100 to-purple-100 hover:from-purple-200 hover:to-pink-200 text-purple-950 font-black text-xs border-2 border-purple-300 shadow-sm transition-all cursor-pointer transform hover:-translate-y-0.5"
                   >
                     <span>Pay ₹{tuitionAmount.toLocaleString('en-IN')} via Razorpay</span>
                     <ArrowRight className="w-4 h-4 text-purple-700" />
@@ -570,7 +570,7 @@ export default function StudentDashboard({
             </div>
 
             {/* Payment History Table */}
-            <div className="bg-white rounded-3xl p-6 border border-purple-200 shadow-sm glass-panel-glow">
+            <div className="bg-white rounded-3xl p-6 border border-purple-200 shadow-sm glass-panel-glow card-attractive-hover">
               <div className="flex items-center justify-between mb-5">
                 <div>
                   <h3 className="text-base font-black text-slate-900">Fee Payment History & PDF Receipts</h3>

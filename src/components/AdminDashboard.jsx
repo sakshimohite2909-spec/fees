@@ -114,42 +114,42 @@ export default function AdminDashboard({
       {/* Overview Analytics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         
-        <div className="bg-white rounded-3xl p-5 border border-purple-100 soft-shadow flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-            <DollarSign className="w-6 h-6" />
+        <div className="bg-white rounded-3xl p-5 border border-purple-200/90 shadow-sm flex items-center gap-4 card-attractive-hover">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold shadow-inner">
+            <DollarSign className="w-6 h-6 text-emerald-600" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-slate-500">Collected Revenue</p>
+            <p className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Collected Revenue</p>
             <p className="text-2xl font-black text-slate-900">₹{totalCollected.toLocaleString('en-IN')}</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl p-5 border border-purple-100 soft-shadow flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-            <Clock className="w-6 h-6" />
+        <div className="bg-white rounded-3xl p-5 border border-purple-200/90 shadow-sm flex items-center gap-4 card-attractive-hover">
+          <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold shadow-inner">
+            <Clock className="w-6 h-6 text-amber-600" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-slate-500">Pending Dues</p>
+            <p className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Pending Dues</p>
             <p className="text-2xl font-black text-amber-600">₹{totalPending.toLocaleString('en-IN')}</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl p-5 border border-purple-100 soft-shadow flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-            <Users className="w-6 h-6" />
+        <div className="bg-white rounded-3xl p-5 border border-purple-200/90 shadow-sm flex items-center gap-4 card-attractive-hover">
+          <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold shadow-inner">
+            <Users className="w-6 h-6 text-purple-600" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-slate-500">Registered Students</p>
+            <p className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Registered Students</p>
             <p className="text-2xl font-black text-slate-900">{totalStudents} Total</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl p-5 border border-purple-100 soft-shadow flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center font-bold">
-            <CheckCircle className="w-6 h-6" />
+        <div className="bg-white rounded-3xl p-5 border border-purple-200/90 shadow-sm flex items-center gap-4 card-attractive-hover">
+          <div className="w-12 h-12 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center font-bold shadow-inner">
+            <CheckCircle className="w-6 h-6 text-pink-600" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-slate-500">Razorpay Transactions</p>
+            <p className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Razorpay Transactions</p>
             <p className="text-2xl font-black text-slate-900">{payments.length} Paid</p>
           </div>
         </div>
@@ -161,7 +161,7 @@ export default function AdminDashboard({
         
         {/* Left Column (4 Cols): Fee Amount Configurator */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="bg-white rounded-3xl p-6 border border-purple-200/80 shadow-sm glass-panel-glow">
+          <div className="bg-white rounded-3xl p-6 border border-purple-200/80 shadow-sm glass-panel-glow card-attractive-hover">
             
             <div className="flex items-center justify-between pb-4 border-b border-purple-100 mb-5">
               <div className="flex items-center gap-3">
@@ -297,7 +297,7 @@ export default function AdminDashboard({
         {/* Right Column (8 Cols): EXCEL STUDENT DATABASE & ADD / UPLOAD ACTIONS */}
         <div className="lg:col-span-8 space-y-6">
           
-          <div className="bg-white rounded-3xl p-6 border border-purple-200/80 shadow-sm glass-panel-glow">
+          <div className="bg-white rounded-3xl p-6 border border-purple-200/80 shadow-sm glass-panel-glow card-attractive-hover">
             
             {/* Top Action Bar (Upload Excel Sheet + Add Student Manually) */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-purple-100">

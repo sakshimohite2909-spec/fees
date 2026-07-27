@@ -242,56 +242,6 @@ export default function StudentDashboard({
   return (
     <div className="space-y-8 animate-slide-up">
       
-      {/* 🚀 Hero Header Banner (Compact Light Pastel Theme) */}
-      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-purple-100/90 via-pink-50/80 to-purple-100/90 text-slate-900 p-5 sm:p-7 border border-purple-200/90 shadow-sm animate-fadeIn card-attractive-hover">
-        
-        {/* Glowing Soft Orbs */}
-        <div className="absolute -top-12 -right-12 w-64 h-64 bg-purple-200/30 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute -bottom-16 left-1/3 w-48 h-48 bg-pink-200/30 rounded-full blur-2xl pointer-events-none"></div>
-
-        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-          <div className="space-y-2 max-w-xl">
-            
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 text-[11px] font-black tracking-wider uppercase text-purple-900 border border-purple-200 shadow-xs">
-              <Sparkles className="w-3.5 h-3.5 text-purple-600 animate-pulse" />
-              <span>Student Online Fee Portal • Session {feesConfig.academicYear || '2026-2027'}</span>
-            </div>
-
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-snug text-slate-900">
-              Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 via-pink-600 to-purple-800">{fullName || currentUser?.fullName || 'Student'}</span> 👋
-            </h1>
-          </div>
-
-          {/* Quick Payment Status Overview */}
-          <div className="w-full lg:w-auto bg-white/90 p-4 rounded-2xl border border-purple-200/90 shadow-sm min-w-[270px] card-hover-3d">
-            <div className="flex items-center justify-between mb-2 text-xs">
-              <span className="text-purple-950 font-black uppercase tracking-wider text-[11px]">Fee Payment Progress</span>
-              <span className="font-extrabold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full text-[11px]">{completionPercentage}% Paid</span>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="w-full bg-purple-100 rounded-full h-2.5 mb-3 p-0.5 border border-purple-200 overflow-hidden">
-              <div 
-                className="bg-gradient-to-r from-purple-600 via-pink-500 to-emerald-500 h-full rounded-full transition-all duration-1000 ease-out shadow-xs"
-                style={{ width: `${completionPercentage}%` }}
-              ></div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 text-xs pt-0.5">
-              <div className="bg-emerald-50 p-2 rounded-xl border border-emerald-200">
-                <p className="text-emerald-900 font-extrabold text-[9px] uppercase">Total Paid</p>
-                <p className="text-base font-black text-emerald-700">₹{totalPaidAmount.toLocaleString('en-IN')}</p>
-              </div>
-              <div className="bg-amber-50 p-2 rounded-xl border border-amber-200">
-                <p className="text-amber-900 font-extrabold text-[9px] uppercase">Remaining Due</p>
-                <p className="text-base font-black text-amber-700">₹{remainingDues.toLocaleString('en-IN')}</p>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
       {/* 📱 STEP 1: SMART SEARCH LOGIN OR NEW STUDENT REGISTRATION FORM */}
       {(!isMobileSubmitted || showEditForm) && (
         <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-purple-200 shadow-md glass-panel-glow relative overflow-hidden animate-fadeIn card-attractive-hover max-w-2xl mx-auto">
@@ -513,9 +463,59 @@ export default function StudentDashboard({
         </div>
       )}
 
-      {/* 🎓 STEP 2: MAIN STUDENT DASHBOARD PAGE (Visible after Mobile Number Submit) */}
+      {/* 🎓 STEP 2: MAIN STUDENT DASHBOARD PAGE (Visible after Student Search / Login) */}
       {(isMobileSubmitted && !showEditForm) && (
         <div className="space-y-8 animate-fadeIn">
+
+          {/* 🚀 Hero Header Banner (Compact Light Pastel Theme - Shown ONLY when Logged In) */}
+          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-purple-100/90 via-pink-50/80 to-purple-100/90 text-slate-900 p-5 sm:p-7 border border-purple-200/90 shadow-sm animate-fadeIn card-attractive-hover">
+            
+            {/* Glowing Soft Orbs */}
+            <div className="absolute -top-12 -right-12 w-64 h-64 bg-purple-200/30 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute -bottom-16 left-1/3 w-48 h-48 bg-pink-200/30 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+              <div className="space-y-2 max-w-xl">
+                
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 text-[11px] font-black tracking-wider uppercase text-purple-900 border border-purple-200 shadow-xs">
+                  <Sparkles className="w-3.5 h-3.5 text-purple-600 animate-pulse" />
+                  <span>Student Online Fee Portal • Session {feesConfig.academicYear || '2026-2027'}</span>
+                </div>
+
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-snug text-slate-900">
+                  Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 via-pink-600 to-purple-800">{fullName || currentUser?.fullName || 'Student'}</span> 👋
+                </h1>
+              </div>
+
+              {/* Quick Payment Status Overview */}
+              <div className="w-full lg:w-auto bg-white/90 p-4 rounded-2xl border border-purple-200/90 shadow-sm min-w-[270px] card-hover-3d">
+                <div className="flex items-center justify-between mb-2 text-xs">
+                  <span className="text-purple-950 font-black uppercase tracking-wider text-[11px]">Fee Payment Progress</span>
+                  <span className="font-extrabold text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full text-[11px]">{completionPercentage}% Paid</span>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="w-full bg-purple-100 rounded-full h-2.5 mb-3 p-0.5 border border-purple-200 overflow-hidden">
+                  <div 
+                    className="bg-gradient-to-r from-purple-600 via-pink-500 to-emerald-500 h-full rounded-full transition-all duration-1000 ease-out shadow-xs"
+                    style={{ width: `${completionPercentage}%` }}
+                  ></div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-xs pt-0.5">
+                  <div className="bg-emerald-50 p-2 rounded-xl border border-emerald-200">
+                    <p className="text-emerald-900 font-extrabold text-[9px] uppercase">Total Paid</p>
+                    <p className="text-base font-black text-emerald-700">₹{totalPaidAmount.toLocaleString('en-IN')}</p>
+                  </div>
+                  <div className="bg-amber-50 p-2 rounded-xl border border-amber-200">
+                    <p className="text-amber-900 font-extrabold text-[9px] uppercase">Remaining Due</p>
+                    <p className="text-base font-black text-amber-700">₹{remainingDues.toLocaleString('en-IN')}</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
           
           {/* 📋 SECTION 1: Student Information Display Card (with Mobile Number) */}
           <div className="bg-white rounded-3xl p-6 sm:p-7 border border-purple-200 shadow-sm glass-panel-glow relative overflow-hidden card-attractive-hover">

@@ -210,39 +210,20 @@ export default function StudentDashboard({
             
             <div className="flex items-center gap-4 border-b border-purple-100 pb-5">
               <div className="w-14 h-14 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold shadow-inner border border-purple-200 shrink-0">
-                <Phone className="w-7 h-7" />
+                <User className="w-7 h-7" />
               </div>
               <div>
-                <h2 className="text-2xl font-black text-slate-900">Student Mobile Number & Info Submission</h2>
-                <p className="text-xs text-slate-500 font-medium">Enter your registered mobile number below to access your student profile & fees structure page.</p>
+                <h2 className="text-2xl font-black text-slate-900">Student Information</h2>
+                <p className="text-xs text-slate-500 font-medium">Please enter your student details to view your profile and fee breakdown page.</p>
               </div>
             </div>
 
             <form onSubmit={handleMobileSubmit} className="space-y-6">
               
-              {/* Mobile Number Entry */}
-              <div className="bg-purple-50/60 p-5 rounded-2xl border border-purple-200 space-y-2">
-                <label className="block text-xs font-black uppercase tracking-wider text-purple-900 flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-purple-600" />
-                  <span>Student Mobile Number *</span>
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-purple-600">+91</span>
-                  <input
-                    type="tel"
-                    required
-                    maxLength={10}
-                    placeholder="Enter 10-digit Mobile Number (e.g. 9876543210)"
-                    value={mobileInput}
-                    onChange={(e) => setMobileInput(e.target.value.replace(/\D/g, ''))}
-                    className="w-full pl-16 pr-4 py-3.5 rounded-xl border border-purple-300 text-base font-extrabold text-slate-900 focus:ring-4 focus:ring-purple-500/20 focus:border-purple-600 focus:outline-none bg-white transition-all shadow-sm"
-                  />
-                </div>
-                <p className="text-[11px] text-purple-700 font-semibold">Your mobile number will be printed on official fee receipts.</p>
-              </div>
-
-              {/* Basic Student Information Inputs */}
+              {/* Basic Student Information Inputs Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                {/* 1. Student Full Name */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">Student Full Name *</label>
                   <input
@@ -255,7 +236,27 @@ export default function StudentDashboard({
                   />
                 </div>
 
-                {/* 🎓 Academic Course Selection Dropdown */}
+                {/* 2. Mobile Number (Next to Student Full Name!) */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                    <Phone className="w-3.5 h-3.5 text-purple-600" />
+                    <span>Mobile Number *</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-purple-600">+91</span>
+                    <input
+                      type="tel"
+                      required
+                      maxLength={10}
+                      placeholder="Enter 10-digit Mobile Number"
+                      value={mobileInput}
+                      onChange={(e) => setMobileInput(e.target.value.replace(/\D/g, ''))}
+                      className="w-full pl-12 pr-3 py-2.5 rounded-xl border border-purple-300 text-xs font-extrabold text-slate-900 focus:ring-2 focus:ring-purple-500 focus:outline-none bg-white"
+                    />
+                  </div>
+                </div>
+
+                {/* 3. Academic Course Selection Dropdown */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
                     <BookOpen className="w-3.5 h-3.5 text-purple-600" />
@@ -272,7 +273,7 @@ export default function StudentDashboard({
                   </select>
                 </div>
 
-                {/* 🌿 Branch Selection Field */}
+                {/* 4. Branch Selection Field */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
                     <Zap className="w-3.5 h-3.5 text-pink-600" />
@@ -298,6 +299,7 @@ export default function StudentDashboard({
                   )}
                 </div>
 
+                {/* 5. Roll Number */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">Roll Number</label>
                   <input
@@ -309,6 +311,7 @@ export default function StudentDashboard({
                   />
                 </div>
 
+                {/* 6. PRN Number */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">PRN Number</label>
                   <input
@@ -320,7 +323,8 @@ export default function StudentDashboard({
                   />
                 </div>
 
-                <div>
+                {/* 7. Year & Semester */}
+                <div className="md:col-span-2">
                   <label className="block text-xs font-bold text-slate-700 mb-1">Year & Semester</label>
                   <div className="grid grid-cols-2 gap-2">
                     <select

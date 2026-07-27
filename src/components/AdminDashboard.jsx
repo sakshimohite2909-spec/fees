@@ -88,8 +88,23 @@ export default function AdminDashboard({
   });
 
   return (
-    <div className="space-y-8 animate-fadeIn">
+    <div className="space-y-8 animate-fadeIn relative">
       
+      {/* 🚀 FLOATING POPUP NOTIFICATION: Save Fee Successfully */}
+      {isSavedAlert && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 animate-slide-down">
+          <div className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-slate-900 text-white border-2 border-emerald-400 shadow-2xl backdrop-blur-xl">
+            <div className="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold shadow-md shadow-emerald-500/30 animate-bounce">
+              <CheckCircle className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-sm font-black text-white">Fee Structure Saved Successfully! 🎉</p>
+              <p className="text-[11px] text-emerald-300 font-semibold">New fee amounts have been updated for all students.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Admin Top Header Banner (Light Pastel Theme) */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-100/90 via-pink-50/80 to-purple-100/90 text-slate-900 p-8 border-2 border-purple-200/90 shadow-sm animate-fadeIn">
         <div className="absolute right-0 top-0 w-96 h-96 bg-purple-200/30 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>

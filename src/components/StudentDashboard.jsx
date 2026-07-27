@@ -412,62 +412,134 @@ export default function StudentDashboard({
           </div>
 
           {/* 📚 SECTION 2: Course Dropdown & Branch Radio Buttons Selection */}
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-200/80 shadow-sm glass-panel-glow space-y-6">
+          {/* 📚 SECTION 2: Easy Process Steps - Academic Program & Branch Selection */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-200/80 shadow-sm glass-panel-glow space-y-8">
             
-            {/* Header */}
+            {/* Section Header */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-purple-100">
               <div className="flex items-center gap-3.5">
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 text-white flex items-center justify-center font-bold shadow-md shadow-purple-500/20">
                   <BookOpen className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-slate-900">Academic Course & Branch Selection</h3>
-                  <p className="text-xs text-slate-500 font-medium">Select your program from the dropdown below and choose your branch</p>
+                  <h3 className="text-xl font-black text-slate-900">Academic Program & Branch Selection</h3>
+                  <p className="text-xs text-slate-500 font-medium">Follow 2 easy steps to set up your course and specialization branch</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-black text-purple-700 bg-purple-50 px-3.5 py-1.5 rounded-full border border-purple-200">
-                  Current Program: <span className="text-pink-600">{selectedCourse}</span>
-                </span>
+              <span className="text-xs font-black text-purple-700 bg-purple-50 px-3.5 py-1.5 rounded-full border border-purple-200 flex items-center gap-1.5">
+                <span>Current Program:</span>
+                <span className="text-pink-600">{selectedCourse}</span>
+              </span>
+            </div>
+
+            {/* 🚀 PROCESS STEPPER TRACK BAR */}
+            <div className="bg-gradient-to-r from-purple-50 via-pink-50/50 to-purple-50 p-4 rounded-2xl border border-purple-100">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 relative">
+                
+                {/* STEP 1 STEPTAB */}
+                <div className="flex items-center gap-3 bg-white p-3.5 rounded-xl border border-purple-200 shadow-sm">
+                  <div className="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center font-black text-sm shadow-md shrink-0">
+                    1
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-wider text-purple-700">STEP 1</p>
+                    <p className="text-xs font-black text-slate-900">Select Academic Course</p>
+                  </div>
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500 ml-auto shrink-0" />
+                </div>
+
+                {/* STEP 2 STEPTAB */}
+                <div className={`flex items-center gap-3 p-3.5 rounded-xl border shadow-sm transition-all ${
+                  selectedCourse === 'Engineering'
+                    ? 'bg-white border-pink-300 ring-2 ring-pink-500/10'
+                    : 'bg-emerald-50/80 border-emerald-200'
+                }`}>
+                  <div className={`w-9 h-9 rounded-xl text-white flex items-center justify-center font-black text-sm shadow-md shrink-0 ${
+                    selectedCourse === 'Engineering' ? 'bg-gradient-to-r from-pink-600 to-purple-600' : 'bg-emerald-600'
+                  }`}>
+                    2
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-500">STEP 2</p>
+                    <p className="text-xs font-black text-slate-900">
+                      {selectedCourse === 'Engineering' ? 'Choose Engineering Branch' : 'Direct Branch Auto-Assigned'}
+                    </p>
+                  </div>
+                  {selectedCourse !== 'Engineering' ? (
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600 ml-auto shrink-0" />
+                  ) : (
+                    <ChevronRight className="w-5 h-5 text-purple-500 ml-auto shrink-0" />
+                  )}
+                </div>
+
               </div>
             </div>
 
-            {/* STEP 1: Course Selection Dropdown Bar */}
-            <div className="bg-purple-50/50 p-4 sm:p-5 rounded-2xl border border-purple-100 space-y-2">
-              <label className="block text-xs font-black uppercase tracking-wider text-purple-900 flex items-center gap-2">
-                <Layers className="w-4 h-4 text-purple-600" />
-                <span>Step 1: Select Academic Course *</span>
-              </label>
+            {/* 🎯 STEP 1 CONTENT: VISUAL COURSE SELECTOR CARDS */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-black uppercase tracking-wider text-purple-900 flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-purple-600" />
+                  <span>Step 1: Choose Your Academic Program *</span>
+                </label>
+                <span className="text-[11px] font-bold text-slate-500">Click a card to switch program</span>
+              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-                <div className="md:col-span-8">
-                  <select
-                    value={selectedCourse}
-                    onChange={(e) => handleCourseChange(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-purple-300 text-sm font-extrabold text-slate-900 bg-white focus:ring-4 focus:ring-purple-500/20 focus:border-purple-600 focus:outline-none transition-all cursor-pointer shadow-sm"
-                  >
-                    <option value="Engineering">Engineering (B.Tech / B.E.)</option>
-                    <option value="Polytechnic">Polytechnic (Diploma)</option>
-                    <option value="Pharmacy">Pharmacy (B.Pharm / D.Pharm)</option>
-                  </select>
-                </div>
-                <div className="md:col-span-4 text-xs font-bold text-purple-700 bg-white p-3 rounded-xl border border-purple-200 text-center">
-                  🎓 {selectedCourse === 'Engineering' ? '6 Branches Available' : 'Direct Program Selected'}
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                {[
+                  { id: 'Engineering', title: 'Engineering (B.Tech / B.E.)', badge: '6 Sub-Branches', icon: '🎓', desc: 'Degrees in Mech, EE, CS, AI, ENTC, Civil' },
+                  { id: 'Polytechnic', title: 'Polytechnic (Diploma)', badge: 'Direct Program', icon: '🏫', desc: '3-Year Polytechnic Diploma Course' },
+                  { id: 'Pharmacy', title: 'Pharmacy (B.Pharm / D.Pharm)', badge: 'Direct Program', icon: '🧪', desc: 'Pharmaceutical Sciences & Healthcare' }
+                ].map((course) => {
+                  const isSelected = selectedCourse === course.id;
+                  return (
+                    <div
+                      key={course.id}
+                      onClick={() => handleCourseChange(course.id)}
+                      className={`p-4 rounded-2xl border-2 transition-all cursor-pointer relative overflow-hidden group ${
+                        isSelected
+                          ? 'bg-gradient-to-b from-purple-50 via-pink-50/40 to-white border-purple-600 shadow-md ring-2 ring-purple-500/20'
+                          : 'bg-white border-slate-200 hover:border-purple-300 hover:bg-purple-50/10'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-2xl">{course.icon}</span>
+                        <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                          isSelected ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-600'
+                        }`}>
+                          {course.badge}
+                        </span>
+                      </div>
+
+                      <div className="mt-3 space-y-1">
+                        <p className={`text-sm font-black ${isSelected ? 'text-purple-950' : 'text-slate-900'}`}>
+                          {course.title}
+                        </p>
+                        <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                          {course.desc}
+                        </p>
+                      </div>
+
+                      {isSelected && (
+                        <div className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-purple-600 animate-ping"></div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
-            {/* STEP 2: Branch Selection Radio Buttons (For Engineering) */}
+            {/* ⚡ STEP 2 CONTENT: BRANCH SELECTION RADIO BUTTONS (For Engineering) */}
             {selectedCourse === 'Engineering' ? (
-              <div className="space-y-3 pt-2">
+              <div className="space-y-4 pt-4 border-t border-purple-100 animate-fadeIn">
                 <div className="flex items-center justify-between">
-                  <label className="block text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                  <label className="text-xs font-black uppercase tracking-wider text-purple-900 flex items-center gap-2">
                     <Zap className="w-4 h-4 text-pink-600" />
-                    <span>Step 2: Select Engineering Branch (Radio Buttons) *</span>
+                    <span>Step 2: Choose Your Engineering Branch (Select via Radio Card) *</span>
                   </label>
-                  <span className="text-[11px] font-extrabold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200">
-                    Click card to select
+                  <span className="text-[11px] font-extrabold text-pink-600 bg-pink-50 px-2.5 py-0.5 rounded-full border border-pink-200">
+                    6 Radio Options
                   </span>
                 </div>
 
@@ -501,7 +573,7 @@ export default function StudentDashboard({
                             }
                           });
                         }}
-                        className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer select-none ${
+                        className={`flex items-center gap-3.5 p-4 rounded-2xl border-2 transition-all cursor-pointer select-none ${
                           isSelected
                             ? 'bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border-purple-600 shadow-md ring-2 ring-purple-500/20'
                             : 'bg-white border-slate-200 hover:border-purple-300 hover:bg-purple-50/20'
@@ -518,30 +590,37 @@ export default function StudentDashboard({
                         />
 
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-1.5">
-                            <span className={`text-xs font-black truncate ${isSelected ? 'text-purple-900' : 'text-slate-800'}`}>
+                          <div className="flex items-center justify-between gap-1">
+                            <p className={`text-xs font-black truncate ${isSelected ? 'text-purple-950' : 'text-slate-800'}`}>
                               {branchObj.label}
-                            </span>
-                            <span className={`text-[10px] font-mono font-extrabold px-2 py-0.5 rounded shrink-0 ${
-                              isSelected ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-600'
-                            }`}>
+                            </p>
+                            <span className="text-[9px] font-mono font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded shrink-0">
                               {branchObj.code}
                             </span>
                           </div>
                         </div>
+
+                        {isSelected && (
+                          <CheckCircle2 className="w-5 h-5 text-purple-600 shrink-0" />
+                        )}
                       </label>
                     );
                   })}
                 </div>
               </div>
             ) : (
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-5 rounded-2xl border border-purple-200 flex items-center gap-3">
-                <CheckCircle2 className="w-6 h-6 text-purple-600 shrink-0" />
-                <div>
-                  <h4 className="text-sm font-black text-purple-900">{selectedCourse} Program Selected</h4>
-                  <p className="text-xs text-purple-700 font-semibold">
-                    Standard curriculum course layout active. Sub-branch radio buttons are applicable for Engineering.
-                  </p>
+              /* DIRECT PROGRAM CONFIRMATION FOR POLYTECHNIC & PHARMACY */
+              <div className="pt-4 border-t border-purple-100 animate-fadeIn">
+                <div className="bg-emerald-50/80 border-2 border-emerald-200 p-4 sm:p-5 rounded-2xl flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold shrink-0 shadow-md">
+                    <CheckCircle2 className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-black text-emerald-950">Direct Curriculum Assigned ({selectedCourse})</h4>
+                    <p className="text-xs font-semibold text-emerald-800">
+                      {selectedCourse} has a unified direct curriculum. No additional branch radio buttons required!
+                    </p>
+                  </div>
                 </div>
               </div>
             )}

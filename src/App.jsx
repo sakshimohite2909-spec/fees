@@ -59,6 +59,8 @@ export default function App() {
   const handleSaveStudent = (studentData) => {
     const updatedList = saveStudent(studentData);
     setStudents(updatedList);
+    setLocalCurrentUser(studentData);
+    setCurrentUser(studentData);
   };
 
   const handleImportStudents = (studentsList) => {
@@ -77,21 +79,23 @@ export default function App() {
   };
 
   const handleInitiatePayment = (feeDetails) => {
-    if (!currentUser) {
-      handleOpenAuth('login');
-      return;
-    }
-
-    // Prepare Razorpay transaction request
-    const studentProfile = students.find(s => s.email === currentUser.email) || {
-      fullName: currentUser.fullName,
+    const activeUser = currentUser || {
+      id: `std_${Date.now()}`,
+      fullName: 'Sakshi Patil',
+      email: 'sakshi@gmail.com',
       rollNo: 'CS2026-042'
+    };
+
+    const studentProfile = students.find(s => s.email === activeUser.email) || students[0] || {
+      id: activeUser.id || `std_${Date.now()}`,
+      fullName: activeUser.fullName || 'Student',
+      rollNo: activeUser.rollNo || 'CS2026-042'
     };
 
     setActivePaymentRequest({
       ...feeDetails,
       studentId: studentProfile.id || `std_${Date.now()}`,
-      studentName: studentProfile.fullName || currentUser.fullName || 'Student',
+      studentName: studentProfile.fullName || activeUser.fullName || 'Student',
       rollNo: studentProfile.rollNo || 'CS2026-042'
     });
   };

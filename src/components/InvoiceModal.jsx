@@ -258,54 +258,7 @@ export default function InvoiceModal({ isOpen, onClose, transaction }) {
             </table>
           </div>
 
-          {/* Amount in Words Box (Light Theme) */}
-          <div className="bg-amber-50/80 border border-amber-200 rounded-xl p-3.5 mb-6 text-xs shadow-xs">
-            <span className="text-amber-900 font-black uppercase tracking-wider text-[10px] block mb-0.5">Amount in Words:</span>
-            <p className="font-black text-amber-950 italic text-sm">
-              "{numberToWords(transaction.amount)}"
-            </p>
-          </div>
 
-          {/* Digital Verification & Stamp Footer */}
-          <div className="pt-4 border-t-2 border-purple-200 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
-            
-            {/* QR Code / Digital Verification */}
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-purple-100 text-purple-900 rounded-xl border border-purple-200 shadow-sm shrink-0">
-                <QrCode className="w-9 h-9 text-purple-700" />
-              </div>
-              <div className="text-[10px] text-slate-600">
-                <p className="font-black text-purple-950">Scan to Verify</p>
-                <p className="leading-tight mt-0.5 font-medium">Encrypted verification code for portal authenticity check.</p>
-              </div>
-            </div>
-
-            {/* Terms & Notice */}
-            <div className="text-[10px] text-slate-500 font-medium space-y-0.5 text-center sm:text-left">
-              <p className="font-black text-slate-800">Notice & Disclaimer:</p>
-              <p className="leading-tight">• Computer generated receipt under IT Act 2000.</p>
-              <p className="leading-tight">• Valid for official scholarship & tax submission.</p>
-            </div>
-
-            {/* Official Stamp Box */}
-            <div className="flex justify-center sm:justify-end">
-              <div className="relative w-28 h-28 rounded-full border-4 border-emerald-600/70 flex flex-col items-center justify-center p-2 text-center rotate-[-8deg] bg-emerald-50/40 shadow-inner group">
-                <div className="w-full h-full rounded-full border border-dashed border-emerald-600/60 flex flex-col items-center justify-center">
-                  <span className="text-[9px] font-black tracking-widest text-emerald-800 uppercase">ACCOUNTS DEPT</span>
-                  <CheckCircle className="w-5 h-5 text-emerald-600 my-0.5" />
-                  <span className="text-[10px] font-black text-emerald-700 tracking-wider">PAID</span>
-                  <span className="text-[8px] font-bold text-emerald-800">{formattedDate}</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          {/* Footer Contact Info */}
-          <div className="mt-6 pt-3 border-t border-purple-100 text-center text-[10px] text-slate-500 font-semibold flex flex-wrap items-center justify-between gap-2">
-            <span>Government Engineering College, Main Campus, Vidyanagar</span>
-            <span>Email: accounts@gce.ac.in | Helpline: +91 02164 271711</span>
-          </div>
 
         </div>
 

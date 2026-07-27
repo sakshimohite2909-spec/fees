@@ -102,9 +102,6 @@ export default function AdminDashboard({
             <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900">
               Fee Control & Excel Student Database
             </h1>
-            <p className="text-slate-600 text-sm max-w-xl font-medium">
-              Upload Excel sheet files, manually add student records, configure fee amounts, and track Razorpay payments in real-time.
-            </p>
           </div>
 
           <div className="bg-white/90 p-5 rounded-2xl border border-purple-200 text-right shadow-sm">

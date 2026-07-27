@@ -260,39 +260,6 @@ export default function AdminDashboard({
                 </div>
               </div>
 
-              {/* FEE OPTION 3: College Fee */}
-              <div className="p-4 rounded-2xl bg-pink-50/50 border border-pink-100 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-extrabold uppercase tracking-wider text-pink-900">Option 3: College Fee</span>
-                  <span className="text-[10px] bg-pink-200 text-pink-900 font-bold px-2 py-0.5 rounded">College</span>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Fee Amount (₹)</label>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    required
-                    value={configForm.collegeFee ?? 12000}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '');
-                      setConfigForm({ ...configForm, collegeFee: val ? Number(val) : '' });
-                    }}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-pink-200 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-pink-500 focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Due Date</label>
-                  <input
-                    type="date"
-                    value={configForm.collegeDueDate}
-                    onChange={(e) => setConfigForm({ ...configForm, collegeDueDate: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-pink-200 text-xs font-semibold"
-                  />
-                </div>
-              </div>
-
               <button
                 type="submit"
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-gradient-to-r from-purple-100 via-pink-100 to-purple-100 hover:from-purple-200 hover:to-pink-200 text-purple-950 font-black text-xs border-2 border-purple-300 shadow-sm transition-all cursor-pointer"

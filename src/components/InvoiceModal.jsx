@@ -67,7 +67,14 @@ export default function InvoiceModal({ isOpen, onClose, transaction }) {
         margin: [6, 6, 6, 6],
         filename: filename,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
+        html2canvas: { 
+          scale: 2, 
+          useCORS: true, 
+          logging: false,
+          windowWidth: 800,
+          scrollX: 0,
+          scrollY: 0
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
@@ -124,29 +131,29 @@ export default function InvoiceModal({ isOpen, onClose, transaction }) {
             <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 text-center sm:text-left">
               
               {/* Emblem / Logo */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 py-1">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 via-violet-600 to-pink-600 text-white flex items-center justify-center p-3 shadow-md shadow-purple-500/20 border-2 border-purple-200 shrink-0">
                   <GraduationCap className="w-10 h-10" />
                 </div>
-                <div>
-                  <h1 className="text-xl sm:text-2xl font-black text-purple-950 tracking-tight uppercase leading-none">
+                <div className="py-1">
+                  <h1 className="text-xl sm:text-2xl font-black text-purple-950 tracking-tight uppercase leading-snug">
                     Government Engineering College
                   </h1>
-                  <p className="text-xs font-black text-purple-800 mt-1 tracking-wide">
+                  <p className="text-xs font-black text-purple-800 mt-1 tracking-wide leading-normal">
                     Autonomous Institute of Government of Maharashtra
                   </p>
-                  <p className="text-[11px] text-slate-500 font-semibold mt-0.5 flex flex-wrap items-center justify-center sm:justify-start gap-x-2">
+                  <p className="text-[11px] text-slate-600 font-bold mt-1 leading-normal flex flex-wrap items-center justify-center sm:justify-start gap-x-2">
                     <span>Approved by AICTE</span> • <span>Affiliated to DBATU</span> • <span>ISO 9001:2015</span>
                   </p>
                 </div>
               </div>
 
               {/* Receipt Title Badge */}
-              <div className="text-center sm:text-right shrink-0">
-                <span className="inline-block px-3.5 py-1 bg-purple-100 text-purple-950 font-black text-xs rounded-lg uppercase tracking-wider border border-purple-300 shadow-sm">
+              <div className="text-center sm:text-right shrink-0 py-1">
+                <span className="inline-block px-3.5 py-1 bg-purple-100 text-purple-950 font-black text-xs rounded-lg uppercase tracking-wider border border-purple-300 shadow-sm leading-normal">
                   Official E-Receipt
                 </span>
-                <p className="text-[11px] font-mono font-bold text-purple-700 mt-1.5">
+                <p className="text-[11px] font-mono font-bold text-purple-700 mt-1.5 leading-normal">
                   Academic Year 2026-27
                 </p>
               </div>
@@ -154,23 +161,23 @@ export default function InvoiceModal({ isOpen, onClose, transaction }) {
             </div>
           </div>
 
-          {/* Key Reference Bar (Light Theme) */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 rounded-xl bg-purple-50/60 border border-purple-200 mb-6 text-xs">
-            <div>
-              <p className="text-purple-900 font-bold uppercase tracking-wider text-[9px]">Receipt No.</p>
-              <p className="font-mono font-extrabold text-purple-950 truncate">{transaction.id || 'REC-2026-78507'}</p>
+          {/* Key Reference Bar (Light Theme - PDF Optimized) */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-xl bg-purple-50/70 border border-purple-200 mb-6 text-xs leading-normal">
+            <div className="py-1">
+              <p className="text-purple-900 font-bold uppercase tracking-wider text-[10px] mb-1">Receipt No.</p>
+              <p className="font-mono font-extrabold text-purple-950 text-xs break-all leading-normal">{transaction.id || 'REC-2026-78507'}</p>
             </div>
-            <div>
-              <p className="text-purple-900 font-bold uppercase tracking-wider text-[9px]">Date & Time</p>
-              <p className="font-bold text-slate-800">{formattedDate}, {formattedTime}</p>
+            <div className="py-1">
+              <p className="text-purple-900 font-bold uppercase tracking-wider text-[10px] mb-1">Date & Time</p>
+              <p className="font-bold text-slate-800 text-xs leading-normal">{formattedDate}, {formattedTime}</p>
             </div>
-            <div>
-              <p className="text-purple-900 font-bold uppercase tracking-wider text-[9px]">Payment Method</p>
-              <p className="font-bold text-purple-900 truncate">{transaction.paymentMethod || 'Razorpay UPI'}</p>
+            <div className="py-1">
+              <p className="text-purple-900 font-bold uppercase tracking-wider text-[10px] mb-1">Payment Method</p>
+              <p className="font-bold text-purple-900 text-xs leading-normal break-all">{transaction.paymentMethod || 'Razorpay UPI'}</p>
             </div>
-            <div>
-              <p className="text-purple-900 font-bold uppercase tracking-wider text-[9px]">Status</p>
-              <span className="inline-flex items-center gap-1 font-black text-emerald-700 text-xs">
+            <div className="py-1">
+              <p className="text-purple-900 font-bold uppercase tracking-wider text-[10px] mb-1">Status</p>
+              <span className="inline-flex items-center gap-1 font-black text-emerald-700 text-xs py-0.5 leading-normal">
                 <CheckCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> PAID
               </span>
             </div>

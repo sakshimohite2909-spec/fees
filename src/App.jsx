@@ -121,8 +121,12 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-purple-100/70 via-pink-50/60 to-violet-100/70 text-slate-800 flex flex-col font-sans relative overflow-x-hidden">
       
+      {/* Background Soft Orbs */}
+      <div className="fixed -top-24 -left-24 w-96 h-96 bg-purple-300/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="fixed top-1/2 -right-24 w-96 h-96 bg-pink-300/20 rounded-full blur-3xl pointer-events-none"></div>
+
       {/* Top Navbar */}
       <Navbar
         currentUser={currentUser}

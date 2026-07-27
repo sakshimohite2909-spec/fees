@@ -3,55 +3,58 @@ import { GraduationCap, ShieldCheck, UserCheck, LogOut, Sparkles, CreditCard } f
 
 export default function Navbar({ currentUser, activeRole, onSwitchRole, onOpenAuth, onLogout }) {
   return (
-    <header className="sticky top-0 z-30 glass-panel-glow border-b border-purple-200/60 bg-white/95 backdrop-blur-md shadow-xs">
+    <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-purple-200/90 shadow-md shadow-purple-500/5">
+      {/* 🌈 Top Accent Gradient Bar */}
+      <div className="h-1 bg-gradient-to-r from-purple-600 via-pink-500 to-violet-600"></div>
+
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-13 sm:h-15 gap-2">
+        <div className="flex items-center justify-between h-14 sm:h-16 gap-2">
           
           {/* Logo & Title */}
-          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-purple-700 via-violet-600 to-pink-600 flex items-center justify-center text-white shadow-sm shrink-0">
-              <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5" />
+          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-purple-700 via-pink-600 to-violet-600 flex items-center justify-center text-white shadow-md shadow-purple-500/25 shrink-0 transform hover:scale-105 transition-transform">
+              <GraduationCap className="w-5 h-5 sm:w-5 sm:h-5 text-white" />
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-black text-lg sm:text-xl tracking-tight text-slate-900">
+              <div className="flex items-center gap-2">
+                <span className="font-black text-xl sm:text-2xl tracking-tight text-slate-900">
                   Edu<span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-pink-600">Pay</span>
                 </span>
-                <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.2 rounded-full border shadow-xs ${
+                <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border shadow-2xs ${
                   activeRole === 'admin' 
-                    ? 'bg-pink-50 text-pink-700 border-pink-200' 
-                    : 'bg-purple-50 text-purple-700 border-purple-200'
+                    ? 'bg-pink-100/80 text-pink-800 border-pink-300' 
+                    : 'bg-purple-100/80 text-purple-900 border-purple-300'
                 }`}>
-                  {activeRole === 'admin' ? 'Admin' : 'Student'}
+                  {activeRole === 'admin' ? 'Admin Portal' : 'Student Portal'}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 font-medium hidden md:block leading-none">College Fee Management & Razorpay Checkout</p>
+              <p className="text-[11px] text-slate-500 font-bold hidden md:block leading-none">College Fee Management & Razorpay Checkout</p>
             </div>
           </div>
 
           {/* Center Navigation Role Selector (Desktop) */}
-          <div className="hidden md:flex items-center bg-purple-50/70 p-1 rounded-xl border border-purple-100 shadow-inner">
+          <div className="hidden md:flex items-center bg-purple-100/60 p-1.5 rounded-2xl border border-purple-200 shadow-inner gap-1">
             <button
               onClick={() => onSwitchRole('student')}
-              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-black transition-all duration-300 cursor-pointer ${
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-xl text-xs font-black transition-all duration-300 cursor-pointer ${
                 activeRole === 'student'
-                  ? 'bg-white text-purple-700 shadow-sm border border-purple-200'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-gradient-to-r from-purple-700 to-violet-700 text-white shadow-md shadow-purple-500/20 scale-102'
+                  : 'text-slate-600 hover:text-purple-900 hover:bg-white/50'
               }`}
             >
-              <UserCheck className="w-3.5 h-3.5 text-purple-600" />
+              <UserCheck className="w-4 h-4" />
               <span>Student View</span>
             </button>
 
             <button
               onClick={() => onSwitchRole('admin')}
-              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-black transition-all duration-300 cursor-pointer ${
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-xl text-xs font-black transition-all duration-300 cursor-pointer ${
                 activeRole === 'admin'
-                  ? 'bg-white text-pink-700 shadow-sm border border-pink-200'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-gradient-to-r from-pink-600 to-purple-700 text-white shadow-md shadow-pink-500/20 scale-102'
+                  : 'text-slate-600 hover:text-pink-900 hover:bg-white/50'
               }`}
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-pink-600" />
+              <ShieldCheck className="w-4 h-4" />
               <span>Admin View</span>
             </button>
           </div>

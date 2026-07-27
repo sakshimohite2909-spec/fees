@@ -191,10 +191,6 @@ export default function StudentDashboard({
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
               Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-rose-100 to-pink-200">{fullName || currentUser?.fullName || 'Student'}</span> 👋
             </h1>
-
-            <p className="text-purple-100/90 text-sm font-medium">
-              Submit your mobile number to view student details, select Course & Branch, and pay Exam Fee & Tuition Fee online.
-            </p>
           </div>
 
           {/* Quick Payment Status Overview */}

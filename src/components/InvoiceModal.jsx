@@ -176,15 +176,15 @@ export default function InvoiceModal({ isOpen, onClose, transaction }) {
             </div>
           </div>
 
-          {/* Student & Transaction Information Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          {/* Student & Transaction Information */}
+          <div className="mb-6">
             
             {/* Student Info Box */}
             <div className="p-4 rounded-2xl bg-purple-50/50 border border-purple-200/80">
               <h3 className="text-[11px] font-black uppercase tracking-wider text-purple-950 mb-2.5 pb-1 border-b border-purple-200/80 flex items-center gap-1.5">
                 <Building2 className="w-3.5 h-3.5 text-purple-600" /> Student Profile Details
               </h3>
-              <dl className="space-y-1.5 text-xs">
+              <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-xs">
                 <div className="flex justify-between">
                   <dt className="text-slate-500 font-semibold">Student Name:</dt>
                   <dd className="font-black text-slate-900 text-right">{transaction.studentName || 'Sakshi Patil'}</dd>
@@ -198,35 +198,8 @@ export default function InvoiceModal({ isOpen, onClose, transaction }) {
                   <dd className="font-mono font-bold text-slate-800 text-right">{transaction.prnNo || '20240325001192'}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-slate-500 font-semibold">Department:</dt>
+                  <dt className="text-slate-500 font-semibold">Department / Course:</dt>
                   <dd className="font-bold text-purple-900 text-right">{transaction.branch || 'Computer Engineering'}</dd>
-                </div>
-              </dl>
-            </div>
-
-            {/* Gateway Info Box */}
-            <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200">
-              <h3 className="text-[11px] font-black uppercase tracking-wider text-slate-700 mb-2.5 pb-1 border-b border-slate-200 flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Digital Payment Metadata
-              </h3>
-              <dl className="space-y-1.5 text-xs">
-                <div className="flex justify-between">
-                  <dt className="text-slate-500 font-semibold">Razorpay Ref ID:</dt>
-                  <dd className="font-mono font-extrabold text-emerald-700 text-right truncate max-w-[150px]" title={transaction.razorpayPaymentId}>
-                    {transaction.razorpayPaymentId || 'pay_rzp_17850787'}
-                  </dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-slate-500 font-semibold">Gateway Status:</dt>
-                  <dd className="font-bold text-emerald-600 text-right">Captured & Verified</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-slate-500 font-semibold">Fee Category:</dt>
-                  <dd className="font-bold text-slate-800 text-right">{transaction.feeType === 'tuitionFee' ? 'Tuition Dues' : 'Institutional Dues'}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-slate-500 font-semibold">Currency:</dt>
-                  <dd className="font-bold text-slate-800 text-right">INR (₹)</dd>
                 </div>
               </dl>
             </div>

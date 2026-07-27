@@ -39,7 +39,7 @@ export default function AdminDashboard({
     const exportData = students.map(std => {
       const stdPayments = payments.filter(p => p.studentId === std.id || p.rollNo === std.rollNo);
       const tuitionPay = stdPayments.find(p => p.feeType === 'tuitionFee');
-      const collegePay = stdPayments.find(p => p.feeType === 'collegeFee');
+      const examPay = stdPayments.find(p => p.feeType === 'examFee');
 
       return {
         'Student Name': std.fullName,
@@ -49,7 +49,7 @@ export default function AdminDashboard({
         'Roll No': std.rollNo,
         'Gmail ID': std.email,
         'Tuition Fee Status': tuitionPay ? `PAID (₹${tuitionPay.amount})` : 'PENDING',
-        'College Fee Status': collegePay ? `PAID (₹${collegePay.amount})` : 'PENDING'
+        'Exam Fee Status': examPay ? `PAID (₹${examPay.amount})` : 'PENDING'
       };
     });
 
@@ -59,11 +59,38 @@ export default function AdminDashboard({
     XLSX.writeFile(workbook, `College_Students_Fee_Report_${new Date().toISOString().slice(0,10)}.xlsx`);
   };
 
+  // Download Sample Excel Template for Admin Upload
+  const handleDownloadSampleExcel = () => {
+    const sampleData = [
+      {
+        'Name': 'Sakshi Patil',
+        'Mobile Number': '9876543210',
+        'PRN No': '20240325001192',
+        'Branch': 'Computer Engineering',
+        'Roll No': 'CS2026-042',
+        'Gmail ID': 'sakshpatil@gmail.com'
+      },
+      {
+        'Name': 'Rahul Deshmukh',
+        'Mobile Number': '9822114455',
+        'PRN No': '20240325001144',
+        'Branch': 'Information Technology',
+        'Roll No': 'CS2026-015',
+        'Gmail ID': 'rahul.deshmukh@gmail.com'
+      }
+    ];
+
+    const worksheet = XLSX.utils.json_to_sheet(sampleData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Students_Sample');
+    XLSX.writeFile(workbook, 'Student_Data_Sample_Template.xlsx');
+  };
+
   // Financial Stats calculation
   const totalCollected = payments.reduce((acc, curr) => acc + (curr.amount || 0), 0);
   const totalStudents = students.length;
   
-  const expectedPerStudent = configForm.tuitionFee + configForm.collegeFee;
+  const expectedPerStudent = (configForm.tuitionFee || 45000) + (configForm.examFee || 2500);
   const totalExpected = totalStudents * expectedPerStudent;
   const totalPending = Math.max(0, totalExpected - totalCollected);
 
@@ -79,8 +106,8 @@ export default function AdminDashboard({
 
     const stdPayments = payments.filter(p => p.studentId === std.id || p.rollNo === std.rollNo);
     const hasPaidTuition = stdPayments.some(p => p.feeType === 'tuitionFee');
-    const hasPaidCollege = stdPayments.some(p => p.feeType === 'collegeFee');
-    const isFullyPaid = hasPaidTuition && hasPaidCollege;
+    const hasPaidExam = stdPayments.some(p => p.feeType === 'examFee');
+    const isFullyPaid = hasPaidTuition && hasPaidExam;
 
     if (statusFilter === 'paid') return matchesSearch && isFullyPaid;
     if (statusFilter === 'pending') return matchesSearch && !isFullyPaid;
@@ -300,21 +327,31 @@ export default function AdminDashboard({
                 <p className="text-xs text-slate-500 font-medium">Name, Mobile Number, PRN No & Branch records</p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+              <div className="flex flex-wrap items-center gap-2.5">
                 
-                {/* 📤 Upload Excel Button */}
+                {/* 📄 Upload Excel Sheet Button */}
                 <button
                   onClick={() => setIsExcelModalOpen(true)}
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-950 font-extrabold text-xs border border-purple-300 shadow-sm transition-all cursor-pointer"
+                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-700 via-pink-600 to-purple-700 hover:from-purple-800 hover:to-pink-700 text-white font-extrabold text-xs shadow-md shadow-purple-600/20 transition-all cursor-pointer transform hover:-translate-y-0.5"
                 >
-                  <FileSpreadsheet className="w-4 h-4 text-purple-700" />
+                  <FileSpreadsheet className="w-4 h-4 text-white" />
                   <span>Upload Excel Sheet</span>
+                </button>
+
+                {/* 📥 Download Sample Excel Template Button */}
+                <button
+                  onClick={handleDownloadSampleExcel}
+                  title="Download Sample Excel Template to fill student data"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 font-extrabold text-xs border border-purple-200 shadow-2xs transition-all cursor-pointer"
+                >
+                  <Download className="w-3.5 h-3.5 text-purple-600" />
+                  <span>Sample Excel Sheet</span>
                 </button>
 
                 {/* ➕ Add Student Manually Button */}
                 <button
                   onClick={() => setIsAddModalOpen(true)}
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-100 via-pink-100 to-purple-100 hover:from-purple-200 hover:to-pink-200 text-purple-950 font-extrabold text-xs border-2 border-purple-300 shadow-sm transition-all cursor-pointer"
+                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-100 via-pink-100 to-purple-100 hover:from-purple-200 hover:to-pink-200 text-purple-950 font-extrabold text-xs border-2 border-purple-300 shadow-2xs transition-all cursor-pointer"
                 >
                   <Plus className="w-4 h-4 text-purple-700" />
                   <span>Add Student</span>
@@ -323,8 +360,8 @@ export default function AdminDashboard({
                 {/* 📥 Export to Excel */}
                 <button
                   onClick={handleExportToExcel}
-                  title="Export Current Table to Excel"
-                  className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold border border-slate-200"
+                  title="Export Current Student Database to Excel"
+                  className="p-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-bold border border-slate-200 shadow-2xs cursor-pointer"
                 >
                   <Download className="w-4 h-4" />
                 </button>
@@ -356,7 +393,7 @@ export default function AdminDashboard({
               </select>
             </div>
 
-            {/* Excel Sheet Table Grid (Displaying Name, Mobile, PRN, Branch) */}
+            {/* Excel Sheet Table Grid (Displaying Name, Mobile, PRN, Branch, Tuition Fee, Exam Fee) */}
             <div className="overflow-x-auto border border-purple-100 rounded-2xl">
               <table className="w-full text-left text-xs">
                 <thead className="bg-gradient-to-r from-purple-100 to-pink-50 text-purple-950 font-black uppercase border-b border-purple-200">
@@ -366,7 +403,7 @@ export default function AdminDashboard({
                     <th className="py-3 px-3">PRN No</th>
                     <th className="py-3 px-3">Branch / Dept</th>
                     <th className="py-3 px-3">Tuition Fee</th>
-                    <th className="py-3 px-3">College Fee</th>
+                    <th className="py-3 px-3">Exam Fee</th>
                     <th className="py-3 px-3 text-right">Action</th>
                   </tr>
                 </thead>
@@ -381,7 +418,7 @@ export default function AdminDashboard({
                     filteredStudents.map((std) => {
                       const stdPayments = payments.filter(p => p.studentId === std.id || p.rollNo === std.rollNo);
                       const tuitionPay = stdPayments.find(p => p.feeType === 'tuitionFee');
-                      const collegePay = stdPayments.find(p => p.feeType === 'collegeFee');
+                      const examPay = stdPayments.find(p => p.feeType === 'examFee');
 
                       return (
                         <tr key={std.id} className="hover:bg-purple-50/50 transition-colors">
@@ -430,14 +467,14 @@ export default function AdminDashboard({
                             )}
                           </td>
 
-                          {/* College Fee */}
+                          {/* Exam Fee */}
                           <td className="py-3 px-3">
-                            {collegePay ? (
+                            {examPay ? (
                               <button
-                                onClick={() => onViewInvoice(collegePay)}
+                                onClick={() => onViewInvoice(examPay)}
                                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold text-[11px]"
                               >
-                                <CheckCircle className="w-3 h-3 text-emerald-600" /> ₹{collegePay.amount?.toLocaleString('en-IN')}
+                                <CheckCircle className="w-3 h-3 text-emerald-600" /> ₹{examPay.amount?.toLocaleString('en-IN')}
                               </button>
                             ) : (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 text-amber-700 font-bold text-[11px] border border-amber-200">

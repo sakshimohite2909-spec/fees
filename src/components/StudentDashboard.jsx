@@ -411,7 +411,6 @@ export default function StudentDashboard({
 
           </div>
 
-          {/* 📚 SECTION 2: Course Dropdown & Branch Radio Buttons Selection */}
           {/* 📚 SECTION 2: Academic Course & Branch Selection */}
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-200/80 shadow-sm glass-panel-glow space-y-6">
             
@@ -432,18 +431,18 @@ export default function StudentDashboard({
               </span>
             </div>
 
-            {/* 🎓 PART 1: 3 COURSES DISPLAY (Engineering, Polytechnic, Pharmacy) */}
-            <div className="space-y-3">
+            {/* 🎓 3 COURSES LIST / GRID */}
+            <div className="space-y-4">
               <label className="text-xs font-black uppercase tracking-wider text-purple-900 flex items-center gap-2">
                 <Layers className="w-4 h-4 text-purple-600" />
-                <span>1. Select Course *</span>
+                <span>Select Academic Course *</span>
               </label>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                 {[
                   { id: 'Engineering', title: 'Engineering (B.Tech / B.E.)', icon: '🎓', badge: '6 Branches' },
-                  { id: 'Polytechnic', title: 'Polytechnic (Diploma)', icon: '🏫', badge: 'Diploma' },
-                  { id: 'Pharmacy', title: 'Pharmacy (B.Pharm / D.Pharm)', icon: '🧪', badge: 'Pharmacy' }
+                  { id: 'Polytechnic', title: 'Polytechnic (Diploma)', icon: '🏫', badge: 'Direct Program' },
+                  { id: 'Pharmacy', title: 'Pharmacy (B.Pharm / D.Pharm)', icon: '🧪', badge: 'Direct Program' }
                 ].map((course) => {
                   const isSelected = selectedCourse === course.id;
                   return (
@@ -472,19 +471,20 @@ export default function StudentDashboard({
               </div>
             </div>
 
-            {/* ⚡ PART 2: ENGINEERING BRANCHES DISPLAY (Radio Buttons Grid - Only for Engineering) */}
+            {/* ⚡ ENGINEERING BRANCHES (DIRECTLY BELOW ENGINEERING) */}
             {selectedCourse === 'Engineering' ? (
-              <div className="space-y-3 pt-4 border-t border-purple-100 animate-fadeIn">
+              <div className="bg-purple-50/40 p-5 rounded-2xl border-2 border-purple-200 space-y-4 animate-fadeIn">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-black uppercase tracking-wider text-pink-900 flex items-center gap-2">
+                  <label className="text-xs font-black uppercase tracking-wider text-purple-950 flex items-center gap-2">
                     <Zap className="w-4 h-4 text-pink-600" />
-                    <span>2. Select Engineering Branch (Radio Buttons) *</span>
+                    <span>Engineering Branches (Select Branch Below) *</span>
                   </label>
-                  <span className="text-[11px] font-extrabold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200">
-                    6 Branches Available
+                  <span className="text-[11px] font-extrabold text-purple-700 bg-white px-2.5 py-0.5 rounded-full border border-purple-200">
+                    Selected: {selectedBranch}
                   </span>
                 </div>
 
+                {/* 3-Column Radio Cards Grid for Branches */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
                   {(COURSE_BRANCHES['Engineering'] || []).map((branchObj) => {
                     const isSelected = selectedBranch === branchObj.label || 
@@ -515,7 +515,7 @@ export default function StudentDashboard({
                         }}
                         className={`flex items-center gap-3.5 p-4 rounded-2xl border-2 transition-all cursor-pointer select-none ${
                           isSelected
-                            ? 'bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border-purple-600 shadow-md ring-2 ring-purple-500/20'
+                            ? 'bg-gradient-to-r from-purple-100/80 via-pink-50 to-purple-50 border-purple-600 shadow-md ring-2 ring-purple-500/20'
                             : 'bg-white border-slate-200 hover:border-purple-300 hover:bg-purple-50/20'
                         }`}
                       >
@@ -549,15 +549,13 @@ export default function StudentDashboard({
               </div>
             ) : (
               /* DIRECT PROGRAM BANNER FOR POLYTECHNIC & PHARMACY */
-              <div className="pt-4 border-t border-purple-100 animate-fadeIn">
-                <div className="bg-emerald-50/80 border-2 border-emerald-200 p-4 rounded-2xl flex items-center gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
-                  <div>
-                    <h4 className="text-sm font-black text-emerald-950">{selectedCourse} Selected</h4>
-                    <p className="text-xs font-semibold text-emerald-800">
-                      Standard direct course layout active. No sub-branches required for {selectedCourse}.
-                    </p>
-                  </div>
+              <div className="bg-emerald-50/80 border-2 border-emerald-200 p-4 rounded-2xl flex items-center gap-3 animate-fadeIn">
+                <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
+                <div>
+                  <h4 className="text-sm font-black text-emerald-950">{selectedCourse} Selected</h4>
+                  <p className="text-xs font-semibold text-emerald-800">
+                    Direct curriculum layout active. No sub-branches required for {selectedCourse}.
+                  </p>
                 </div>
               </div>
             )}

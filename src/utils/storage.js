@@ -15,9 +15,6 @@ const DEFAULT_FEES_CONFIG = {
   examFee: 2500,
   examDueDate: '2026-08-25',
   examDescription: 'Semester Examination & Hall Ticket Fee',
-  collegeFee: 15000,
-  collegeDueDate: '2026-08-30',
-  collegeDescription: 'Library, Lab, Gymkhana & Activity Fee',
   academicYear: '2026-2027',
   updatedAt: new Date().toISOString()
 };

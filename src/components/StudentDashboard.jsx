@@ -225,11 +225,9 @@ export default function StudentDashboard({
 
   const isExamPaid = myPayments.some(p => p.feeType === 'examFee' && p.status === 'PAID');
   const isTuitionPaid = myPayments.some(p => p.feeType === 'tuitionFee' && p.status === 'PAID');
-  const isCollegePaid = myPayments.some(p => p.feeType === 'collegeFee' && p.status === 'PAID');
 
   const examPaymentRecord = myPayments.find(p => p.feeType === 'examFee' && p.status === 'PAID');
   const tuitionPaymentRecord = myPayments.find(p => p.feeType === 'tuitionFee' && p.status === 'PAID');
-  const collegePaymentRecord = myPayments.find(p => p.feeType === 'collegeFee' && p.status === 'PAID');
 
   const totalPaidAmount = myPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
   const examAmount = feesConfig.examFee || 2500;

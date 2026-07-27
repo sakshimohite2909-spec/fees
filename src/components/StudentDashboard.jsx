@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  CreditCard, UserPlus, CheckCircle, Clock, FileText, 
+  CreditCard, CheckCircle, Clock, FileText, 
   Sparkles, Award, ArrowRight, ShieldCheck, Download, Edit3, Save, Check,
-  Zap, Lock, FileCheck, HelpCircle, ArrowUpRight, TrendingUp, Layers
+  Phone, BookOpen, Layers, Zap, Building2, CheckCircle2, ChevronRight, User, Hash
 } from 'lucide-react';
 
 export default function StudentDashboard({ 
@@ -15,89 +15,168 @@ export default function StudentDashboard({
   onViewInvoice,
   onOpenAuth 
 }) {
-  // Find current student profile or build draft
-  const studentProfile = students.find(s => s.email === currentUser?.email) || {
-    email: currentUser?.email || '',
-    fullName: currentUser?.fullName || '',
-    rollNo: '',
-    prnNo: '',
-    educationDetails: {
-      course: 'B.Tech Computer Science',
-      branch: 'Computer Engineering',
-      year: '3rd Year',
-      semester: '5th Semester',
-      mobile: '',
-      collegeName: 'Government Engineering College'
+  // Course & Branch mapping structure (Only Engineering has sub-branches with radio buttons)
+  const COURSE_BRANCHES = {
+    'Engineering': [
+      { id: 'mech', label: 'Mechanical Engineering', code: 'ME' },
+      { id: 'elec', label: 'Electrical Engineering', code: 'EE' },
+      { id: 'comp', label: 'Computer Engineering', code: 'CE' },
+      { id: 'ai', label: 'Artificial Intelligence (AI)', code: 'AI' },
+      { id: 'entc', label: 'Electronics & Telecommunication (ENTC)', code: 'ENTC' },
+      { id: 'civil', label: 'Civil Engineering', code: 'CIVIL' }
+    ]
+  };
+
+  // Helper to ensure selectedCourse is one of Engineering, Polytechnic, Pharmacy
+  const getNormalizedCourse = (c) => {
+    if (!c) return 'Engineering';
+    const str = String(c).toLowerCase();
+    if (str.includes('poly') || str.includes('diploma')) return 'Polytechnic';
+    if (str.includes('pharm')) return 'Pharmacy';
+    return 'Engineering';
+  };
+
+  // Find existing student profile or initialize default
+  const existingProfile = students.find(s => s.email === currentUser?.email) || null;
+
+  const defaultMobile = existingProfile?.mobile || existingProfile?.educationDetails?.mobile || currentUser?.mobile || '9876543210';
+  const defaultCourse = getNormalizedCourse(existingProfile?.educationDetails?.course);
+  const defaultBranch = existingProfile?.educationDetails?.branch || 'Computer Engineering';
+
+  // Form & view state
+  const [mobileInput, setMobileInput] = useState(defaultMobile);
+  const [selectedCourse, setSelectedCourse] = useState(defaultCourse);
+  const [selectedBranch, setSelectedBranch] = useState(defaultBranch);
+  const [fullName, setFullName] = useState(existingProfile?.fullName || currentUser?.fullName || 'Sakshi Patil');
+  const [rollNo, setRollNo] = useState(existingProfile?.rollNo || 'CS2026-042');
+  const [prnNo, setPrnNo] = useState(existingProfile?.prnNo || '20240325001192');
+  const [year, setYear] = useState(existingProfile?.educationDetails?.year || '3rd Year');
+  const [semester, setSemester] = useState(existingProfile?.educationDetails?.semester || '5th Semester');
+
+  // Direct Student Dashboard View (No redundant 2nd login page)
+  const [showEditForm, setShowEditForm] = useState(false);
+
+  // Sync state if currentUser changes
+  useEffect(() => {
+    if (existingProfile || currentUser) {
+      setMobileInput(existingProfile?.mobile || currentUser?.mobile || '9876543210');
+      setSelectedCourse(getNormalizedCourse(existingProfile?.educationDetails?.course));
+      setSelectedBranch(existingProfile?.educationDetails?.branch || 'Computer Engineering');
+      setFullName(existingProfile?.fullName || currentUser?.fullName || 'Student');
+      setRollNo(existingProfile?.rollNo || 'CS2026-042');
+      setPrnNo(existingProfile?.prnNo || '20240325001192');
+      setYear(existingProfile?.educationDetails?.year || '3rd Year');
+      setSemester(existingProfile?.educationDetails?.semester || '5th Semester');
+    }
+  }, [currentUser, existingProfile]);
+
+  const handleCourseChange = (newCourse) => {
+    setSelectedCourse(newCourse);
+    if (newCourse === 'Engineering') {
+      const availableBranches = COURSE_BRANCHES['Engineering'];
+      const exists = availableBranches.some(b => b.label === selectedBranch);
+      if (!exists) {
+        setSelectedBranch('Computer Engineering');
+      }
+    } else {
+      setSelectedBranch(newCourse);
     }
   };
 
-  const [formData, setFormData] = useState(studentProfile);
-  const [isEditingForm, setIsEditingForm] = useState(!studentProfile.rollNo);
-  const [formSubmitted, setFormSubmitted] = useState(!!studentProfile.rollNo);
+  // Handle Mobile Number Submission (opens main details & fees page)
+  const handleMobileSubmit = (e) => {
+    e.preventDefault();
+    if (!mobileInput.trim()) return;
 
-  useEffect(() => {
-    if (studentProfile) {
-      setFormData(studentProfile);
-      setFormSubmitted(!!studentProfile.rollNo);
-    }
-  }, [currentUser]);
+    const updatedData = {
+      id: existingProfile?.id || `std_${Date.now()}`,
+      email: currentUser?.email || `${(fullName || 'student').toLowerCase().replace(/\s+/g, '')}@gmail.com`,
+      fullName: fullName || currentUser?.fullName || 'Student',
+      rollNo: rollNo || `RN-${Math.floor(1000 + Math.random() * 9000)}`,
+      prnNo: prnNo || `2026${Math.floor(10000000 + Math.random() * 90000000)}`,
+      mobile: mobileInput.trim(),
+      branch: selectedBranch,
+      course: selectedCourse,
+      year,
+      semester,
+      educationDetails: {
+        course: selectedCourse,
+        branch: selectedBranch,
+        year,
+        semester,
+        mobile: mobileInput.trim(),
+        collegeName: 'Government Engineering & Technology College'
+      }
+    };
 
-  // Payment Status checks
-  const myPayments = payments.filter(p => p.studentId === studentProfile.id || p.rollNo === formData.rollNo);
+    onSaveStudent(updatedData);
+    setIsMobileSubmitted(true);
+    setShowEditForm(false);
+  };
+
+  // Payment Status checks for student
+  const currentStudentId = existingProfile?.id;
+  const currentRollNo = rollNo || existingProfile?.rollNo;
+
+  const myPayments = payments.filter(p => 
+    (currentStudentId && p.studentId === currentStudentId) || 
+    (currentRollNo && p.rollNo === currentRollNo)
+  );
+
+  const isExamPaid = myPayments.some(p => p.feeType === 'examFee' && p.status === 'PAID');
   const isTuitionPaid = myPayments.some(p => p.feeType === 'tuitionFee' && p.status === 'PAID');
   const isCollegePaid = myPayments.some(p => p.feeType === 'collegeFee' && p.status === 'PAID');
 
+  const examPaymentRecord = myPayments.find(p => p.feeType === 'examFee' && p.status === 'PAID');
   const tuitionPaymentRecord = myPayments.find(p => p.feeType === 'tuitionFee' && p.status === 'PAID');
   const collegePaymentRecord = myPayments.find(p => p.feeType === 'collegeFee' && p.status === 'PAID');
 
   const totalPaidAmount = myPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
-  const totalFeesDue = (feesConfig.tuitionFee || 0) + (feesConfig.collegeFee || 0);
-  const remainingDues = Math.max(0, totalFeesDue - totalPaidAmount);
-  const completionPercentage = Math.round((totalPaidAmount / totalFeesDue) * 100);
+  const examAmount = feesConfig.examFee || 2500;
+  const tuitionAmount = feesConfig.tuitionFee || 45000;
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    onSaveStudent(formData);
-    setFormSubmitted(true);
-    setIsEditingForm(false);
-  };
+  const totalFeesDue = examAmount + tuitionAmount;
+  const remainingDues = Math.max(0, totalFeesDue - totalPaidAmount);
+  const completionPercentage = Math.min(100, Math.round((totalPaidAmount / totalFeesDue) * 100));
 
   return (
     <div className="space-y-8 animate-slide-up">
       
-      {/* 🚀 Royal Purple & Soft Rose Hero Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-800 via-violet-700 to-pink-600 text-white p-8 sm:p-10 soft-shadow animate-gradient-bg">
+      {/* 🚀 Hero Header Banner */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-900 via-violet-800 to-pink-700 text-white p-8 sm:p-10 soft-shadow animate-gradient-bg">
         
-        {/* Floating Glowing Orbs in Background */}
-        <div className="absolute -top-12 -right-12 w-80 h-80 bg-white/15 rounded-full blur-3xl animate-float pointer-events-none"></div>
-        <div className="absolute -bottom-16 left-1/3 w-64 h-64 bg-pink-400/20 rounded-full blur-2xl animate-float pointer-events-none" style={{ animationDelay: '2s' }}></div>
+        {/* Glowing Orbs */}
+        <div className="absolute -top-12 -right-12 w-80 h-80 bg-white/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute -bottom-16 left-1/3 w-64 h-64 bg-pink-400/20 rounded-full blur-2xl pointer-events-none"></div>
 
         <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
           <div className="space-y-3 max-w-2xl">
             
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-xs font-black tracking-wider uppercase text-purple-100 border border-white/30 shadow-sm animate-pulse-glow">
-              <Sparkles className="w-4 h-4 text-amber-300 animate-spin" style={{ animationDuration: '8s' }} />
-              <span>Student Online Fee Portal • Academic Session {feesConfig.academicYear}</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-xs font-black tracking-wider uppercase text-purple-100 border border-white/30 shadow-sm">
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span>Student Online Fee Portal • Academic Session {feesConfig.academicYear || '2026-2027'}</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
-              Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-rose-100 to-pink-200">{currentUser?.fullName || formData.fullName || 'Student'}</span> 👋
+              Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-rose-100 to-pink-200">{fullName || currentUser?.fullName || 'Student'}</span> 👋
             </h1>
 
+            <p className="text-purple-100/90 text-sm font-medium">
+              Submit your mobile number to view student details, select Course & Branch, and pay Exam Fee & Tuition Fee online.
+            </p>
           </div>
 
-          {/* Right Stats Card Overlay */}
-          <div className="w-full lg:w-auto bg-white/10 backdrop-blur-xl p-5 sm:p-6 rounded-3xl border border-white/25 shadow-2xl min-w-[280px]">
-            
+          {/* Quick Payment Status Overview */}
+          <div className="w-full lg:w-auto bg-white/10 backdrop-blur-xl p-5 sm:p-6 rounded-3xl border border-white/25 shadow-2xl min-w-[290px]">
             <div className="flex items-center justify-between mb-3 text-xs">
               <span className="text-purple-100 font-bold uppercase tracking-wider">Fee Payment Progress</span>
-              <span className="font-extrabold text-amber-300 bg-white/20 px-2 py-0.5 rounded-full">{completionPercentage}% Completed</span>
+              <span className="font-extrabold text-amber-300 bg-white/20 px-2.5 py-0.5 rounded-full">{completionPercentage}% Paid</span>
             </div>
 
-            {/* Animated Progress Bar */}
-            <div className="w-full bg-black/20 rounded-full h-3 mb-4 p-0.5 border border-white/20 overflow-hidden">
+            {/* Progress Bar */}
+            <div className="w-full bg-black/25 rounded-full h-3 mb-4 p-0.5 border border-white/20 overflow-hidden">
               <div 
-                className="bg-gradient-to-r from-emerald-400 via-pink-400 to-purple-400 h-full rounded-full transition-all duration-1000 ease-out shadow-sm"
+                className="bg-gradient-to-r from-emerald-400 via-pink-400 to-amber-300 h-full rounded-full transition-all duration-1000 ease-out shadow-sm"
                 style={{ width: `${completionPercentage}%` }}
               ></div>
             </div>
@@ -112,225 +191,105 @@ export default function StudentDashboard({
                 <p className="text-lg font-black text-amber-200">₹{remainingDues.toLocaleString('en-IN')}</p>
               </div>
             </div>
-
           </div>
+
         </div>
       </div>
 
-      {/* 📊 Interactive Step-by-Step Workflow Bar */}
-      <div className="bg-white rounded-3xl p-5 border border-purple-200/60 shadow-sm glass-panel-glow">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* 📱 EDIT PROFILE MODAL / FORM (Only visible when student clicks Update Mobile / Profile) */}
+      {showEditForm && (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-200 shadow-lg glass-panel-glow relative overflow-hidden animate-fadeIn">
           
-          {/* Step 1 */}
-          <div className={`flex items-center gap-3 p-3.5 rounded-2xl border transition-all ${
-            formSubmitted 
-              ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900' 
-              : 'bg-purple-50/70 border-purple-200 text-purple-900 ring-2 ring-purple-500/20'
-          }`}>
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-sm ${
-              formSubmitted ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' : 'bg-purple-600 text-white'
-            }`}>
-              {formSubmitted ? <Check className="w-5 h-5" /> : '1'}
-            </div>
-            <div>
-              <p className="text-xs font-extrabold uppercase tracking-wider opacity-75">Step 1</p>
-              <p className="text-sm font-extrabold">{formSubmitted ? 'Student Profile Saved' : 'Fill Profile Form'}</p>
-            </div>
-          </div>
+          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-purple-700 via-violet-600 to-pink-600"></div>
 
-          {/* Step 2 */}
-          <div className={`flex items-center gap-3 p-3.5 rounded-2xl border transition-all ${
-            (isTuitionPaid || isCollegePaid)
-              ? 'bg-violet-50/70 border-violet-200 text-violet-900'
-              : 'bg-purple-50/30 border-purple-100 text-slate-700'
-          }`}>
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-sm ${
-              (isTuitionPaid || isCollegePaid) ? 'bg-violet-600 text-white' : 'bg-purple-200 text-purple-700'
-            }`}>
-              2
-            </div>
-            <div>
-              <p className="text-xs font-extrabold uppercase tracking-wider opacity-75">Step 2</p>
-              <p className="text-sm font-extrabold">Select Fee Option</p>
-            </div>
-          </div>
-
-          {/* Step 3 */}
-          <div className={`flex items-center gap-3 p-3.5 rounded-2xl border transition-all ${
-            (isTuitionPaid && isCollegePaid)
-              ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900'
-              : 'bg-purple-50/30 border-purple-100 text-slate-700'
-          }`}>
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-sm ${
-              (isTuitionPaid && isCollegePaid) ? 'bg-emerald-600 text-white' : 'bg-purple-200 text-purple-700'
-            }`}>
-              {(isTuitionPaid && isCollegePaid) ? <Check className="w-5 h-5" /> : '3'}
-            </div>
-            <div>
-              <p className="text-xs font-extrabold uppercase tracking-wider opacity-75">Step 3</p>
-              <p className="text-sm font-extrabold">Razorpay Checkout & Receipt</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* Grid Section: Student Form (Google Form style) + Fee Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        {/* Left Column (5 Cols): Google Form Style Student Profile Form */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-purple-200/80 shadow-sm glass-panel-glow relative overflow-hidden">
+          <div className="max-w-3xl mx-auto space-y-6">
             
-            {/* Top Decorative Color Bar */}
-            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-purple-700 via-violet-600 to-pink-600"></div>
-
-            <div className="flex items-center justify-between pb-4 border-b border-purple-100 mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-100 text-purple-600 flex items-center justify-center font-bold shadow-sm border border-purple-200/60">
-                  <FileText className="w-6 h-6 text-purple-600" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-black text-slate-900">Student Profile Form</h2>
-                  <p className="text-xs text-slate-500 font-medium">Google Form style details submission</p>
-                </div>
+            <div className="flex items-center gap-4 border-b border-purple-100 pb-5">
+              <div className="w-14 h-14 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold shadow-inner border border-purple-200 shrink-0">
+                <Phone className="w-7 h-7" />
               </div>
-
-              {formSubmitted && !isEditingForm && (
-                <button
-                  onClick={() => setIsEditingForm(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-purple-600 hover:bg-purple-50 rounded-xl transition-colors border border-purple-200"
-                >
-                  <Edit3 className="w-3.5 h-3.5" />
-                  <span>Edit Form</span>
-                </button>
-              )}
+              <div>
+                <h2 className="text-2xl font-black text-slate-900">Update Student Mobile & Profile Info</h2>
+                <p className="text-xs text-slate-500 font-medium">Update your registered mobile number and profile details below.</p>
+              </div>
             </div>
 
-            {/* Submission Status Badge */}
-            {formSubmitted && !isEditingForm ? (
-              <div className="space-y-5 animate-fadeIn">
-                <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/80 flex items-center gap-3 shadow-sm">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold shrink-0 shadow-md shadow-emerald-500/20">
-                    <Check className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-black text-emerald-900">Student Details Linked & Saved!</p>
-                    <p className="text-[11px] text-emerald-700 font-medium">Your PRN and Roll No are mapped for fee receipts.</p>
-                  </div>
+            <form onSubmit={handleMobileSubmit} className="space-y-6">
+              
+              {/* Mobile Number Entry */}
+              <div className="bg-purple-50/60 p-5 rounded-2xl border border-purple-200 space-y-2">
+                <label className="block text-xs font-black uppercase tracking-wider text-purple-900 flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-purple-600" />
+                  <span>Student Mobile Number *</span>
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-purple-600">+91</span>
+                  <input
+                    type="tel"
+                    required
+                    maxLength={10}
+                    placeholder="Enter 10-digit Mobile Number (e.g. 9876543210)"
+                    value={mobileInput}
+                    onChange={(e) => setMobileInput(e.target.value.replace(/\D/g, ''))}
+                    className="w-full pl-16 pr-4 py-3.5 rounded-xl border border-purple-300 text-base font-extrabold text-slate-900 focus:ring-4 focus:ring-purple-500/20 focus:border-purple-600 focus:outline-none bg-white transition-all shadow-sm"
+                  />
                 </div>
-
-                <div className="space-y-3 bg-purple-50/40 p-5 rounded-2xl border border-purple-100/80 text-xs">
-                  <div className="flex justify-between border-b border-purple-100 pb-2.5">
-                    <span className="text-slate-500 font-semibold">Full Name:</span>
-                    <span className="font-extrabold text-slate-900">{formData.fullName}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-purple-100 pb-2.5">
-                    <span className="text-slate-500 font-semibold">Roll Number:</span>
-                    <span className="font-mono font-extrabold text-purple-700 bg-purple-100/60 px-2 py-0.5 rounded border border-purple-200">{formData.rollNo}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-purple-100 pb-2.5">
-                    <span className="text-slate-500 font-semibold">PRN Number:</span>
-                    <span className="font-mono font-extrabold text-slate-800 bg-white px-2 py-0.5 rounded border border-purple-200">{formData.prnNo}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-purple-100 pb-2.5">
-                    <span className="text-slate-500 font-semibold">Course & Branch:</span>
-                    <span className="font-bold text-slate-900">{formData.educationDetails?.course}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-purple-100 pb-2.5">
-                    <span className="text-slate-500 font-semibold">Year & Semester:</span>
-                    <span className="font-bold text-slate-900">{formData.educationDetails?.year} ({formData.educationDetails?.semester})</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500 font-semibold">Gmail ID:</span>
-                    <span className="font-bold text-slate-900">{formData.email}</span>
-                  </div>
-                </div>
+                <p className="text-[11px] text-purple-700 font-semibold">Your mobile number will be printed on official fee receipts.</p>
               </div>
-            ) : (
-              <form onSubmit={handleFormSubmit} className="space-y-4">
-                
+
+              {/* Basic Student Information Inputs */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-extrabold text-slate-700 mb-1">Full Name *</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Student Full Name *</label>
                   <input
                     type="text"
                     required
-                    placeholder="Enter Student Full Name"
-                    value={formData.fullName}
-                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-purple-200 text-xs font-semibold focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:outline-none transition-all"
+                    placeholder="Enter Student Name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:ring-2 focus:ring-purple-500 focus:outline-none"
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1">Roll Number *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. CS2026-042"
-                      value={formData.rollNo}
-                      onChange={(e) => setFormData({ ...formData, rollNo: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-purple-200 text-xs font-mono font-bold text-purple-700 focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:outline-none transition-all"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1">PRN Number *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. 20240325001192"
-                      value={formData.prnNo}
-                      onChange={(e) => setFormData({ ...formData, prnNo: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-purple-200 text-xs font-mono font-bold text-slate-800 focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:outline-none transition-all"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Roll Number</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. CS2026-042"
+                    value={rollNo}
+                    onChange={(e) => setRollNo(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold text-purple-700 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-extrabold text-slate-700 mb-1">Course / Degree *</label>
-                  <select
-                    value={formData.educationDetails?.course}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      educationDetails: { ...formData.educationDetails, course: e.target.value }
-                    })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-purple-200 text-xs font-semibold focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:outline-none transition-all bg-white"
-                  >
-                    <option>B.Tech Computer Science</option>
-                    <option>B.Tech Information Technology</option>
-                    <option>B.Tech Mechanical Engineering</option>
-                    <option>B.Tech Electronics & Telecom</option>
-                    <option>BCA / MCA</option>
-                  </select>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">PRN Number</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 20240325001192"
+                    value={prnNo}
+                    onChange={(e) => setPrnNo(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                  />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1">Year</label>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Year & Semester</label>
+                  <div className="grid grid-cols-2 gap-2">
                     <select
-                      value={formData.educationDetails?.year}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        educationDetails: { ...formData.educationDetails, year: e.target.value }
-                      })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-purple-200 text-xs font-semibold bg-white"
+                      value={year}
+                      onChange={(e) => setYear(e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white"
                     >
                       <option>1st Year</option>
                       <option>2nd Year</option>
                       <option>3rd Year</option>
                       <option>4th Year</option>
                     </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-extrabold text-slate-700 mb-1">Semester</label>
                     <select
-                      value={formData.educationDetails?.semester}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        educationDetails: { ...formData.educationDetails, semester: e.target.value }
-                      })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-purple-200 text-xs font-semibold bg-white"
+                      value={semester}
+                      onChange={(e) => setSemester(e.target.value)}
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white"
                     >
                       <option>1st Semester</option>
                       <option>2nd Semester</option>
@@ -343,240 +302,452 @@ export default function StudentDashboard({
                     </select>
                   </div>
                 </div>
+              </div>
 
-                <div>
-                  <label className="block text-xs font-extrabold text-slate-700 mb-1">Mobile Number</label>
-                  <input
-                    type="tel"
-                    placeholder="+91 9876543210"
-                    value={formData.educationDetails?.mobile}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      educationDetails: { ...formData.educationDetails, mobile: e.target.value }
-                    })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-purple-200 text-xs font-semibold focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:outline-none transition-all"
-                  />
-                </div>
-
+              {/* Save & Cancel Buttons */}
+              <div className="flex gap-3 pt-2">
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-purple-700 via-violet-600 to-pink-600 hover:from-purple-800 hover:to-pink-700 text-white font-extrabold text-xs shadow-lg shadow-purple-600/30 transition-all shimmer-btn"
+                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-purple-700 via-violet-600 to-pink-600 hover:from-purple-800 hover:to-pink-700 text-white font-black text-sm shadow-xl shadow-purple-600/30 transition-all shimmer-btn"
                 >
-                  <Save className="w-4 h-4" />
-                  <span>Save Student Profile Details</span>
+                  <CheckCircle className="w-5 h-5" />
+                  <span>Save Profile Details</span>
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setShowEditForm(false)}
+                  className="px-6 py-4 rounded-2xl border border-slate-300 font-bold text-xs hover:bg-slate-50 transition-colors text-slate-700"
+                >
+                  Cancel
+                </button>
+              </div>
 
-              </form>
-            )}
+            </form>
 
           </div>
+
         </div>
+      )}
 
-        {/* Right Column (7 Cols): 2 Admin-Configured Fee Options & Payment Trigger */}
-        <div className="lg:col-span-7 space-y-6">
+      {/* 🎓 MAIN STUDENT DASHBOARD PAGE */}
+      {!showEditForm && (
+        <div className="space-y-8 animate-fadeIn">
           
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-black text-slate-900">College Fee Structure</h2>
-              <p className="text-xs text-slate-500 font-medium">Select fee option added by Admin and complete Razorpay payment</p>
-            </div>
-            <div className="flex items-center gap-2 bg-gradient-to-r from-purple-50 to-pink-50 text-purple-700 border border-purple-200/80 px-3.5 py-1.5 rounded-2xl text-xs font-extrabold shadow-sm">
-              <ShieldCheck className="w-4 h-4 text-purple-600" />
-              <span>Razorpay Verified</span>
-            </div>
-          </div>
-
-          {/* Fee Cards Grid (2 Options as explicitly requested) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* 📋 SECTION 1: Student Information Display Card (with Mobile Number) */}
+          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-purple-200 shadow-sm glass-panel-glow relative overflow-hidden">
             
-            {/* OPTION 1: Tuition Fee */}
-            <div className={`relative bg-white rounded-3xl p-6 border transition-all card-hover-3d glass-panel-glow ${
-              isTuitionPaid ? 'border-emerald-300 ring-2 ring-emerald-500/20' : 'border-purple-200/80'
-            }`}>
-              
-              {/* Badge */}
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
-                  Option 1
-                </span>
-                {isTuitionPaid ? (
-                  <span className="bg-emerald-500 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
-                    <CheckCircle className="w-3 h-3" /> PAID
-                  </span>
-                ) : (
-                  <span className="bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-black uppercase px-2.5 py-1 rounded-full flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> Mandatory
-                  </span>
-                )}
-              </div>
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500"></div>
 
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-100 text-purple-600 flex items-center justify-center font-bold mb-4 shadow-sm border border-purple-200/60">
-                <CreditCard className="w-7 h-7 text-purple-600" />
-              </div>
-
-              <h3 className="text-xl font-black text-slate-900 mb-1">Tuition Fee</h3>
-              <p className="text-xs text-slate-500 font-medium mb-5 min-h-[32px]">
-                {feesConfig.tuitionDescription}
-              </p>
-
-              <div className="p-4 bg-purple-50/50 rounded-2xl border border-purple-100 mb-6">
-                <div className="flex items-baseline justify-between mb-1">
-                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Amount</span>
-                  <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-pink-600">
-                    ₹{feesConfig.tuitionFee?.toLocaleString('en-IN')}
-                  </span>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-purple-100">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 text-white flex items-center justify-center font-black text-lg shadow-md shadow-purple-500/20">
+                  <User className="w-6 h-6" />
                 </div>
-                <div className="flex items-center gap-1 text-[11px] text-amber-700 font-bold pt-1 border-t border-purple-100">
-                  <Clock className="w-3 h-3 text-amber-600" /> Due Date: {feesConfig.tuitionDueDate}
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-xl font-black text-slate-900">Student Profile Information</h2>
+                    <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Active Student
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium">Verified details linked to mobile number</p>
                 </div>
               </div>
 
-              {isTuitionPaid ? (
-                <button
-                  onClick={() => onViewInvoice(tuitionPaymentRecord)}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-extrabold text-xs border border-emerald-200/80 transition-all shadow-sm"
-                >
-                  <Download className="w-4 h-4 text-emerald-600" />
-                  <span>Download Paid Fee Receipt</span>
-                </button>
-              ) : (
-                <button
-                  onClick={() => onInitiatePayment({
-                    feeType: 'tuitionFee',
-                    feeTitle: 'Tuition Fee',
-                    amount: feesConfig.tuitionFee
-                  })}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-purple-700 via-violet-600 to-pink-600 hover:from-purple-800 hover:to-pink-700 text-white font-black text-xs shadow-lg shadow-purple-600/30 transition-all shimmer-btn"
-                >
-                  <span>Pay ₹{feesConfig.tuitionFee?.toLocaleString('en-IN')} via Razorpay</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              )}
+              <button
+                onClick={() => setShowEditForm(true)}
+                className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-extrabold text-purple-700 hover:bg-purple-50 rounded-xl transition-colors border border-purple-200"
+              >
+                <Edit3 className="w-4 h-4 text-purple-600" />
+                <span>Update Mobile / Profile</span>
+              </button>
             </div>
 
-            {/* OPTION 2: College Fee */}
-            <div className={`relative bg-white rounded-3xl p-6 border transition-all card-hover-3d glass-panel-glow ${
-              isCollegePaid ? 'border-emerald-300 ring-2 ring-emerald-500/20' : 'border-purple-200/80'
-            }`}>
+            {/* Unified Single Profile Box */}
+            <div className="mt-5 p-5 bg-gradient-to-r from-purple-50/90 via-pink-50/50 to-purple-50/90 rounded-2xl border-2 border-purple-200 divide-y sm:divide-y-0 sm:divide-x divide-purple-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-0 shadow-sm">
               
-              {/* Badge */}
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-pink-50 text-pink-700 border border-pink-200">
-                  Option 2
-                </span>
-                {isCollegePaid ? (
-                  <span className="bg-emerald-500 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
-                    <CheckCircle className="w-3 h-3" /> PAID
-                  </span>
-                ) : (
-                  <span className="bg-purple-50 text-purple-700 border border-purple-200 text-[10px] font-black uppercase px-2.5 py-1 rounded-full flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> Annual
-                  </span>
-                )}
+              {/* Item 1: Student Full Name */}
+              <div className="sm:pr-5 space-y-1">
+                <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-purple-600" /> Student Full Name
+                </p>
+                <p className="text-base font-black text-slate-900 truncate">{fullName || 'Sakshi Patil'}</p>
               </div>
 
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-50 to-purple-100 text-pink-600 flex items-center justify-center font-bold mb-4 shadow-sm border border-pink-200/60">
-                <Award className="w-7 h-7 text-pink-600" />
-              </div>
-
-              <h3 className="text-xl font-black text-slate-900 mb-1">College Fee</h3>
-              <p className="text-xs text-slate-500 font-medium mb-5 min-h-[32px]">
-                {feesConfig.collegeDescription}
-              </p>
-
-              <div className="p-4 bg-purple-50/50 rounded-2xl border border-purple-100 mb-6">
-                <div className="flex items-baseline justify-between mb-1">
-                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Amount</span>
-                  <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-700">
-                    ₹{feesConfig.collegeFee?.toLocaleString('en-IN')}
-                  </span>
+              {/* Item 2: Submitted Mobile Number */}
+              <div className="sm:px-5 space-y-1 pt-3 sm:pt-0">
+                <div className="flex items-center justify-between">
+                  <p className="text-[11px] font-extrabold uppercase tracking-wider text-purple-900 flex items-center gap-1.5">
+                    <Phone className="w-3.5 h-3.5 text-purple-600" /> Mobile Number
+                  </p>
+                  <span className="text-[9px] bg-purple-600 text-white font-black px-1.5 py-0.2 rounded">VERIFIED</span>
                 </div>
-                <div className="flex items-center gap-1 text-[11px] text-amber-700 font-bold pt-1 border-t border-purple-100">
-                  <Clock className="w-3 h-3 text-amber-600" /> Due Date: {feesConfig.collegeDueDate}
+                <p className="text-base font-black text-purple-950 font-mono tracking-wide">+91 {mobileInput}</p>
+              </div>
+
+              {/* Item 3: Roll & PRN Number */}
+              <div className="sm:px-5 space-y-1 pt-3 sm:pt-0">
+                <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">Roll & PRN Number</p>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-xs font-mono font-bold text-purple-700 bg-purple-100/90 px-2 py-0.5 rounded">{rollNo || 'CS2026-042'}</span>
+                  <span className="text-xs font-mono font-bold text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200">{prnNo || '20240325001192'}</span>
                 </div>
               </div>
 
-              {isCollegePaid ? (
-                <button
-                  onClick={() => onViewInvoice(collegePaymentRecord)}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-extrabold text-xs border border-emerald-200/80 transition-all shadow-sm"
-                >
-                  <Download className="w-4 h-4 text-emerald-600" />
-                  <span>Download Paid Fee Receipt</span>
-                </button>
-              ) : (
-                <button
-                  onClick={() => onInitiatePayment({
-                    feeType: 'collegeFee',
-                    feeTitle: 'College Fee',
-                    amount: feesConfig.collegeFee
-                  })}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-black text-xs shadow-lg shadow-purple-600/30 transition-all shimmer-btn"
-                >
-                  <span>Pay ₹{feesConfig.collegeFee?.toLocaleString('en-IN')} via Razorpay</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              )}
+              {/* Item 4: Course & Branch */}
+              <div className="sm:pl-5 space-y-0.5 pt-3 sm:pt-0">
+                <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">Selected Course & Branch</p>
+                <p className="text-xs font-black text-slate-900">{selectedCourse}</p>
+                <p className="text-xs font-extrabold text-purple-700 truncate">{selectedBranch}</p>
+              </div>
+
             </div>
 
           </div>
 
-          {/* Payment History Table */}
-          <div className="bg-white rounded-3xl p-6 border border-purple-200/80 shadow-sm glass-panel-glow">
-            <div className="flex items-center justify-between mb-5">
-              <div>
-                <h3 className="text-base font-black text-slate-900">My Fee Payment Receipts & Audit History</h3>
-                <p className="text-xs text-slate-500 font-medium">All completed Razorpay payment receipts</p>
+          {/* 📚 SECTION 2: Course Dropdown & Branch Radio Buttons Selection */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-200/80 shadow-sm glass-panel-glow space-y-6">
+            
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-purple-100">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 text-white flex items-center justify-center font-bold shadow-md shadow-purple-500/20">
+                  <BookOpen className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-slate-900">Academic Course & Branch Selection</h3>
+                  <p className="text-xs text-slate-500 font-medium">Select your program from the dropdown below and choose your branch</p>
+                </div>
               </div>
-              <span className="text-xs font-black text-purple-700 bg-purple-50 px-3 py-1 rounded-full border border-purple-200">
-                {myPayments.length} Completed
-              </span>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black text-purple-700 bg-purple-50 px-3.5 py-1.5 rounded-full border border-purple-200">
+                  Current Program: <span className="text-pink-600">{selectedCourse}</span>
+                </span>
+              </div>
             </div>
 
-            {myPayments.length === 0 ? (
-              <div className="text-center py-10 text-slate-400 bg-purple-50/30 rounded-2xl border border-dashed border-purple-200 space-y-2">
-                <CreditCard className="w-10 h-10 mx-auto opacity-40 text-purple-400" />
-                <p className="text-xs font-extrabold text-slate-600">No payment history found yet.</p>
-                <p className="text-[11px] text-slate-400 max-w-sm mx-auto">Select any of the fee options above to initiate your instant Razorpay payment.</p>
+            {/* STEP 1: Course Selection Dropdown Bar */}
+            <div className="bg-purple-50/50 p-4 sm:p-5 rounded-2xl border border-purple-100 space-y-2">
+              <label className="block text-xs font-black uppercase tracking-wider text-purple-900 flex items-center gap-2">
+                <Layers className="w-4 h-4 text-purple-600" />
+                <span>Step 1: Select Academic Course *</span>
+              </label>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                <div className="md:col-span-8">
+                  <select
+                    value={selectedCourse}
+                    onChange={(e) => handleCourseChange(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-purple-300 text-sm font-extrabold text-slate-900 bg-white focus:ring-4 focus:ring-purple-500/20 focus:border-purple-600 focus:outline-none transition-all cursor-pointer shadow-sm"
+                  >
+                    <option value="Engineering">Engineering (B.Tech / B.E.)</option>
+                    <option value="Polytechnic">Polytechnic (Diploma)</option>
+                    <option value="Pharmacy">Pharmacy (B.Pharm / D.Pharm)</option>
+                  </select>
+                </div>
+                <div className="md:col-span-4 text-xs font-bold text-purple-700 bg-white p-3 rounded-xl border border-purple-200 text-center">
+                  🎓 {selectedCourse === 'Engineering' ? '6 Branches Available' : 'Direct Program Selected'}
+                </div>
+              </div>
+            </div>
+
+            {/* STEP 2: Branch Selection Radio Buttons (For Engineering) */}
+            {selectedCourse === 'Engineering' ? (
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-pink-600" />
+                    <span>Step 2: Select Engineering Branch (Radio Buttons) *</span>
+                  </label>
+                  <span className="text-[11px] font-extrabold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200">
+                    Click card to select
+                  </span>
+                </div>
+
+                {/* Symmetric 3-Column Radio Cards Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                  {(COURSE_BRANCHES['Engineering'] || []).map((branchObj) => {
+                    const isSelected = selectedBranch === branchObj.label || 
+                      (selectedBranch && branchObj.label.toLowerCase().includes(selectedBranch.toLowerCase()));
+
+                    return (
+                      <label
+                        key={branchObj.id}
+                        onClick={() => {
+                          setSelectedBranch(branchObj.label);
+                          // Auto save profile branch update
+                          onSaveStudent({
+                            ...existingProfile,
+                            email: currentUser?.email || existingProfile?.email,
+                            fullName: fullName || existingProfile?.fullName,
+                            rollNo: rollNo || existingProfile?.rollNo,
+                            prnNo: prnNo || existingProfile?.prnNo,
+                            mobile: mobileInput,
+                            branch: branchObj.label,
+                            course: selectedCourse,
+                            educationDetails: {
+                              course: selectedCourse,
+                              branch: branchObj.label,
+                              year,
+                              semester,
+                              mobile: mobileInput
+                            }
+                          });
+                        }}
+                        className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer select-none ${
+                          isSelected
+                            ? 'bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border-purple-600 shadow-md ring-2 ring-purple-500/20'
+                            : 'bg-white border-slate-200 hover:border-purple-300 hover:bg-purple-50/20'
+                        }`}
+                      >
+                        {/* Radio Dot Input */}
+                        <input
+                          type="radio"
+                          name="studentBranchSelection"
+                          value={branchObj.label}
+                          checked={isSelected}
+                          onChange={() => {}}
+                          className="w-4.5 h-4.5 text-purple-600 focus:ring-purple-500 border-slate-300 cursor-pointer accent-purple-600 shrink-0"
+                        />
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1.5">
+                            <span className={`text-xs font-black truncate ${isSelected ? 'text-purple-900' : 'text-slate-800'}`}>
+                              {branchObj.label}
+                            </span>
+                            <span className={`text-[10px] font-mono font-extrabold px-2 py-0.5 rounded shrink-0 ${
+                              isSelected ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-600'
+                            }`}>
+                              {branchObj.code}
+                            </span>
+                          </div>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-purple-50/70 text-purple-900 font-bold uppercase border-b border-purple-200">
-                    <tr>
-                      <th className="py-3.5 px-4">Fee Particular</th>
-                      <th className="py-3.5 px-4">Razorpay Payment ID</th>
-                      <th className="py-3.5 px-4">Amount</th>
-                      <th className="py-3.5 px-4">Payment Method</th>
-                      <th className="py-3.5 px-4 text-right">Receipt</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-purple-100 font-medium">
-                    {myPayments.map((pay) => (
-                      <tr key={pay.id} className="hover:bg-purple-50/50 transition-colors">
-                        <td className="py-3.5 px-4 font-black text-slate-900">{pay.feeTitle}</td>
-                        <td className="py-3.5 px-4 font-mono text-emerald-700 font-bold bg-emerald-50 px-2">{pay.razorpayPaymentId}</td>
-                        <td className="py-3.5 px-4 font-black text-slate-900">₹{pay.amount.toLocaleString('en-IN')}</td>
-                        <td className="py-3.5 px-4 text-slate-600">{pay.paymentMethod}</td>
-                        <td className="py-3.5 px-4 text-right">
-                          <button
-                            onClick={() => onViewInvoice(pay)}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-purple-900 hover:bg-slate-900 text-white font-bold text-[11px] shadow-sm transition-all"
-                          >
-                            <Download className="w-3.5 h-3.5 text-emerald-400" /> Invoice
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-5 rounded-2xl border border-purple-200 flex items-center gap-3">
+                <CheckCircle2 className="w-6 h-6 text-purple-600 shrink-0" />
+                <div>
+                  <h4 className="text-sm font-black text-purple-900">{selectedCourse} Program Selected</h4>
+                  <p className="text-xs text-purple-700 font-semibold">
+                    Standard curriculum course layout active. Sub-branch radio buttons are applicable for Engineering.
+                  </p>
+                </div>
               </div>
             )}
+
+          </div>
+
+          {/* 💳 SECTION 3: Exam Fee & Tuition Fee Display & Razorpay Checkout */}
+          <div className="space-y-6">
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-black text-slate-900">Academic Fee Structure & Payment Options</h3>
+                <p className="text-xs text-slate-500 font-medium">Exam Fee & Tuition Fee configured for session {feesConfig.academicYear || '2026-2027'}</p>
+              </div>
+              <div className="flex items-center gap-2 bg-gradient-to-r from-purple-50 to-pink-50 text-purple-700 border border-purple-200 px-3.5 py-1.5 rounded-2xl text-xs font-extrabold shadow-sm">
+                <ShieldCheck className="w-4 h-4 text-purple-600" />
+                <span>Razorpay Gateway Verified</span>
+              </div>
+            </div>
+
+            {/* Fee Cards Grid (Exam Fee & Tuition Fee) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              
+              {/* CARD 1: EXAM FEE */}
+              <div className={`relative bg-white rounded-3xl p-6 border transition-all glass-panel-glow flex flex-col justify-between ${
+                isExamPaid ? 'border-emerald-300 ring-2 ring-emerald-500/20' : 'border-purple-200'
+              }`}>
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+                      Exam Fee
+                    </span>
+                    {isExamPaid ? (
+                      <span className="bg-emerald-500 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                        <CheckCircle className="w-3 h-3" /> PAID
+                      </span>
+                    ) : (
+                      <span className="bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-black uppercase px-2.5 py-1 rounded-full flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> Due Soon
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-100 text-indigo-700 flex items-center justify-center font-bold mb-4 shadow-sm border border-indigo-200">
+                    <FileText className="w-6 h-6 text-indigo-600" />
+                  </div>
+
+                  <h4 className="text-xl font-black text-slate-900 mb-1">Exam Fee</h4>
+                  <p className="text-xs text-slate-500 font-medium mb-4 min-h-[32px]">
+                    {feesConfig.examDescription || 'Semester Examination & Hall Ticket Fee'}
+                  </p>
+
+                  <div className="p-3.5 bg-indigo-50/50 rounded-2xl border border-indigo-100 mb-5">
+                    <div className="flex items-baseline justify-between mb-1">
+                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Amount</span>
+                      <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-purple-700">
+                        ₹{examAmount.toLocaleString('en-IN')}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1 text-[11px] text-indigo-700 font-bold pt-1 border-t border-indigo-100">
+                      <Clock className="w-3 h-3 text-indigo-600" /> Due: {feesConfig.examDueDate || '2026-08-25'}
+                    </div>
+                  </div>
+                </div>
+
+                {isExamPaid ? (
+                  <button
+                    onClick={() => onViewInvoice(examPaymentRecord)}
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-extrabold text-xs border border-emerald-200 transition-all shadow-sm"
+                  >
+                    <Download className="w-4 h-4 text-emerald-600" />
+                    <span>Download Exam Fee Receipt</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => onInitiatePayment({
+                      feeType: 'examFee',
+                      feeTitle: 'Exam Fee',
+                      amount: examAmount
+                    })}
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-600 hover:from-indigo-800 hover:to-pink-700 text-white font-black text-xs shadow-lg shadow-indigo-600/30 transition-all shimmer-btn"
+                  >
+                    <span>Pay ₹{examAmount.toLocaleString('en-IN')} via Razorpay</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+
+              {/* CARD 2: TUITION FEE */}
+              <div className={`relative bg-white rounded-3xl p-6 border transition-all glass-panel-glow flex flex-col justify-between ${
+                isTuitionPaid ? 'border-emerald-300 ring-2 ring-emerald-500/20' : 'border-purple-200'
+              }`}>
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
+                      Tuition Fee
+                    </span>
+                    {isTuitionPaid ? (
+                      <span className="bg-emerald-500 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                        <CheckCircle className="w-3 h-3" /> PAID
+                      </span>
+                    ) : (
+                      <span className="bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-black uppercase px-2.5 py-1 rounded-full flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> Mandatory
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-100 text-purple-600 flex items-center justify-center font-bold mb-4 shadow-sm border border-purple-200">
+                    <CreditCard className="w-6 h-6 text-purple-600" />
+                  </div>
+
+                  <h4 className="text-xl font-black text-slate-900 mb-1">Tuition Fee</h4>
+                  <p className="text-xs text-slate-500 font-medium mb-4 min-h-[32px]">
+                    {feesConfig.tuitionDescription || 'Semester Tuition & Academic Fee'}
+                  </p>
+
+                  <div className="p-3.5 bg-purple-50/50 rounded-2xl border border-purple-100 mb-5">
+                    <div className="flex items-baseline justify-between mb-1">
+                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Amount</span>
+                      <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-pink-600">
+                        ₹{tuitionAmount.toLocaleString('en-IN')}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1 text-[11px] text-purple-700 font-bold pt-1 border-t border-purple-100">
+                      <Clock className="w-3 h-3 text-purple-600" /> Due: {feesConfig.tuitionDueDate || '2026-08-15'}
+                    </div>
+                  </div>
+                </div>
+
+                {isTuitionPaid ? (
+                  <button
+                    onClick={() => onViewInvoice(tuitionPaymentRecord)}
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-extrabold text-xs border border-emerald-200 transition-all shadow-sm"
+                  >
+                    <Download className="w-4 h-4 text-emerald-600" />
+                    <span>Download Tuition Fee Receipt</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => onInitiatePayment({
+                      feeType: 'tuitionFee',
+                      feeTitle: 'Tuition Fee',
+                      amount: tuitionAmount
+                    })}
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-purple-700 via-violet-600 to-pink-600 hover:from-purple-800 hover:to-pink-700 text-white font-black text-xs shadow-lg shadow-purple-600/30 transition-all shimmer-btn"
+                  >
+                    <span>Pay ₹{tuitionAmount.toLocaleString('en-IN')} via Razorpay</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+
+            </div>
+
+            {/* Payment History Table */}
+            <div className="bg-white rounded-3xl p-6 border border-purple-200 shadow-sm glass-panel-glow">
+              <div className="flex items-center justify-between mb-5">
+                <div>
+                  <h3 className="text-base font-black text-slate-900">Fee Payment History & PDF Receipts</h3>
+                  <p className="text-xs text-slate-500 font-medium">All completed Razorpay payment receipts for this student profile</p>
+                </div>
+                <span className="text-xs font-black text-purple-700 bg-purple-50 px-3 py-1 rounded-full border border-purple-200">
+                  {myPayments.length} Receipts
+                </span>
+              </div>
+
+              {myPayments.length === 0 ? (
+                <div className="text-center py-10 text-slate-400 bg-purple-50/30 rounded-2xl border border-dashed border-purple-200 space-y-2">
+                  <CreditCard className="w-10 h-10 mx-auto opacity-40 text-purple-400" />
+                  <p className="text-xs font-extrabold text-slate-600">No fee payment receipts available yet.</p>
+                  <p className="text-[11px] text-slate-400 max-w-sm mx-auto">Select Exam Fee or Tuition Fee above to make your payment via Razorpay.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-purple-50/80 text-purple-950 font-bold uppercase border-b border-purple-200">
+                      <tr>
+                        <th className="py-3.5 px-4">Fee Description</th>
+                        <th className="py-3.5 px-4">Razorpay Payment ID</th>
+                        <th className="py-3.5 px-4">Amount Paid</th>
+                        <th className="py-3.5 px-4">Method</th>
+                        <th className="py-3.5 px-4 text-right">PDF Invoice</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-purple-100 font-medium">
+                      {myPayments.map((pay) => (
+                        <tr key={pay.id} className="hover:bg-purple-50/50 transition-colors">
+                          <td className="py-3.5 px-4 font-black text-slate-900">{pay.feeTitle}</td>
+                          <td className="py-3.5 px-4 font-mono text-emerald-700 font-bold bg-emerald-50 px-2">{pay.razorpayPaymentId}</td>
+                          <td className="py-3.5 px-4 font-black text-slate-900">₹{pay.amount?.toLocaleString('en-IN')}</td>
+                          <td className="py-3.5 px-4 text-slate-600">{pay.paymentMethod}</td>
+                          <td className="py-3.5 px-4 text-right">
+                            <button
+                              onClick={() => onViewInvoice(pay)}
+                              className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-purple-900 hover:bg-slate-900 text-white font-bold text-[11px] shadow-sm transition-all"
+                            >
+                              <Download className="w-3.5 h-3.5 text-emerald-400" /> Print Receipt
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
           </div>
 
         </div>
-
-      </div>
+      )}
 
     </div>
   );

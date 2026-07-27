@@ -12,9 +12,12 @@ const DEFAULT_FEES_CONFIG = {
   tuitionFee: 45000,
   tuitionDueDate: '2026-08-15',
   tuitionDescription: 'Semester 5 Tuition & Academic Fee',
+  examFee: 2500,
+  examDueDate: '2026-08-25',
+  examDescription: 'Semester Examination & Hall Ticket Fee',
   collegeFee: 15000,
   collegeDueDate: '2026-08-30',
-  collegeDescription: 'Library, Lab, Gymkhana & Exam Fee',
+  collegeDescription: 'Library, Lab, Gymkhana & Activity Fee',
   academicYear: '2026-2027',
   updatedAt: new Date().toISOString()
 };
@@ -96,7 +99,12 @@ const DEFAULT_PAYMENTS = [
 
 export const getFeesConfig = () => {
   const saved = localStorage.getItem(STORAGE_KEYS.FEES_CONFIG);
-  return saved ? JSON.parse(saved) : DEFAULT_FEES_CONFIG;
+  if (!saved) return DEFAULT_FEES_CONFIG;
+  try {
+    return { ...DEFAULT_FEES_CONFIG, ...JSON.parse(saved) };
+  } catch (e) {
+    return DEFAULT_FEES_CONFIG;
+  }
 };
 
 export const saveFeesConfig = (config) => {

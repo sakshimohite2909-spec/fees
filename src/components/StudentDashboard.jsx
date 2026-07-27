@@ -322,60 +322,6 @@ export default function StudentDashboard({
                   )}
                 </div>
 
-                {/* 5. Roll Number */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Roll Number</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. CS2026-042"
-                    value={rollNo}
-                    onChange={(e) => setRollNo(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold text-purple-700 focus:ring-2 focus:ring-purple-500 focus:outline-none bg-white"
-                  />
-                </div>
-
-                {/* 6. PRN Number */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">PRN Number</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 20240325001192"
-                    value={prnNo}
-                    onChange={(e) => setPrnNo(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none bg-white"
-                  />
-                </div>
-
-                {/* 7. Year & Semester */}
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Year & Semester</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <select
-                      value={year}
-                      onChange={(e) => setYear(e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white cursor-pointer"
-                    >
-                      <option>1st Year</option>
-                      <option>2nd Year</option>
-                      <option>3rd Year</option>
-                      <option>4th Year</option>
-                    </select>
-                    <select
-                      value={semester}
-                      onChange={(e) => setSemester(e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white cursor-pointer"
-                    >
-                      <option>1st Semester</option>
-                      <option>2nd Semester</option>
-                      <option>3rd Semester</option>
-                      <option>4th Semester</option>
-                      <option>5th Semester</option>
-                      <option>6th Semester</option>
-                      <option>7th Semester</option>
-                      <option>8th Semester</option>
-                    </select>
-                  </div>
-                </div>
               </div>
 
               {/* Submit Button */}
@@ -440,7 +386,7 @@ export default function StudentDashboard({
             </div>
 
             {/* Unified Single Profile Box */}
-            <div className="mt-5 p-5 bg-gradient-to-r from-purple-50/90 via-pink-50/50 to-purple-50/90 rounded-2xl border-2 border-purple-200 divide-y sm:divide-y-0 sm:divide-x divide-purple-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-0 shadow-sm">
+            <div className="mt-5 p-5 bg-gradient-to-r from-purple-50/90 via-pink-50/50 to-purple-50/90 rounded-2xl border-2 border-purple-200 divide-y sm:divide-y-0 sm:divide-x divide-purple-200 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-0 shadow-sm">
               
               {/* Item 1: Student Full Name */}
               <div className="sm:pr-5 space-y-1">
@@ -461,16 +407,7 @@ export default function StudentDashboard({
                 <p className="text-base font-black text-purple-950 font-mono tracking-wide">+91 {mobileInput}</p>
               </div>
 
-              {/* Item 3: Roll & PRN Number */}
-              <div className="sm:px-5 space-y-1 pt-3 sm:pt-0">
-                <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">Roll & PRN Number</p>
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-xs font-mono font-bold text-purple-700 bg-purple-100/90 px-2 py-0.5 rounded">{rollNo || 'CS2026-042'}</span>
-                  <span className="text-xs font-mono font-bold text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200">{prnNo || '20240325001192'}</span>
-                </div>
-              </div>
-
-              {/* Item 4: Course & Branch */}
+              {/* Item 3: Course & Branch */}
               <div className="sm:pl-5 space-y-0.5 pt-3 sm:pt-0">
                 <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">Selected Course & Branch</p>
                 <p className="text-xs font-black text-slate-900">{selectedCourse}</p>

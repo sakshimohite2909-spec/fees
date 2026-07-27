@@ -56,23 +56,25 @@ export default function Navbar({ currentUser, activeRole, onSwitchRole, onOpenAu
             </button>
           </div>
 
-          {/* User Account Controls */}
+          {/* User Account Controls & Logout Button */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {currentUser && (
-              <div className="flex items-center gap-2 sm:gap-3 bg-purple-50/50 pl-2.5 sm:pl-3.5 pr-1.5 sm:pr-2 py-1 sm:py-1.5 rounded-2xl border border-purple-200/80 shadow-sm">
-                <div className="text-right hidden sm:block">
-                  <p className="text-xs font-black text-slate-900">{currentUser.fullName || currentUser.email.split('@')[0]}</p>
-                  <p className="text-[10px] text-purple-600 font-semibold">{currentUser.email}</p>
+              <div className="flex items-center gap-2 sm:gap-2.5 bg-purple-50/60 pl-3 pr-1.5 py-1 rounded-xl border border-purple-200/80 shadow-xs">
+                <div className="text-right">
+                  <p className="text-xs sm:text-sm font-black text-slate-900 leading-none">
+                    {currentUser.fullName || 'Student'}
+                  </p>
                 </div>
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center font-black text-white text-xs sm:text-sm shadow-md shadow-purple-500/20">
-                  {(currentUser.fullName?.[0] || currentUser.email[0]).toUpperCase()}
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center font-black text-white text-xs shadow-xs">
+                  {(currentUser.fullName?.[0] || 'S').toUpperCase()}
                 </div>
                 <button
                   onClick={onLogout}
                   title="Logout"
-                  className="p-1.5 sm:p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-xs border border-rose-200 transition-all cursor-pointer shadow-2xs"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="w-3.5 h-3.5 text-rose-600" />
+                  <span>Logout</span>
                 </button>
               </div>
             )}

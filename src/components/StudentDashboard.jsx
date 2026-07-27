@@ -164,11 +164,10 @@ export default function StudentDashboard({
     }
   };
 
-  // Open New Student Registration Form with a clean blank form!
+  // Open New Student Registration Form with a 100% clean blank form!
   const handleOpenNewStudentRegistration = () => {
     setFullName('');
-    const digitsOnly = searchQueryInput.replace(/\D/g, '');
-    setMobileInput(digitsOnly.length === 10 ? digitsOnly : '');
+    setMobileInput('');
     setSelectedCourse('Engineering');
     setSelectedBranch('Computer Engineering');
     setShowRegistrationForm(true);

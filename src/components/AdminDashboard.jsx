@@ -204,10 +204,14 @@ export default function AdminDashboard({
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">Fee Amount (₹)</label>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     required
-                    value={configForm.examFee || 2500}
-                    onChange={(e) => setConfigForm({ ...configForm, examFee: Number(e.target.value) })}
+                    value={configForm.examFee ?? 2500}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      setConfigForm({ ...configForm, examFee: val ? Number(val) : '' });
+                    }}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-indigo-200 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                   />
                 </div>
@@ -233,10 +237,14 @@ export default function AdminDashboard({
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">Fee Amount (₹)</label>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     required
-                    value={configForm.tuitionFee}
-                    onChange={(e) => setConfigForm({ ...configForm, tuitionFee: Number(e.target.value) })}
+                    value={configForm.tuitionFee ?? 45000}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      setConfigForm({ ...configForm, tuitionFee: val ? Number(val) : '' });
+                    }}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-purple-200 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-purple-500 focus:outline-none"
                   />
                 </div>
@@ -262,10 +270,14 @@ export default function AdminDashboard({
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">Fee Amount (₹)</label>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     required
-                    value={configForm.collegeFee}
-                    onChange={(e) => setConfigForm({ ...configForm, collegeFee: Number(e.target.value) })}
+                    value={configForm.collegeFee ?? 12000}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      setConfigForm({ ...configForm, collegeFee: val ? Number(val) : '' });
+                    }}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-pink-200 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-pink-500 focus:outline-none"
                   />
                 </div>

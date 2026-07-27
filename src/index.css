@@ -111,6 +111,17 @@
   border-color: rgba(192, 132, 252, 0.9);
 }
 
+/* Hide HTML5 Number Input Spinners (▲▼) Globally */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 /* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;

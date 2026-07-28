@@ -221,7 +221,7 @@ export default function StudentDashboard({
       
       {/* 📱 STEP 1: MOBILE NUMBER SEARCH INPUT */}
       {step === 'mobile' && (
-        <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm relative overflow-hidden animate-fadeIn max-w-xl mx-auto">
+        <div className="card-interactive p-6 sm:p-8 relative overflow-hidden animate-fadeIn max-w-xl mx-auto">
           <div className="space-y-6">
             
             <div className="flex items-center gap-3 border-b border-slate-100 pb-4">

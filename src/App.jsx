@@ -160,7 +160,10 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans relative">
+    <div 
+      className="min-h-screen text-slate-800 flex flex-col font-sans relative bg-cover bg-center bg-no-repeat bg-fixed"
+      style={{ backgroundImage: `linear-gradient(to bottom, rgba(248, 250, 252, 0.88), rgba(248, 250, 252, 0.94)), url('/college-bg.png')` }}
+    >
       
       {/* Top Navbar */}
       <Navbar

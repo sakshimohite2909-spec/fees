@@ -66,7 +66,7 @@ export default function StudentDashboard({
   const [isMobileSubmitted, setIsMobileSubmitted] = useState(!!currentUser && !!existingProfile?.mobile);
   const [showEditForm, setShowEditForm] = useState(false);
 
-  // Sync state if currentUser changes or when user logs out
+  // Sync state if currentUser changes
   useEffect(() => {
     if (currentUser && existingProfile) {
       setMobileInput(existingProfile.mobile || existingProfile.educationDetails?.mobile || '');
@@ -79,14 +79,6 @@ export default function StudentDashboard({
       setSemester(existingProfile.educationDetails?.semester || '5th Semester');
       setIsMobileSubmitted(true);
       setStep('dashboard');
-    } else if (!currentUser) {
-      setIsMobileSubmitted(false);
-      setShowEditForm(false);
-      setMobileSearchInput('');
-      setFullName('');
-      setMobileInput('');
-      setMatchedStudentRecord(null);
-      setStep('mobile');
     }
   }, [currentUser, existingProfile]);
 

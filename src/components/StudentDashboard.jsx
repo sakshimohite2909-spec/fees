@@ -231,7 +231,7 @@ export default function StudentDashboard({
     <div className="space-y-8 animate-slide-up">
       
       {/* 📱 STEP 1: MOBILE NUMBER SEARCH INPUT */}
-      {(!isMobileSubmitted || showEditForm) && step === 'mobile' && (
+      {step === 'mobile' && (
         <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm relative overflow-hidden animate-fadeIn max-w-xl mx-auto">
           <div className="space-y-6">
             
@@ -279,7 +279,7 @@ export default function StudentDashboard({
       )}
 
       {/* 🎓 STEP 2A: MATCHED EXISTING STUDENT -> SHOW ONLY NAME & SELECT COURSE */}
-      {(!isMobileSubmitted || showEditForm) && step === 'confirm-course' && (
+      {step === 'confirm-course' && (
         <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm relative overflow-hidden animate-fadeIn max-w-xl mx-auto">
           <div className="space-y-5">
             
@@ -367,7 +367,7 @@ export default function StudentDashboard({
       )}
 
       {/* 🆕 STEP 2B: NEW STUDENT REGISTRATION FORM (When mobile number not found) */}
-      {(!isMobileSubmitted || showEditForm) && step === 'new-student' && (
+      {step === 'new-student' && (
         <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm relative overflow-hidden animate-fadeIn max-w-xl mx-auto">
           <div className="space-y-5">
             
@@ -403,8 +403,6 @@ export default function StudentDashboard({
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 />
               </div>
-
-
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">Select Academic Course *</label>
@@ -451,8 +449,8 @@ export default function StudentDashboard({
         </div>
       )}
 
-      {/* 🎓 STEP 2: MAIN STUDENT DASHBOARD PAGE (Visible after Student Search / Login) */}
-      {(isMobileSubmitted && !showEditForm) && (
+      {/* 🎓 STEP 3: MAIN STUDENT DASHBOARD PAGE (Visible after Student Search / Login) */}
+      {step === 'dashboard' && (
         <div className="space-y-6 animate-fadeIn">
 
           {/* 📋 SECTION 1: Student Information Display Card */}

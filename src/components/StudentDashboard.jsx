@@ -85,11 +85,7 @@ export default function StudentDashboard({
   const handleCourseChange = (newCourse) => {
     setSelectedCourse(newCourse);
     if (newCourse === 'Engineering') {
-      const availableBranches = COURSE_BRANCHES['Engineering'];
-      const exists = availableBranches.some(b => b.label === selectedBranch);
-      if (!exists) {
-        setSelectedBranch('Computer Engineering');
-      }
+      setSelectedBranch('');
     } else {
       setSelectedBranch(newCourse);
     }
@@ -140,8 +136,8 @@ export default function StudentDashboard({
     setFullName('');
     setRollNo(`RN-${Math.floor(1000 + Math.random() * 9000)}`);
     setPrnNo(`2026${Math.floor(10000000 + Math.random() * 90000000)}`);
-    setSelectedCourse('Engineering');
-    setSelectedBranch('Computer Engineering');
+    setSelectedCourse('');
+    setSelectedBranch('');
     setStep('new-student');
   };
 
@@ -313,10 +309,12 @@ export default function StudentDashboard({
                   <span>Select Course *</span>
                 </label>
                 <select
+                  required
                   value={selectedCourse}
                   onChange={(e) => handleCourseChange(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-900 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none cursor-pointer"
                 >
+                  <option value="" disabled>-- Select Course --</option>
                   <option value="Engineering">Engineering (B.Tech / B.E.)</option>
                   <option value="Polytechnic">Polytechnic (Diploma)</option>
                   <option value="Pharmacy">Pharmacy (B.Pharm / D.Pharm)</option>
@@ -331,10 +329,12 @@ export default function StudentDashboard({
                     <span>Select Branch *</span>
                   </label>
                   <select
+                    required
                     value={selectedBranch}
                     onChange={(e) => setSelectedBranch(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-900 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none cursor-pointer"
                   >
+                    <option value="" disabled>-- Select Branch --</option>
                     {(COURSE_BRANCHES['Engineering'] || []).map((b) => (
                       <option key={b.id} value={b.label}>
                         {b.label} ({b.code})
@@ -399,10 +399,12 @@ export default function StudentDashboard({
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">Select Academic Course *</label>
                 <select
+                  required
                   value={selectedCourse}
                   onChange={(e) => handleCourseChange(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-900 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none cursor-pointer"
                 >
+                  <option value="" disabled>-- Select Course --</option>
                   <option value="Engineering">Engineering (B.Tech / B.E.)</option>
                   <option value="Polytechnic">Polytechnic (Diploma)</option>
                   <option value="Pharmacy">Pharmacy (B.Pharm / D.Pharm)</option>
@@ -414,10 +416,12 @@ export default function StudentDashboard({
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">Select Branch *</label>
                   <select
+                    required
                     value={selectedBranch}
                     onChange={(e) => setSelectedBranch(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-900 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none cursor-pointer"
                   >
+                    <option value="" disabled>-- Select Branch --</option>
                     {(COURSE_BRANCHES['Engineering'] || []).map((b) => (
                       <option key={b.id} value={b.label}>
                         {b.label} ({b.code})

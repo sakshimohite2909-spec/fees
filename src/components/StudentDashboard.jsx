@@ -562,9 +562,42 @@ export default function StudentDashboard({
                 <h3 className="text-base sm:text-lg font-bold text-slate-900">Fee Structure & Payments</h3>
                 <p className="text-xs text-slate-500 font-medium">Exam Fee & Tuition Fee for session {feesConfig.academicYear || '2026-2027'}</p>
               </div>
-              <div className="flex items-center gap-1.5 bg-indigo-50/70 text-indigo-700 border border-indigo-100 px-3 py-1 rounded-full text-xs font-semibold shrink-0">
+              <div className="flex items-center gap-1.5 bg-indigo-50/90 text-indigo-700 border border-indigo-200/80 px-3 py-1 rounded-full text-xs font-semibold shrink-0 shadow-2xs">
                 <ShieldCheck className="w-4 h-4 text-emerald-600" />
                 <span>Razorpay Secured</span>
+              </div>
+            </div>
+
+            {/* 📊 Summary Stat Mini-Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="card-interactive p-3.5 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Academic Fee</p>
+                  <p className="text-base font-extrabold text-slate-900 mt-0.5">₹{totalFeesDue.toLocaleString('en-IN')}</p>
+                </div>
+                <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0">
+                  <CreditCard className="w-4 h-4 text-slate-600" />
+                </div>
+              </div>
+
+              <div className="card-interactive p-3.5 flex items-center justify-between border-emerald-200/70 bg-emerald-50/20">
+                <div>
+                  <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">Total Paid</p>
+                  <p className="text-base font-extrabold text-emerald-700 mt-0.5">₹{totalPaidAmount.toLocaleString('en-IN')}</p>
+                </div>
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs shrink-0">
+                  <CheckCircle className="w-4 h-4 text-emerald-600" />
+                </div>
+              </div>
+
+              <div className="card-interactive p-3.5 flex items-center justify-between border-amber-200/70 bg-amber-50/20">
+                <div>
+                  <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wider">Remaining Dues</p>
+                  <p className="text-base font-extrabold text-amber-700 mt-0.5">₹{remainingDues.toLocaleString('en-IN')}</p>
+                </div>
+                <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0">
+                  <Clock className="w-4 h-4 text-amber-600" />
+                </div>
               </div>
             </div>
 

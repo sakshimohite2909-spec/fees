@@ -80,6 +80,12 @@ export default function StudentDashboard({
       setSemester(existingProfile.educationDetails?.semester || '5th Semester');
       setIsMobileSubmitted(true);
       setStep('dashboard');
+    } else if (!currentUser) {
+      setStep('mobile');
+      setMobileSearchInput('');
+      setMatchedStudentRecord(null);
+      setNotFoundMobile(null);
+      setIsMobileSubmitted(false);
     }
   }, [currentUser, existingProfile]);
 

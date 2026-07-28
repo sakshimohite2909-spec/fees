@@ -75,6 +75,11 @@ export default function App() {
   const handleLogout = () => {
     setLocalCurrentUser(null);
     setCurrentUser(null);
+    setCurrentStep('mobile');
+    if (checkIsAdminPath()) {
+      window.history.pushState(null, '', '/');
+      setActiveRole('student');
+    }
   };
 
   const handleOpenAuth = (mode = 'login') => {

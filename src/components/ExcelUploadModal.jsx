@@ -100,24 +100,23 @@ export default function ExcelUploadModal({ isOpen, onClose, onImportSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-md animate-fadeIn overflow-y-auto">
-      <div className="bg-white rounded-3xl shadow-2xl border border-purple-100 max-w-2xl w-full overflow-hidden soft-shadow my-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/50 backdrop-blur-xs animate-fadeIn overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-2xl w-full overflow-hidden my-auto">
 
-        
         {/* Top Header */}
-        <div className="bg-gradient-to-r from-purple-800 via-violet-700 to-pink-600 p-6 text-white flex items-center justify-between">
+        <div className="bg-slate-50 p-5 text-slate-900 flex items-center justify-between border-b border-slate-200">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center">
-              <FileSpreadsheet className="w-7 h-7 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center">
+              <FileSpreadsheet className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-black tracking-tight">Upload Excel Student Sheet</h2>
-              <p className="text-purple-100 text-xs mt-0.5">Bulk import Name, Mobile Number, PRN No & Branch</p>
+              <h2 className="text-lg font-bold tracking-tight text-slate-900">Upload Excel Student Sheet</h2>
+              <p className="text-slate-500 text-xs mt-0.5 font-medium">Bulk import Name, Mobile Number, PRN No & Branch</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors"
+            className="text-slate-400 hover:text-slate-700 bg-white hover:bg-slate-100 p-2 rounded-full transition-colors border border-slate-200 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>

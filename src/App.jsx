@@ -13,7 +13,18 @@ import {
 } from './utils/storage';
 
 export default function App() {
-  const [activeRole, setActiveRole] = useState('student'); // 'student' | 'admin'
+  // Check URL pathname for /admin
+  const checkIsAdminPath = () => {
+    const path = window.location.pathname.toLowerCase();
+    return path === '/admin' || path.startsWith('/admin');
+  };
+
+  const [activeRole, setActiveRole] = useState(() => {
+    if (checkIsAdminPath()) return 'admin';
+    const user = getCurrentUser();
+    return user?.role || 'student';
+  });
+
   const [currentUser, setLocalCurrentUser] = useState(null);
   
   // Data state
@@ -32,14 +43,33 @@ export default function App() {
     const user = getCurrentUser();
     if (user) {
       setLocalCurrentUser(user);
-      if (user.role) setActiveRole(user.role);
     }
+
+    const syncRoleFromPath = () => {
+      if (checkIsAdminPath()) {
+        setActiveRole('admin');
+      } else {
+        const u = getCurrentUser();
+        setActiveRole(u?.role || 'student');
+      }
+    };
+
+    // Initial check
+    syncRoleFromPath();
+
+    // Listen for back/forward navigation
+    window.addEventListener('popstate', syncRoleFromPath);
+    return () => {
+      window.removeEventListener('popstate', syncRoleFromPath);
+    };
   }, []);
 
   const handleAuthSuccess = (user) => {
     setLocalCurrentUser(user);
     setCurrentUser(user);
-    if (user.role) setActiveRole(user.role);
+    if (user.role) {
+      handleSwitchRole(user.role);
+    }
   };
 
   const handleLogout = () => {
@@ -54,6 +84,15 @@ export default function App() {
 
   const handleSwitchRole = (role) => {
     setActiveRole(role);
+    if (role === 'admin') {
+      if (!checkIsAdminPath()) {
+        window.history.pushState(null, '', '/admin');
+      }
+    } else {
+      if (checkIsAdminPath()) {
+        window.history.pushState(null, '', '/');
+      }
+    }
   };
 
   const handleSaveStudent = (studentData) => {
@@ -121,17 +160,12 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100/70 via-pink-50/60 to-violet-100/70 text-slate-800 flex flex-col font-sans relative overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans relative">
       
-      {/* Background Soft Orbs */}
-      <div className="fixed -top-24 -left-24 w-96 h-96 bg-purple-300/20 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="fixed top-1/2 -right-24 w-96 h-96 bg-pink-300/20 rounded-full blur-3xl pointer-events-none"></div>
-
       {/* Top Navbar */}
       <Navbar
         currentUser={currentUser}
         activeRole={activeRole}
-        onSwitchRole={handleSwitchRole}
         onOpenAuth={handleOpenAuth}
         onLogout={handleLogout}
       />
@@ -164,7 +198,7 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-purple-100 py-6 mt-12">
+      <footer className="bg-white border-t border-slate-200 py-6 mt-12">
         <div className="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 font-medium">
           <p>© 2026 EduPay College Fee Management System. Integrated with Razorpay Payment Gateway & Excel Import.</p>
         </div>

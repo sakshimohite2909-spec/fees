@@ -3,7 +3,7 @@ import {
   CreditCard, CheckCircle, Clock, FileText, 
   Sparkles, Award, ArrowRight, ShieldCheck, Download, Edit3, Save, Check,
   Phone, BookOpen, Layers, Zap, Building2, CheckCircle2, ChevronRight, User, Hash,
-  Search, UserPlus, AlertCircle
+  Search, UserPlus, AlertCircle, X
 } from 'lucide-react';
 
 export default function StudentDashboard({ 

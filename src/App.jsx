@@ -159,8 +159,20 @@ export default function App() {
     setActiveInvoice(newPaymentRecord);
   };
 
+  const [currentStep, setCurrentStep] = useState('mobile');
+  const isHomeScreen = activeRole === 'student' && currentStep !== 'dashboard';
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans relative">
+    <div 
+      className="min-h-screen text-slate-800 flex flex-col font-sans relative bg-slate-50 transition-all duration-300"
+      style={isHomeScreen ? {
+        backgroundImage: `linear-gradient(to bottom, rgba(241, 245, 249, 0.65), rgba(248, 250, 252, 0.75)), url('/college-bg.png')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      } : {}}
+    >
       
       {/* Top Navbar */}
       <Navbar
@@ -171,7 +183,7 @@ export default function App() {
       />
 
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 overflow-x-hidden">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-12 overflow-x-hidden">
         {activeRole === 'student' ? (
           <StudentDashboard
             currentUser={currentUser}
@@ -182,6 +194,7 @@ export default function App() {
             onInitiatePayment={handleInitiatePayment}
             onViewInvoice={(trx) => setActiveInvoice(trx)}
             onOpenAuth={handleOpenAuth}
+            onStepChange={(st) => setCurrentStep(st)}
           />
         ) : (
           <AdminDashboard

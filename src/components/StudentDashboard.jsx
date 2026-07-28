@@ -14,7 +14,8 @@ export default function StudentDashboard({
   onSaveStudent, 
   onInitiatePayment,
   onViewInvoice,
-  onOpenAuth 
+  onOpenAuth,
+  onStepChange
 }) {
   // Course & Branch mapping structure (Only Engineering has sub-branches with radio buttons)
   const COURSE_BRANCHES = {
@@ -216,17 +217,16 @@ export default function StudentDashboard({
   const remainingDues = Math.max(0, totalFeesDue - totalPaidAmount);
   const completionPercentage = Math.min(100, Math.round((totalPaidAmount / totalFeesDue) * 100));
 
+  // Notify parent component of current wizard step
+  useEffect(() => {
+    onStepChange?.(step);
+  }, [step, onStepChange]);
+
   return (
     <div className="space-y-8 animate-slide-up">
       
-      {/* 🏠 FULL SIZE HOME PAGE LANDING / VERIFICATION SECTION (Background Image Full Screen) */}
-      {(step === 'mobile' || step === 'confirm-course' || step === 'new-student') && (
-        <div 
-          className="fixed inset-0 top-14 sm:top-16 z-20 flex flex-col justify-center items-center px-4 py-8 bg-cover bg-center bg-no-repeat bg-fixed overflow-y-auto"
-          style={{ backgroundImage: `linear-gradient(to bottom, rgba(241, 245, 249, 0.60), rgba(248, 250, 252, 0.70)), url('/college-bg.png')` }}
-        >
-          {/* 📱 STEP 1: MOBILE NUMBER SEARCH INPUT */}
-          {step === 'mobile' && (
+      {/* 📱 STEP 1: MOBILE NUMBER SEARCH INPUT */}
+      {step === 'mobile' && (
             <div className="card-interactive p-6 sm:p-8 relative overflow-hidden animate-fadeIn max-w-xl mx-auto">
               <div className="space-y-6">
                 
@@ -486,8 +486,6 @@ export default function StudentDashboard({
               </div>
             </div>
           )}
-        </div>
-      )}
 
       {/* 🎓 STEP 3: MAIN STUDENT DASHBOARD PAGE (Visible after Student Search / Login) */}
       {step === 'dashboard' && (

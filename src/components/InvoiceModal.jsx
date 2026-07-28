@@ -214,15 +214,7 @@ export default function InvoiceModal({ isOpen, onClose, transaction }) {
                   </td>
                 </tr>
                 
-                {/* Summary Rows */}
-                <tr className="bg-slate-50 font-bold border-t border-slate-200">
-                  <td colSpan="3" className="py-2.5 px-2 sm:px-4 text-right text-slate-600 uppercase text-[9px] sm:text-[10px] tracking-wider">
-                    Sub-Total Amount
-                  </td>
-                  <td className="py-2.5 px-2 sm:px-4 text-right text-slate-900 font-bold text-xs sm:text-sm whitespace-nowrap">
-                    ₹{Number(transaction.amount || 0).toLocaleString('en-IN')}
-                  </td>
-                </tr>
+
                 <tr className="bg-slate-100 text-slate-900 font-bold border-t-2 border-slate-300">
                   <td colSpan="3" className="py-3 px-2 sm:px-4 text-right uppercase tracking-wider text-[10px] sm:text-xs text-slate-900">
                     Grand Total Paid

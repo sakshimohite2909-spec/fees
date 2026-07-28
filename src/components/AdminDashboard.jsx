@@ -308,12 +308,12 @@ export default function AdminDashboard({
                 <p className="text-xs text-slate-500 font-medium">Name, Mobile Number, PRN No & Branch records</p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                 
                 {/* 📄 Upload Excel Sheet Button */}
                 <button
                   onClick={() => setIsExcelModalOpen(true)}
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs transition-all cursor-pointer"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs transition-all cursor-pointer"
                 >
                   <FileSpreadsheet className="w-4 h-4 text-white" />
                   <span>Upload Excel Sheet</span>
@@ -322,7 +322,7 @@ export default function AdminDashboard({
                 {/* ➕ Add Student Manually Button */}
                 <button
                   onClick={() => setIsAddModalOpen(true)}
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-semibold text-xs border border-slate-200 transition-all cursor-pointer"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-semibold text-xs border border-slate-200 transition-all cursor-pointer"
                 >
                   <Plus className="w-4 h-4 text-slate-600" />
                   <span>Add Student</span>

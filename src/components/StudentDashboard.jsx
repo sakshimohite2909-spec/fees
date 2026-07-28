@@ -91,7 +91,7 @@ export default function StudentDashboard({
     }
   };
 
-  const [showNotFoundModal, setShowNotFoundModal] = useState(false);
+  const [notFoundMobile, setNotFoundMobile] = useState(null);
 
   // 1️⃣ STEP 1: Mobile Number Search Handler
   const handleMobileNumberSubmit = (e) => {
@@ -121,18 +121,19 @@ export default function StudentDashboard({
       setSelectedBranch(matchedBranch);
       if (match.rollNo) setRollNo(match.rollNo);
       if (match.prnNo) setPrnNo(match.prnNo);
+      setNotFoundMobile(null);
 
       setStep('confirm-course');
     } else {
-      // NO MATCH FOUND: Open Pop-Up Modal for Registration!
+      // NO MATCH FOUND: Show clean inline alert!
       setMatchedStudentRecord(null);
       setMobileInput(query);
-      setShowNotFoundModal(true);
+      setNotFoundMobile(query);
     }
   };
 
   const handleConfirmRegisterNewStudent = () => {
-    setShowNotFoundModal(false);
+    setNotFoundMobile(null);
     setFullName('');
     setRollNo(`RN-${Math.floor(1000 + Math.random() * 9000)}`);
     setPrnNo(`2026${Math.floor(10000000 + Math.random() * 90000000)}`);
@@ -261,6 +262,41 @@ export default function StudentDashboard({
                 <ArrowRight className="w-4 h-4 text-white" />
               </button>
             </form>
+
+            {/* ⚠️ INLINE NOT FOUND ALERT BANNER (No dark screen overlay!) */}
+            {notFoundMobile && (
+              <div className="p-4 rounded-2xl bg-amber-50/90 border border-amber-200 text-slate-800 space-y-3 animate-slide-up mt-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200">
+                    <AlertCircle className="w-4 h-4 text-amber-600" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <h4 className="text-xs font-bold text-slate-900">Mobile Number Not Found (+91 {notFoundMobile})</h4>
+                    <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
+                      No record found in college database. If you are a new student, click below to register.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-2 pt-1 border-t border-amber-200/60">
+                  <button
+                    type="button"
+                    onClick={handleConfirmRegisterNewStudent}
+                    className="w-full sm:flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all cursor-pointer shadow-xs"
+                  >
+                    <UserPlus className="w-3.5 h-3.5" />
+                    <span>+ Register as New Student</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNotFoundMobile(null)}
+                    className="w-full sm:w-auto px-3.5 py-2.5 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 rounded-xl border border-slate-300 transition-all cursor-pointer"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            )}
 
           </div>
         </div>
@@ -713,52 +749,7 @@ export default function StudentDashboard({
         </div>
       )}
 
-      {/* ⚠️ POP-UP MODAL: MOBILE NUMBER NOT REGISTERED */}
-      {showNotFoundModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-fadeIn">
-          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xl max-w-md w-full animate-scale-in space-y-4">
-            
-            <div className="flex items-start justify-between">
-              <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0">
-                <AlertCircle className="w-6 h-6 text-amber-600" />
-              </div>
-              <button
-                onClick={() => setShowNotFoundModal(false)}
-                className="text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 p-1.5 rounded-full transition-colors cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
 
-            <div>
-              <h3 className="text-lg font-bold text-slate-900">Mobile Number Not Found</h3>
-              <p className="text-xs text-slate-600 font-medium mt-1 leading-relaxed">
-                No student record was found for <span className="font-bold text-slate-900 font-mono">+91 {mobileInput}</span> in the college database.
-              </p>
-              <p className="text-xs text-slate-500 font-normal mt-2">
-                If you are a new student, please click <strong className="text-indigo-600">+ Register as New Student</strong> below to create your student profile.
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-2.5 pt-2 border-t border-slate-100">
-              <button
-                onClick={handleConfirmRegisterNewStudent}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs transition-all cursor-pointer"
-              >
-                <UserPlus className="w-4 h-4 text-white" />
-                <span>+ Register as New Student</span>
-              </button>
-              <button
-                onClick={() => setShowNotFoundModal(false)}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold text-xs transition-all cursor-pointer"
-              >
-                Try Again
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
 
     </div>
   );

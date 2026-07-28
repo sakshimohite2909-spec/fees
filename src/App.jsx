@@ -162,7 +162,7 @@ export default function App() {
   return (
     <div 
       className="min-h-screen text-slate-800 flex flex-col font-sans relative bg-cover bg-center bg-no-repeat bg-fixed"
-      style={{ backgroundImage: `linear-gradient(to bottom, rgba(248, 250, 252, 0.88), rgba(248, 250, 252, 0.94)), url('/college-bg.png')` }}
+      style={{ backgroundImage: `linear-gradient(to bottom, rgba(226, 232, 240, 0.55), rgba(241, 245, 249, 0.65)), url('/college-bg.png')` }}
     >
       
       {/* Top Navbar */}

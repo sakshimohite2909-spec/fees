@@ -219,11 +219,11 @@ export default function StudentDashboard({
   return (
     <div className="space-y-8 animate-slide-up">
       
-      {/* 🏠 HOME PAGE LANDING / VERIFICATION SECTION (Full Size Background Image on Home Page) */}
+      {/* 🏠 FULL SIZE HOME PAGE LANDING / VERIFICATION SECTION (Background Image Full Screen) */}
       {(step === 'mobile' || step === 'confirm-course' || step === 'new-student') && (
         <div 
-          className="-mx-3 sm:-mx-6 lg:-mx-8 -my-4 sm:-my-8 min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 sm:p-8 bg-cover bg-center bg-no-repeat bg-fixed"
-          style={{ backgroundImage: `linear-gradient(to bottom, rgba(226, 232, 240, 0.50), rgba(241, 245, 249, 0.60)), url('/college-bg.png')` }}
+          className="fixed inset-0 top-14 sm:top-16 z-20 flex flex-col justify-center items-center px-4 py-8 bg-cover bg-center bg-no-repeat bg-fixed overflow-y-auto"
+          style={{ backgroundImage: `linear-gradient(to bottom, rgba(241, 245, 249, 0.60), rgba(248, 250, 252, 0.70)), url('/college-bg.png')` }}
         >
           {/* 📱 STEP 1: MOBILE NUMBER SEARCH INPUT */}
           {step === 'mobile' && (

@@ -11,6 +11,7 @@ import {
   getPayments, recordPayment, 
   getCurrentUser, setCurrentUser 
 } from './utils/storage';
+import './utils/firebase';
 
 export default function App() {
   // Check URL pathname for /admin

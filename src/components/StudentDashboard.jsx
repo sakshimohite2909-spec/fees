@@ -311,20 +311,8 @@ export default function StudentDashboard({
               <div className="bg-white rounded-3xl p-5 sm:p-8 shadow-2xl border border-white/90 max-w-md mx-auto lg:ml-auto w-full">
                 <div className="space-y-5 sm:space-y-6">
                   
-                  {/* Header */}
-                  <div className="flex items-start gap-3 sm:gap-3.5">
-                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold border border-indigo-100/80 shrink-0 text-lg shadow-2xs">
-                      <Hash className="w-5 h-5 text-indigo-600" />
-                    </div>
-                    <div>
-                      <h2 className="text-base sm:text-xl font-extrabold text-slate-900 tracking-tight leading-snug">
-                        Student Fee Portal Verification
-                      </h2>
-                    </div>
-                  </div>
-
                   {/* Form */}
-                  <form onSubmit={handleEnrolmentNumberSubmit} className="space-y-4 pt-1">
+                  <form onSubmit={handleEnrolmentNumberSubmit} className="space-y-4">
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
                         <Hash className="w-3.5 h-3.5 text-indigo-600" />

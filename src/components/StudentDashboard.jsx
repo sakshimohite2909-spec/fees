@@ -260,11 +260,11 @@ export default function StudentDashboard({
           <img 
             src="/college-bg.jpg" 
             alt="Netaji Polytechnic College Campus" 
-            className="absolute inset-0 w-full h-full object-cover object-[22%_55%] transition-all duration-500" 
+            className="absolute inset-0 w-full h-full object-cover object-[15%_42%] sm:object-[22%_55%] transition-all duration-500" 
           />
           
           {/* Dark Overlay for Readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/30 to-slate-950/70 lg:bg-gradient-to-r lg:from-slate-950/20 lg:via-transparent lg:to-slate-950/10 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-slate-950/20 to-slate-950/60 lg:bg-gradient-to-r lg:from-slate-950/20 lg:via-transparent lg:to-slate-950/10 pointer-events-none" />
 
           {/* 🏛️ DESKTOP ONLY: Dark Glassmorphism College Badge on Bottom Left */}
           <div className="hidden lg:block absolute bottom-8 left-8 z-10 max-w-sm">
@@ -287,19 +287,19 @@ export default function StudentDashboard({
           </div>
 
           {/* 📝 RESPONSIVE LAYOUT CONTAINER */}
-          <div className="relative z-10 w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 items-center gap-6">
+          <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col justify-between lg:grid lg:grid-cols-12 items-center gap-4 sm:gap-6 py-2 sm:py-0">
             
             {/* 🏛️ MOBILE ONLY: Dark Glassmorphism College Badge on Top on Mobile */}
             <div className="block lg:hidden w-full max-w-md mx-auto">
-              <div className="bg-slate-900/85 backdrop-blur-md border border-white/20 p-3.5 sm:p-4 rounded-2xl shadow-xl flex items-center gap-3 text-white">
-                <div className="w-10 h-10 rounded-full bg-slate-800/90 border border-slate-700 flex items-center justify-center shrink-0 shadow-inner">
-                  <GraduationCap className="w-5 h-5 text-slate-200" />
+              <div className="bg-slate-900/85 backdrop-blur-md border border-white/20 p-3 rounded-2xl shadow-xl flex items-center gap-3 text-white">
+                <div className="w-9 h-9 rounded-full bg-slate-800/90 border border-slate-700 flex items-center justify-center shrink-0 shadow-inner">
+                  <GraduationCap className="w-4 h-4 text-slate-200" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-xs sm:text-sm text-white leading-tight">
+                  <h3 className="font-bold text-xs text-white leading-tight">
                     Netaji Polytechnic College
                   </h3>
-                  <p className="text-[11px] text-slate-300 font-medium">
+                  <p className="text-[10px] text-slate-300 font-medium">
                     Dhule, Maharashtra • Approved by DTE & MSBTE
                   </p>
                 </div>
@@ -307,8 +307,8 @@ export default function StudentDashboard({
             </div>
 
             {/* 📝 Floating White Verification Card */}
-            <div className="lg:col-span-6 lg:col-start-7 w-full">
-              <div className="bg-white rounded-3xl p-5 sm:p-8 shadow-2xl border border-white/90 max-w-md mx-auto lg:ml-auto w-full">
+            <div className="lg:col-span-6 lg:col-start-7 w-full my-auto">
+              <div className="bg-white/95 sm:bg-white rounded-3xl p-5 sm:p-8 shadow-2xl border border-white/90 max-w-md mx-auto lg:ml-auto w-full backdrop-blur-xs">
                 <div className="space-y-5 sm:space-y-6">
                   
                   {/* Form */}

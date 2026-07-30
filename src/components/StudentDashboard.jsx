@@ -252,133 +252,202 @@ export default function StudentDashboard({
   return (
     <div className="space-y-8 animate-slide-up">
       
-      {/* 🔢 STEP 1: ENROLMENT NUMBER (PRN) SEARCH INPUT (FULLY MOBILE RESPONSIVE HERO CLONE) */}
+      {/* 🔢 STEP 1: ENROLMENT NUMBER (PRN) SEARCH INPUT */}
       {step === 'mobile' && (
-        <div className="relative overflow-hidden w-full min-h-[calc(100vh-64px)] flex items-center justify-center p-4 sm:p-8 lg:p-12 animate-fadeIn bg-slate-950">
+        <div className="w-full animate-fadeIn">
           
-          {/* Full Campus Background Photo */}
-          <img 
-            src="/college-bg.jpg" 
-            alt="Netaji Polytechnic College Campus" 
-            className="absolute inset-0 w-full h-full object-cover object-[15%_42%] sm:object-[22%_55%] transition-all duration-500" 
-          />
-          
-          {/* Dark Overlay for Readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-slate-950/20 to-slate-950/60 lg:bg-gradient-to-r lg:from-slate-950/20 lg:via-transparent lg:to-slate-950/10 pointer-events-none" />
-
-          {/* 🏛️ DESKTOP ONLY: Dark Glassmorphism College Badge on Bottom Left */}
-          <div className="hidden lg:block absolute bottom-8 left-8 z-10 max-w-sm">
-            <div className="bg-slate-900/80 backdrop-blur-md border border-white/20 p-5 rounded-3xl shadow-2xl flex items-center gap-3.5 text-white">
-              <div className="w-12 h-12 rounded-full bg-slate-800/90 border border-slate-700 flex items-center justify-center shrink-0 shadow-inner">
-                <GraduationCap className="w-6 h-6 text-slate-200" />
-              </div>
-              <div>
-                <h3 className="font-bold text-base text-white leading-tight">
-                  Netaji Polytechnic College
-                </h3>
-                <p className="text-xs text-slate-300 font-medium mt-0.5">
-                  Dhule, Maharashtra
-                </p>
-                <p className="text-[11px] text-slate-400 font-medium mt-0.5">
-                  Approved by DTE & MSBTE
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* 📝 RESPONSIVE LAYOUT CONTAINER */}
-          <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col justify-between lg:grid lg:grid-cols-12 items-center gap-4 sm:gap-6 py-2 sm:py-0">
+          {/* 📱 MOBILE VIEW (< 1024px): Dedicated Uncropped Campus Banner + Verification Form */}
+          <div className="block lg:hidden space-y-4 px-3 py-4 max-w-md mx-auto">
             
-            {/* 🏛️ MOBILE ONLY: Dark Glassmorphism College Badge on Top on Mobile */}
-            <div className="block lg:hidden w-full max-w-md mx-auto">
-              <div className="bg-slate-900/85 backdrop-blur-md border border-white/20 p-3 rounded-2xl shadow-xl flex items-center gap-3 text-white">
-                <div className="w-9 h-9 rounded-full bg-slate-800/90 border border-slate-700 flex items-center justify-center shrink-0 shadow-inner">
+            {/* College Building Image Banner */}
+            <div className="relative rounded-3xl overflow-hidden shadow-lg border border-slate-200 bg-slate-950 aspect-[16/10] sm:aspect-[16/9]">
+              <img 
+                src="/college-bg.jpg" 
+                alt="Netaji Polytechnic College Campus" 
+                className="w-full h-full object-cover object-[center_35%]" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-900/20 to-transparent" />
+              
+              <div className="absolute bottom-3 left-3 right-3 flex items-center gap-2.5 bg-slate-900/85 backdrop-blur-md border border-white/20 p-2.5 rounded-2xl text-white shadow-lg">
+                <div className="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 shadow-inner">
                   <GraduationCap className="w-4 h-4 text-slate-200" />
                 </div>
                 <div>
                   <h3 className="font-bold text-xs text-white leading-tight">
                     Netaji Polytechnic College
                   </h3>
-                  <p className="text-[10px] text-slate-300 font-medium">
+                  <p className="text-[10px] text-slate-300 font-medium mt-0.5">
                     Dhule, Maharashtra • Approved by DTE & MSBTE
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* 📝 Floating White Verification Card */}
-            <div className="lg:col-span-6 lg:col-start-7 w-full my-auto">
-              <div className="bg-white/95 sm:bg-white rounded-3xl p-5 sm:p-8 shadow-2xl border border-white/90 max-w-md mx-auto lg:ml-auto w-full backdrop-blur-xs">
-                <div className="space-y-5 sm:space-y-6">
-                  
-                  {/* Form */}
-                  <form onSubmit={handleEnrolmentNumberSubmit} className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
-                        <Hash className="w-3.5 h-3.5 text-indigo-600" />
-                        <span>Enter Enrolment Number (PRN No) *</span>
-                      </label>
-                      <div className="relative">
+            {/* Verification Form Card */}
+            <div className="bg-white rounded-3xl p-5 shadow-xl border border-slate-200/90">
+              <form onSubmit={handleEnrolmentNumberSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
+                    <Hash className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>Enter Enrolment Number (PRN No) *</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. 25612400241 or 25623600001"
+                    value={enrolmentSearchInput}
+                    onChange={(e) => setEnrolmentSearchInput(e.target.value)}
+                    className="w-full pl-4 pr-4 py-3 rounded-xl border border-slate-300 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50/50 shadow-2xs"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all cursor-pointer active:scale-[0.99]"
+                >
+                  <span>Verify Enrolment Number</span>
+                  <ArrowRight className="w-4 h-4 text-white" />
+                </button>
+              </form>
+
+              <div className="pt-3.5 mt-3.5 border-t border-slate-100 space-y-2.5">
+                <p className="text-center text-xs text-slate-500 font-medium">
+                  Don't have an Enrolment Number?
+                </p>
+                <button
+                  type="button"
+                  onClick={handleConfirmRegisterNewStudent}
+                  className="w-full font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 transition-all cursor-pointer text-xs"
+                >
+                  <UserPlus className="w-4 h-4 text-indigo-600" />
+                  <span>Register as New Student</span>
+                </button>
+              </div>
+
+              {notFoundEnrolment && (
+                <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-slate-800 space-y-2 mt-3 animate-slide-up">
+                  <div className="flex items-start justify-between gap-2.5">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                      <div className="space-y-0.5">
+                        <h4 className="text-xs font-bold text-slate-900">Enrolment No Not Found ("{notFoundEnrolment}")</h4>
+                        <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
+                          No matching record found in database. Please check your Enrolment Number or contact Admin.
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setNotFoundEnrolment(null)}
+                      className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-amber-100"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+          </div>
+
+          {/* 💻 DESKTOP VIEW (>= 1024px): Hero Split-Screen Floating Layout */}
+          <div className="hidden lg:flex relative overflow-hidden w-full min-h-[calc(100vh-64px)] items-center justify-center p-12 bg-slate-950">
+            {/* Full Campus Background Photo */}
+            <img 
+              src="/college-bg.jpg" 
+              alt="Netaji Polytechnic College Campus" 
+              className="absolute inset-0 w-full h-full object-cover object-[22%_55%]" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/20 via-transparent to-slate-950/10 pointer-events-none" />
+
+            {/* Dark Glassmorphism College Badge on Bottom Left */}
+            <div className="absolute bottom-8 left-8 z-10 max-w-sm">
+              <div className="bg-slate-900/80 backdrop-blur-md border border-white/20 p-5 rounded-3xl shadow-2xl flex items-center gap-3.5 text-white">
+                <div className="w-12 h-12 rounded-full bg-slate-800/90 border border-slate-700 flex items-center justify-center shrink-0 shadow-inner">
+                  <GraduationCap className="w-6 h-6 text-slate-200" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base text-white leading-tight">
+                    Netaji Polytechnic College
+                  </h3>
+                  <p className="text-xs text-slate-300 font-medium mt-0.5">
+                    Dhule, Maharashtra
+                  </p>
+                  <p className="text-[11px] text-slate-400 font-medium mt-0.5">
+                    Approved by DTE & MSBTE
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Floating White Verification Card */}
+            <div className="relative z-10 w-full max-w-6xl mx-auto grid grid-cols-12 items-center">
+              <div className="col-span-6 col-start-7 w-full my-auto">
+                <div className="bg-white rounded-3xl p-8 shadow-2xl border border-white/90 max-w-md ml-auto w-full">
+                  <div className="space-y-6">
+                    <form onSubmit={handleEnrolmentNumberSubmit} className="space-y-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
+                          <Hash className="w-3.5 h-3.5 text-indigo-600" />
+                          <span>Enter Enrolment Number (PRN No) *</span>
+                        </label>
                         <input
                           type="text"
                           required
                           placeholder="e.g. 25612400241 or 25623600001"
                           value={enrolmentSearchInput}
                           onChange={(e) => setEnrolmentSearchInput(e.target.value)}
-                          className="w-full pl-4 pr-4 py-3 rounded-xl border border-slate-300 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none bg-slate-50/50 transition-all hover:border-slate-400 placeholder:text-slate-400 shadow-2xs"
+                          className="w-full pl-4 pr-4 py-3 rounded-xl border border-slate-300 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50/50 shadow-2xs"
                         />
                       </div>
+
+                      <button
+                        type="submit"
+                        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all cursor-pointer transform hover:-translate-y-0.5"
+                      >
+                        <span>Verify Enrolment Number</span>
+                        <ArrowRight className="w-4 h-4 text-white" />
+                      </button>
+                    </form>
+
+                    <div className="pt-4 border-t border-slate-100 space-y-3">
+                      <p className="text-center text-xs text-slate-500 font-medium">
+                        Don't have an Enrolment Number?
+                      </p>
+                      <button
+                        type="button"
+                        onClick={handleConfirmRegisterNewStudent}
+                        className="w-full font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 transition-all cursor-pointer text-xs"
+                      >
+                        <UserPlus className="w-4 h-4 text-indigo-600" />
+                        <span>Register as New Student</span>
+                      </button>
                     </div>
 
-                    <button
-                      type="submit"
-                      className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all cursor-pointer transform hover:-translate-y-0.5 active:scale-[0.99]"
-                    >
-                      <span>Verify Enrolment Number</span>
-                      <ArrowRight className="w-4 h-4 text-white" />
-                    </button>
-                  </form>
-
-                  {/* Register Option */}
-                  <div className="pt-3.5 sm:pt-4 border-t border-slate-100 space-y-2.5 sm:space-y-3">
-                    <p className="text-center text-xs text-slate-500 font-medium">
-                      Don't have an Enrolment Number?
-                    </p>
-                    <button
-                      type="button"
-                      onClick={handleConfirmRegisterNewStudent}
-                      className="w-full font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 transition-all cursor-pointer text-xs"
-                    >
-                      <UserPlus className="w-4 h-4 text-indigo-600" />
-                      <span>Register as New Student</span>
-                    </button>
-                  </div>
-
-                  {/* Alert Error */}
-                  {notFoundEnrolment && (
-                    <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-50/95 border border-amber-200 text-slate-800 space-y-2 animate-slide-up">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-start gap-2.5">
-                          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                          <div className="space-y-0.5">
-                            <h4 className="text-xs font-bold text-slate-900">Enrolment No Not Found ("{notFoundEnrolment}")</h4>
-                            <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
-                              No matching record found in database. Please check your Enrolment Number or contact Admin.
-                            </p>
+                    {notFoundEnrolment && (
+                      <div className="p-4 rounded-2xl bg-amber-50/95 border border-amber-200 text-slate-800 space-y-2 animate-slide-up">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-start gap-2.5">
+                            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                            <div className="space-y-0.5">
+                              <h4 className="text-xs font-bold text-slate-900">Enrolment No Not Found ("{notFoundEnrolment}")</h4>
+                              <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
+                                No matching record found in database. Please check your Enrolment Number or contact Admin.
+                              </p>
+                            </div>
                           </div>
+                          <button
+                            type="button"
+                            onClick={() => setNotFoundEnrolment(null)}
+                            className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-amber-100 transition-all cursor-pointer shrink-0"
+                            title="Dismiss"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => setNotFoundEnrolment(null)}
-                          className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-amber-100 transition-all cursor-pointer shrink-0"
-                          title="Dismiss"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
                       </div>
-                    </div>
-                  )}
-
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

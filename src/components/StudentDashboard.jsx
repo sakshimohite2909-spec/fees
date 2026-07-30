@@ -259,12 +259,12 @@ export default function StudentDashboard({
           {/* 📱 MOBILE VIEW (< 1024px): Dedicated Uncropped Campus Banner + Verification Form */}
           <div className="block lg:hidden space-y-4 px-3 py-4 max-w-md mx-auto">
             
-            {/* College Building Image Banner */}
-            <div className="relative rounded-3xl overflow-hidden shadow-lg border border-slate-200 bg-slate-950 aspect-[16/10] sm:aspect-[16/9]">
+            {/* College Building Image Banner (Option 1: Tall Aspect for 100% Building Visibility) */}
+            <div className="relative rounded-3xl overflow-hidden shadow-xl border border-slate-200/90 bg-slate-950 h-72 sm:h-80 w-full">
               <img 
                 src="/college-bg.jpg" 
                 alt="Netaji Polytechnic College Campus" 
-                className="w-full h-full object-cover object-[center_35%]" 
+                className="w-full h-full object-cover object-[center_55%] transition-all duration-300" 
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-900/20 to-transparent" />
               

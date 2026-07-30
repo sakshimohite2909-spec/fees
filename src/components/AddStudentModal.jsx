@@ -5,10 +5,30 @@ export default function AddStudentModal({ isOpen, onClose, onAddStudent }) {
   const [fullName, setFullName] = useState('');
   const [mobile, setMobile] = useState('');
   const [prnNo, setPrnNo] = useState('');
+  const [course, setCourse] = useState('Engineering');
   const [branch, setBranch] = useState('Computer Engineering');
   const [rollNo, setRollNo] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+
+  const ENGINEERING_BRANCHES = [
+    'Computer Engineering',
+    'Information Technology',
+    'Mechanical Engineering',
+    'Electrical Engineering',
+    'Electronics & Telecom',
+    'Civil Engineering',
+    'Artificial Intelligence (AI)'
+  ];
+
+  const handleCourseChange = (newCourse) => {
+    setCourse(newCourse);
+    if (newCourse === 'Engineering') {
+      setBranch('Computer Engineering');
+    } else {
+      setBranch('N/A');
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -29,6 +49,7 @@ export default function AddStudentModal({ isOpen, onClose, onAddStudent }) {
       fullName: fullName.trim(),
       mobile: mobile.trim() || 'N/A',
       prnNo: prnNo.trim(),
+      course,
       branch,
       rollNo: rollNo.trim() || `RN-${Math.floor(100 + Math.random() * 900)}`,
       email: email.trim() || `${fullName.trim().toLowerCase().replace(/\s+/g, '')}@gmail.com`
@@ -40,6 +61,8 @@ export default function AddStudentModal({ isOpen, onClose, onAddStudent }) {
     setFullName('');
     setMobile('');
     setPrnNo('');
+    setCourse('Engineering');
+    setBranch('Computer Engineering');
     setRollNo('');
     setEmail('');
     onClose();
@@ -125,24 +148,43 @@ export default function AddStudentModal({ isOpen, onClose, onAddStudent }) {
             </div>
           </div>
 
-          {/* Branch / Department */}
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Branch / Department *</label>
-            <div className="relative">
-              <BookOpen className="w-4 h-4 text-purple-400 absolute left-3 top-3" />
-              <select
-                value={branch}
-                onChange={(e) => setBranch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:outline-none"
-              >
-                <option>Computer Engineering</option>
-                <option>Information Technology</option>
-                <option>Mechanical Engineering</option>
-                <option>Electronics & Telecom</option>
-                <option>Civil Engineering</option>
-                <option>BCA / MCA</option>
-              </select>
+          {/* Select Academic Course & Select Branch */}
+          <div className={`grid grid-cols-1 ${course === 'Engineering' ? 'sm:grid-cols-2' : ''} gap-3`}>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Select Academic Course *</label>
+              <div className="relative">
+                <BookOpen className="w-4 h-4 text-purple-400 absolute left-3 top-3" />
+                <select
+                  value={course}
+                  onChange={(e) => handleCourseChange(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:outline-none"
+                >
+                  <option value="Engineering">Engineering (B.Tech / B.E.)</option>
+                  <option value="Polytechnic">Polytechnic (Diploma)</option>
+                  <option value="Pharmacy">Pharmacy (B.Pharm / D.Pharm)</option>
+                </select>
+              </div>
             </div>
+
+            {course === 'Engineering' && (
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Select Branch *</label>
+                <div className="relative">
+                  <BookOpen className="w-4 h-4 text-purple-400 absolute left-3 top-3" />
+                  <select
+                    value={branch}
+                    onChange={(e) => setBranch(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 focus:outline-none"
+                  >
+                    {ENGINEERING_BRANCHES.map((b) => (
+                      <option key={b} value={b}>
+                        {b}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Roll No & Gmail ID */}

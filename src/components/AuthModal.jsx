@@ -94,14 +94,14 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onAu
         <div className="bg-gradient-to-r from-slate-50 via-purple-50/40 to-slate-50 px-6 py-3 flex items-center justify-between border-b border-purple-100">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black text-lg shadow-md shadow-blue-500/20">
-              e
+              N
             </div>
             <div>
-              <span className="text-2xl font-black text-blue-950 tracking-tight">
-                edupay<span className="text-blue-600 font-extrabold text-sm align-top">®</span>
+              <span className="text-lg font-black text-blue-950 tracking-tight">
+                Netaji Polytechnic College
               </span>
-              <span className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-widest -mt-1">
-                Pay Fees Anytime, Anywhere
+              <span className="block text-[10px] font-extrabold text-slate-500 uppercase tracking-widest -mt-0.5">
+                Student Fee Portal • Dhule
               </span>
             </div>
           </div>

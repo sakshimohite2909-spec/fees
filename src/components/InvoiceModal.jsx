@@ -137,10 +137,10 @@ export default function InvoiceModal({ isOpen, onClose, transaction }) {
                 </div>
                 <div>
                   <h1 className="text-base sm:text-xl font-bold text-slate-900 tracking-tight uppercase">
-                    Government Engineering College
+                    Netaji Polytechnic College
                   </h1>
                   <p className="text-[10px] sm:text-xs font-semibold text-slate-600 mt-0.5">
-                    Autonomous Institute of Government of Maharashtra
+                    Dhule, Maharashtra • Approved by DTE & MSBTE
                   </p>
                 </div>
               </div>

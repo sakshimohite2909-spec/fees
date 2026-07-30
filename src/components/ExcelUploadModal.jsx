@@ -21,31 +21,145 @@ export default function ExcelUploadModal({ isOpen, onClose, onImportSuccess }) {
     const reader = new FileReader();
     reader.onload = (evt) => {
       try {
-        const bstr = evt.target.result;
-        const wb = XLSX.read(bstr, { type: 'binary' });
-        const wsname = wb.SheetNames[0];
-        const ws = wb.Sheets[wsname];
-        const data = XLSX.utils.sheet_to_json(ws);
+        const arrayData = evt.target.result;
+        const wb = XLSX.read(arrayData, { type: 'array' });
 
-        if (!data || data.length === 0) {
-          setError('The uploaded Excel sheet contains no rows or data.');
+        if (!wb.SheetNames || wb.SheetNames.length === 0) {
+          setError('The uploaded Excel file contains no worksheets.');
           setIsProcessing(false);
           return;
         }
 
-        // Normalize columns (support 'Name', 'Mobile Number', 'PRN No', 'Branch', etc.)
-        const normalized = data.map((row) => {
-          return {
-            fullName: row.Name || row['Student Name'] || row.fullName || row['FULL NAME'] || 'Student',
-            mobile: row['Mobile Number'] || row.Mobile || row.mobile || row.Phone || row['Contact Number'] || 'N/A',
-            prnNo: row['PRN No'] || row.PRN || row.prnNo || row['PRN Number'] || 'N/A',
-            branch: row.Branch || row.Department || row.branch || row.Course || 'Computer Engineering',
-            rollNo: row['Roll No'] || row.RollNo || row.rollNo || `RN-${Math.floor(100 + Math.random() * 900)}`,
-            email: row['Gmail ID'] || row.Email || row.email || `${(row.Name || row['Student Name'] || 'student').toLowerCase().replace(/\s+/g, '')}@gmail.com`
-          };
+        let allNormalizedStudents = [];
+
+        // Loop over ALL worksheets in the Excel file (e.g. POLY, PHARMACY tabs)
+        wb.SheetNames.forEach((wsname) => {
+          const ws = wb.Sheets[wsname];
+          if (!ws || !ws['!ref']) return;
+
+          // Detect header row index for this worksheet
+          let headerRowIndex = 0;
+          let sheetTitleText = '';
+          const range = XLSX.utils.decode_range(ws['!ref']);
+
+          for (let R = range.s.r; R <= range.e.r; R++) {
+            let rowHasHeader = false;
+            for (let C = range.s.c; C <= range.e.c; C++) {
+              const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+              const cell = ws[cellAddress];
+              if (cell && cell.v) {
+                const val = String(cell.v).toUpperCase();
+                sheetTitleText += ' ' + val;
+                if (
+                  val.includes('ENROL') || 
+                  val.includes('ENROLMENT') || 
+                  val.includes('ENROLLMENT') || 
+                  val.includes('CANDIDATE') ||
+                  val.includes('NAME') || 
+                  val.includes('SRNO') || 
+                  val.includes('SR NO') ||
+                  val.includes('PRN') ||
+                  val.includes('SCHEME')
+                ) {
+                  rowHasHeader = true;
+                }
+              }
+            }
+            if (rowHasHeader) {
+              headerRowIndex = R;
+              break;
+            }
+          }
+
+          const rawRows = XLSX.utils.sheet_to_json(ws, { range: headerRowIndex });
+
+          if (rawRows && rawRows.length > 0) {
+            const normalizedSheetRows = rawRows.map((row) => {
+              // Fuzzy key matcher to handle spaces, dots, case differences, and aliases
+              const getVal = (...keys) => {
+                const rowKeys = Object.keys(row);
+                for (const target of keys) {
+                  const cleanTarget = String(target).toLowerCase().replace(/[^a-z0-9]/g, '');
+                  for (const key of rowKeys) {
+                    const cleanKey = String(key).toLowerCase().replace(/[^a-z0-9]/g, '');
+                    if (cleanKey === cleanTarget || (cleanTarget.length >= 3 && cleanKey.includes(cleanTarget))) {
+                      const val = row[key];
+                      if (val !== undefined && val !== null && String(val).trim() !== '') {
+                        return String(val).trim();
+                      }
+                    }
+                  }
+                }
+                return '';
+              };
+
+              const fullName = getVal(
+                'candidatename', 'name', 'studentname', 'fullname', 'candidate'
+              ) || 'Student';
+
+              const prnNo = getVal(
+                'enrollno', 'enrolmentno', 'enrolment', 'enrollment', 'prnno', 'prn', 'rollno'
+              ) || `2026${Math.floor(10000000 + Math.random() * 90000000)}`;
+
+              const rollNo = getVal(
+                'srno', 'sr', 'rollno', 'rn'
+              ) || `RN-${Math.floor(100 + Math.random() * 900)}`;
+
+              const schemeVal = getVal('scheme', 'course', 'academiccourse');
+              const year = getVal('year') || '2nd Year';
+              const mobile = getVal('mobile', 'phone', 'contact') || 'N/A';
+              const email = getVal('gmail', 'email') || `${fullName.toLowerCase().replace(/[^a-z0-9]/g, '')}@gmail.com`;
+
+              // Auto-determine Course (Polytechnic vs Pharmacy)
+              let detectedCourse = 'Polytechnic';
+              const sheetUpper = wsname.toUpperCase();
+              const schemeUpper = schemeVal.toUpperCase();
+
+              if (sheetUpper.includes('POLY') || sheetUpper.includes('DIPLOMA') || sheetTitleText.includes('POLYTECHNIC')) {
+                detectedCourse = 'Polytechnic';
+              } else if (sheetUpper.includes('PHARM') || sheetTitleText.includes('PHARMACY') || schemeUpper.startsWith('PH')) {
+                detectedCourse = 'Pharmacy';
+              } else if (schemeUpper.startsWith('CE') || schemeUpper.startsWith('ME') || schemeUpper.startsWith('EE') || schemeUpper.startsWith('CO') || schemeUpper.startsWith('EJ') || schemeUpper.includes('POLY')) {
+                detectedCourse = 'Polytechnic';
+              } else if (schemeVal === 'Polytechnic' || schemeVal === 'Pharmacy') {
+                detectedCourse = schemeVal;
+              }
+
+              const branch = getVal('branch', 'department') || (detectedCourse === 'Engineering' ? 'Computer Engineering' : 'N/A');
+              const displayScheme = schemeVal || (detectedCourse === 'Pharmacy' ? 'PH-2-J' : 'CE-K');
+
+              return {
+                fullName,
+                prnNo,
+                rollNo,
+                course: detectedCourse,
+                scheme: displayScheme,
+                year,
+                branch,
+                mobile,
+                email
+              };
+            });
+
+            // Filter out empty header rows or invalid title rows
+            const validStudents = normalizedSheetRows.filter(
+              s => s.fullName && 
+                   s.fullName !== 'Student' && 
+                   s.fullName.toLowerCase() !== 'candidate name' && 
+                   s.fullName.toLowerCase() !== 'name' &&
+                   s.fullName.toLowerCase() !== 'student name'
+            );
+            allNormalizedStudents.push(...validStudents);
+          }
         });
 
-        setParsedData(normalized);
+        if (allNormalizedStudents.length === 0) {
+          setError('No valid student rows found in the uploaded Excel file.');
+          setIsProcessing(false);
+          return;
+        }
+
+        setParsedData(allNormalizedStudents);
         setIsProcessing(false);
       } catch (err) {
         console.error('Error reading Excel:', err);
@@ -54,38 +168,24 @@ export default function ExcelUploadModal({ isOpen, onClose, onImportSuccess }) {
       }
     };
 
-    reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(file);
   };
 
   const handleDownloadSample = () => {
-    const sampleData = [
-      {
-        'Name': 'Sakshi Patil',
-        'Mobile Number': '9876543210',
-        'PRN No': '20240325001192',
-        'Branch': 'Computer Engineering',
-        'Roll No': 'CS2026-042',
-        'Gmail ID': 'sakshpatil@gmail.com'
-      },
-      {
-        'Name': 'Rahul Deshmukh',
-        'Mobile Number': '9822114455',
-        'PRN No': '20240325001144',
-        'Branch': 'Information Technology',
-        'Roll No': 'CS2026-015',
-        'Gmail ID': 'rahul.deshmukh@gmail.com'
-      },
-      {
-        'Name': 'Anita Shinde',
-        'Mobile Number': '9988776655',
-        'PRN No': '20240325001188',
-        'Branch': 'Mechanical Engineering',
-        'Roll No': 'ME2026-008',
-        'Gmail ID': 'anita.shinde@gmail.com'
-      }
+    const titleRow = ["NETAJI SUBHASHCHANDRA BOSE EDUCATION TRUST'S NETAJI POLYTECHNIC COLLEGE"];
+    const headerRow = ["SRNO", "ENROLMENTNO", "NAME", "SCHEME", "Year", "BRANCH", "MOBILE", "GMAIL ID"];
+
+    const sampleRows = [
+      [1, '20240325001192', 'Sakshi Patil', 'Engineering', '3rd Year', 'Computer Engineering', '9876543210', 'sakshpatil@gmail.com'],
+      [2, '20240325001144', 'Rahul Deshmukh', 'Engineering', '3rd Year', 'Information Technology', '9822114455', 'rahul.deshmukh@gmail.com'],
+      [3, '20240325001188', 'Anita Shinde', 'Polytechnic', '2nd Year', 'N/A', '9988776655', 'anita.shinde@gmail.com']
     ];
 
-    const worksheet = XLSX.utils.json_to_sheet(sampleData);
+    const worksheet = XLSX.utils.aoa_to_sheet([titleRow, [], headerRow, ...sampleRows]);
+    worksheet['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } }
+    ];
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Students');
     XLSX.writeFile(workbook, 'Student_Data_Sample_Template.xlsx');
@@ -182,19 +282,21 @@ export default function ExcelUploadModal({ isOpen, onClose, onImportSuccess }) {
                 <table className="w-full text-left text-xs">
                   <thead className="bg-purple-50 text-purple-900 font-bold uppercase sticky top-0">
                     <tr>
-                      <th className="py-2.5 px-3">Name</th>
-                      <th className="py-2.5 px-3">Mobile Number</th>
-                      <th className="py-2.5 px-3">PRN No</th>
-                      <th className="py-2.5 px-3">Branch</th>
+                      <th className="py-2.5 px-3">SRNO</th>
+                      <th className="py-2.5 px-3">ENROLMENTNO</th>
+                      <th className="py-2.5 px-3">NAME</th>
+                      <th className="py-2.5 px-3">SCHEME</th>
+                      <th className="py-2.5 px-3">Year</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 font-medium">
                     {parsedData.map((row, idx) => (
                       <tr key={idx} className="hover:bg-purple-50/40">
-                        <td className="py-2 px-3 font-bold text-slate-900">{row.fullName}</td>
-                        <td className="py-2 px-3 font-mono text-slate-700">{row.mobile}</td>
+                        <td className="py-2 px-3 font-mono font-bold text-slate-700">{idx + 1}</td>
                         <td className="py-2 px-3 font-mono font-bold text-purple-700">{row.prnNo}</td>
-                        <td className="py-2 px-3 text-slate-800">{row.branch}</td>
+                        <td className="py-2 px-3 font-bold text-slate-900">{row.fullName}</td>
+                        <td className="py-2 px-3 font-semibold text-purple-800">{row.scheme || row.course}</td>
+                        <td className="py-2 px-3 text-slate-700">{row.year || '3rd Year'}</td>
                       </tr>
                     ))}
                   </tbody>

@@ -7,7 +7,7 @@ import RazorpayModal from './components/RazorpayModal';
 import InvoiceModal from './components/InvoiceModal';
 import { 
   getFeesConfig, saveFeesConfig, 
-  getStudents, saveStudent, saveMultipleStudents, deleteStudent,
+  getStudents, saveStudent, saveMultipleStudents, clearAllStudents, deleteStudent,
   getPayments, recordPayment, 
   getCurrentUser, setCurrentUser 
 } from './utils/storage';
@@ -108,7 +108,12 @@ export default function App() {
   };
 
   const handleImportStudents = (studentsList) => {
-    const updatedList = saveMultipleStudents(studentsList);
+    const updatedList = saveMultipleStudents(studentsList, true);
+    setStudents(updatedList);
+  };
+
+  const handleClearAllStudents = () => {
+    const updatedList = clearAllStudents();
     setStudents(updatedList);
   };
 
@@ -168,16 +173,7 @@ export default function App() {
   const isHomeScreen = activeRole === 'student' && currentStep !== 'dashboard';
 
   return (
-    <div 
-      className="min-h-screen text-slate-800 flex flex-col font-sans relative bg-slate-50 transition-all duration-300"
-      style={isHomeScreen ? {
-        backgroundImage: `linear-gradient(to bottom, rgba(241, 245, 249, 0.65), rgba(248, 250, 252, 0.75)), url('/college-bg.png')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed'
-      } : {}}
-    >
+    <div className="min-h-screen text-slate-800 flex flex-col font-sans relative bg-slate-50 transition-all duration-300">
       
       {/* Top Navbar */}
       <Navbar
@@ -188,7 +184,7 @@ export default function App() {
       />
 
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-12 overflow-x-hidden">
+      <main className={`flex-1 w-full overflow-x-hidden ${isHomeScreen ? 'max-w-none p-0' : 'max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-12'}`}>
         {activeRole === 'student' ? (
           <StudentDashboard
             currentUser={currentUser}
@@ -209,6 +205,7 @@ export default function App() {
             onUpdateFeesConfig={handleUpdateFeesConfig}
             onAddStudent={handleSaveStudent}
             onImportStudents={handleImportStudents}
+            onClearAllStudents={handleClearAllStudents}
             onDeleteStudent={handleDeleteStudent}
             onViewInvoice={(trx) => setActiveInvoice(trx)}
           />

@@ -1,5 +1,4 @@
-import React from 'react';
-import { GraduationCap, LogOut, Sparkles } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 
 export default function Navbar({ currentUser, activeRole, onOpenAuth, onLogout }) {
   return (
@@ -9,29 +8,19 @@ export default function Navbar({ currentUser, activeRole, onOpenAuth, onLogout }
           
           {/* Logo & Title */}
           <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0 min-w-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 shrink-0 transform hover:scale-105 transition-transform duration-200">
-              <GraduationCap className="w-5 h-5 sm:w-5.5 sm:h-5.5 text-white" />
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white p-0.5 border border-slate-200 shadow-xs shrink-0 transform hover:scale-105 transition-transform duration-200 overflow-hidden flex items-center justify-center">
+              <img 
+                src="/logo.png" 
+                alt="Netaji Polytechnic College Logo" 
+                className="w-full h-full object-contain" 
+              />
             </div>
             <div className="min-w-0">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="font-extrabold text-lg sm:text-2xl tracking-tight text-slate-900 leading-none">
-                  Edu<span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Pay</span>
-                </span>
-                <span className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 sm:px-2.5 rounded-full border hidden sm:flex items-center gap-1.5 shadow-2xs ${
-                  activeRole === 'admin' 
-                    ? 'bg-slate-900 text-white border-slate-800' 
-                    : 'bg-indigo-50/90 text-indigo-700 border-indigo-200/80'
-                }`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${activeRole === 'admin' ? 'bg-emerald-400' : 'bg-indigo-600'} animate-pulse`} />
-                  <span>{activeRole === 'admin' ? 'Admin Portal' : 'Student Portal'}</span>
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-500 font-medium hidden md:flex items-center gap-1 leading-none mt-1">
-                <span>College Fee Management System</span>
-                <span className="text-slate-300">•</span>
-                <span className="text-indigo-600 font-semibold flex items-center gap-0.5">
-                  <Sparkles className="w-3 h-3 text-amber-500" /> Fast & Secure
-                </span>
+              <span className="font-extrabold text-base sm:text-xl tracking-tight text-slate-900 leading-tight block">
+                Netaji Polytechnic College
+              </span>
+              <p className="text-[11px] text-slate-500 font-medium hidden md:block leading-none mt-0.5">
+                Dhule, Maharashtra
               </p>
             </div>
           </div>

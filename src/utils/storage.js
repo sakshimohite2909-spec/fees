@@ -125,11 +125,12 @@ export const saveStudent = (studentData) => {
     rollNo: studentData.rollNo || 'N/A',
     prnNo: studentData.prnNo || 'N/A',
     mobile: studentData.mobile || studentData.educationDetails?.mobile || 'N/A',
-    branch: studentData.branch || studentData.educationDetails?.branch || 'Computer Science',
+    course: studentData.course || studentData.educationDetails?.course || 'Engineering',
+    branch: studentData.branch || studentData.educationDetails?.branch || 'Computer Engineering',
     email: studentData.email || `${(studentData.fullName || 'student').toLowerCase().replace(/\s+/g, '')}@gmail.com`,
     educationDetails: {
-      course: studentData.course || studentData.educationDetails?.course || `B.Tech ${studentData.branch || 'Computer Science'}`,
-      branch: studentData.branch || studentData.educationDetails?.branch || 'Computer Science',
+      course: studentData.course || studentData.educationDetails?.course || 'Engineering',
+      branch: studentData.branch || studentData.educationDetails?.branch || 'Computer Engineering',
       year: studentData.year || studentData.educationDetails?.year || '3rd Year',
       semester: studentData.semester || studentData.educationDetails?.semester || '5th Semester',
       mobile: studentData.mobile || studentData.educationDetails?.mobile || 'N/A',
@@ -150,39 +151,53 @@ export const saveStudent = (studentData) => {
   return updatedList;
 };
 
-export const saveMultipleStudents = (newStudentsList) => {
-  let existingStudents = getStudents();
+export const saveMultipleStudents = (newStudentsList, replaceAll = true) => {
+  let existingStudents = replaceAll ? [] : getStudents();
   
-  newStudentsList.forEach((newStd) => {
+  newStudentsList.forEach((newStd, index) => {
+    // Filter out invalid dummy records
+    if (!newStd.fullName || newStd.fullName === 'Student' || newStd.fullName.toLowerCase() === 'candidate name') {
+      return;
+    }
+
     const formattedStudent = {
-      id: `std_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
-      fullName: newStd.fullName || newStd.Name || 'Student',
-      mobile: newStd.mobile || newStd['Mobile Number'] || newStd.Mobile || 'N/A',
-      prnNo: newStd.prnNo || newStd['PRN No'] || newStd.PRN || 'N/A',
-      branch: newStd.branch || newStd.Branch || newStd.Department || 'Computer Science',
-      rollNo: newStd.rollNo || newStd['Roll No'] || newStd.RollNo || `RN-${Math.floor(100 + Math.random() * 900)}`,
-      email: newStd.email || newStd['Gmail ID'] || newStd.Email || `${(newStd.fullName || newStd.Name || 'student').toLowerCase().replace(/\s+/g, '')}@gmail.com`,
+      id: `std_${Date.now()}_${index}_${Math.random().toString(36).substring(2, 9)}`,
+      fullName: newStd.fullName || 'Student',
+      mobile: newStd.mobile || 'N/A',
+      prnNo: newStd.prnNo || 'N/A',
+      course: newStd.course || 'Polytechnic',
+      scheme: newStd.scheme || newStd.course || 'Polytechnic',
+      year: newStd.year || '2nd Year',
+      branch: newStd.branch || (newStd.course === 'Engineering' ? 'Computer Engineering' : 'N/A'),
+      rollNo: newStd.rollNo || `RN-${Math.floor(100 + Math.random() * 900)}`,
+      email: newStd.email || `${(newStd.fullName || 'student').toLowerCase().replace(/[^a-z0-9]/g, '')}@gmail.com`,
       educationDetails: {
-        course: `B.Tech ${newStd.branch || newStd.Branch || 'Computer Science'}`,
-        branch: newStd.branch || newStd.Branch || 'Computer Science',
-        year: '3rd Year',
-        semester: '5th Semester',
-        mobile: newStd.mobile || newStd['Mobile Number'] || 'N/A',
-        collegeName: 'Government Engineering College'
+        course: newStd.course || 'Polytechnic',
+        scheme: newStd.scheme || newStd.course || 'Polytechnic',
+        year: newStd.year || '2nd Year',
+        branch: newStd.branch || (newStd.course === 'Engineering' ? 'Computer Engineering' : 'N/A'),
+        semester: '4th Semester',
+        mobile: newStd.mobile || 'N/A',
+        collegeName: 'Netaji Polytechnic / Pharmacy College'
       },
       registeredAt: new Date().toISOString()
     };
 
-    const index = existingStudents.findIndex(s => (s.prnNo && s.prnNo === formattedStudent.prnNo && s.prnNo !== 'N/A'));
-    if (index >= 0) {
-      existingStudents[index] = { ...existingStudents[index], ...formattedStudent };
+    const existingIdx = existingStudents.findIndex(s => (s.prnNo && s.prnNo === formattedStudent.prnNo && s.prnNo !== 'N/A'));
+    if (existingIdx >= 0) {
+      existingStudents[existingIdx] = { ...existingStudents[existingIdx], ...formattedStudent };
     } else {
-      existingStudents = [formattedStudent, ...existingStudents];
+      existingStudents.push(formattedStudent);
     }
   });
 
   localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(existingStudents));
   return existingStudents;
+};
+
+export const clearAllStudents = () => {
+  localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify([]));
+  return [];
 };
 
 export const deleteStudent = (studentId) => {
@@ -199,9 +214,16 @@ export const getPayments = () => {
 
 export const recordPayment = (paymentData) => {
   const payments = getPayments();
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+
   const newPayment = {
     id: `pay_${Date.now()}`,
-    timestamp: new Date().toISOString(),
+    timestamp: now.toISOString(),
+    date: dateStr,
+    time: timeStr,
+    dateTime: `${dateStr}, ${timeStr}`,
     status: 'PAID',
     ...paymentData
   };

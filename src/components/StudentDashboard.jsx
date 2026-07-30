@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   CreditCard, CheckCircle, Clock, FileText, 
   Sparkles, Award, ArrowRight, ShieldCheck, Download, Edit3, Save, Check,
-  Phone, BookOpen, Layers, Zap, Building2, CheckCircle2, ChevronRight, User, Hash,
+  Phone, BookOpen, Layers, Zap, Building2, CheckCircle2, ChevronRight, User, Hash, GraduationCap,
   Search, UserPlus, AlertCircle, X
 } from 'lucide-react';
 
@@ -51,20 +51,21 @@ export default function StudentDashboard({
     return 'mobile';
   });
 
-  const [mobileSearchInput, setMobileSearchInput] = useState('');
+  const [enrolmentSearchInput, setEnrolmentSearchInput] = useState('');
   const [matchedStudentRecord, setMatchedStudentRecord] = useState(null);
 
   const [mobileInput, setMobileInput] = useState(defaultMobile);
   const [selectedCourse, setSelectedCourse] = useState(defaultCourse);
   const [selectedBranch, setSelectedBranch] = useState(defaultBranch);
-  const [fullName, setFullName] = useState(existingProfile?.fullName || currentUser?.fullName || 'Sakshi Patil');
-  const [rollNo, setRollNo] = useState(existingProfile?.rollNo || 'CS2026-042');
-  const [prnNo, setPrnNo] = useState(existingProfile?.prnNo || '20240325001192');
-  const [year, setYear] = useState(existingProfile?.educationDetails?.year || '3rd Year');
-  const [semester, setSemester] = useState(existingProfile?.educationDetails?.semester || '5th Semester');
+  const [selectedScheme, setSelectedScheme] = useState(existingProfile?.scheme || 'CE-K');
+  const [fullName, setFullName] = useState(existingProfile?.fullName || currentUser?.fullName || '');
+  const [rollNo, setRollNo] = useState(existingProfile?.rollNo || '');
+  const [prnNo, setPrnNo] = useState(existingProfile?.prnNo || '');
+  const [year, setYear] = useState(existingProfile?.educationDetails?.year || '2nd Year');
+  const [semester, setSemester] = useState(existingProfile?.educationDetails?.semester || '4th Semester');
 
-  // Track if mobile number has been submitted to open the student details page
-  const [isMobileSubmitted, setIsMobileSubmitted] = useState(!!currentUser && !!existingProfile?.mobile);
+  // Track if verification step has been submitted
+  const [isMobileSubmitted, setIsMobileSubmitted] = useState(!!currentUser && !!existingProfile?.prnNo);
   const [showEditForm, setShowEditForm] = useState(false);
 
   // Sync state if currentUser changes
@@ -72,19 +73,20 @@ export default function StudentDashboard({
     if (currentUser && existingProfile) {
       setMobileInput(existingProfile.mobile || existingProfile.educationDetails?.mobile || '');
       setSelectedCourse(getNormalizedCourse(existingProfile.educationDetails?.course));
-      setSelectedBranch(existingProfile.educationDetails?.branch || 'Computer Engineering');
+      setSelectedBranch(existingProfile.educationDetails?.branch || 'N/A');
+      setSelectedScheme(existingProfile.scheme || existingProfile.educationDetails?.course || 'CE-K');
       setFullName(existingProfile.fullName || currentUser?.fullName || '');
       setRollNo(existingProfile.rollNo || '');
       setPrnNo(existingProfile.prnNo || '');
-      setYear(existingProfile.educationDetails?.year || '3rd Year');
-      setSemester(existingProfile.educationDetails?.semester || '5th Semester');
+      setYear(existingProfile.educationDetails?.year || '2nd Year');
+      setSemester(existingProfile.educationDetails?.semester || '4th Semester');
       setIsMobileSubmitted(true);
       setStep('dashboard');
     } else if (!currentUser) {
       setStep('mobile');
-      setMobileSearchInput('');
+      setEnrolmentSearchInput('');
       setMatchedStudentRecord(null);
-      setNotFoundMobile(null);
+      setNotFoundEnrolment(null);
       setIsMobileSubmitted(false);
     }
   }, [currentUser, existingProfile]);
@@ -98,52 +100,55 @@ export default function StudentDashboard({
     }
   };
 
-  const [notFoundMobile, setNotFoundMobile] = useState(null);
+  const [notFoundEnrolment, setNotFoundEnrolment] = useState(null);
 
-  // 1️⃣ STEP 1: Mobile Number Search Handler
-  const handleMobileNumberSubmit = (e) => {
+  // 1️⃣ STEP 1: Enrolment Number Search Handler (Fetch direct Excel student data)
+  const handleEnrolmentNumberSubmit = (e) => {
     e.preventDefault();
-    const query = mobileSearchInput.trim();
+    const query = enrolmentSearchInput.trim().toLowerCase();
     if (!query) return;
 
-    // Search in students database by mobile number (or PRN / Roll No)
+    // Search in students database by Enrolment No (PRN) or Roll No
     const match = students.find(s => {
-      const mob = (s.mobile || s.educationDetails?.mobile || '').replace(/\D/g, '');
-      const prn = (s.prnNo || '').toLowerCase();
-      const roll = (s.rollNo || '').toLowerCase();
-      const searchClean = query.replace(/\D/g, '').toLowerCase();
-      return (searchClean && mob.includes(searchClean)) || (query && prn.includes(query.toLowerCase())) || (query && roll.includes(query.toLowerCase()));
+      const prn = (s.prnNo || '').toLowerCase().trim();
+      const roll = (s.rollNo || '').toLowerCase().trim();
+      const name = (s.fullName || '').toLowerCase().trim();
+      return prn === query || roll === query || (prn && prn.includes(query)) || (name && name.includes(query));
     });
 
     if (match) {
-      // MATCH FOUND: Existing Student!
-      const matchedMobile = match.mobile || match.educationDetails?.mobile || query;
-      const matchedCourse = getNormalizedCourse(match.course || match.educationDetails?.course);
-      const matchedBranch = match.branch || match.educationDetails?.branch || 'Computer Engineering';
+      // MATCH FOUND in Excel Database!
+      const matchedCourse = getNormalizedCourse(match.course || match.educationDetails?.course || match.scheme);
+      const matchedBranch = match.branch || match.educationDetails?.branch || (matchedCourse === 'Engineering' ? 'Computer Engineering' : 'N/A');
+      const matchedScheme = match.scheme || match.course || matchedCourse;
+      const matchedYear = match.year || match.educationDetails?.year || '2nd Year';
 
       setMatchedStudentRecord(match);
       setFullName(match.fullName || 'Student');
-      setMobileInput(matchedMobile);
+      if (match.mobile) setMobileInput(match.mobile);
       setSelectedCourse(matchedCourse);
       setSelectedBranch(matchedBranch);
+      setSelectedScheme(matchedScheme);
       if (match.rollNo) setRollNo(match.rollNo);
       if (match.prnNo) setPrnNo(match.prnNo);
-      setNotFoundMobile(null);
+      setYear(matchedYear);
+      setNotFoundEnrolment(null);
 
-      setStep('confirm-course');
+      // Directly open student fee portal dashboard with fetched Excel data!
+      setIsMobileSubmitted(true);
+      setStep('dashboard');
     } else {
-      // NO MATCH FOUND: Show clean inline alert!
+      // NO MATCH FOUND in Excel Database
       setMatchedStudentRecord(null);
-      setMobileInput(query);
-      setNotFoundMobile(query);
+      setNotFoundEnrolment(query);
     }
   };
 
   const handleConfirmRegisterNewStudent = () => {
-    setNotFoundMobile(null);
+    setNotFoundEnrolment(null);
     setFullName('');
     setRollNo(`RN-${Math.floor(1000 + Math.random() * 9000)}`);
-    setPrnNo(`2026${Math.floor(10000000 + Math.random() * 90000000)}`);
+    setPrnNo('N/A');
     setSelectedCourse('');
     setSelectedBranch('');
     setStep('new-student');
@@ -177,7 +182,7 @@ export default function StudentDashboard({
       id: `std_${Date.now()}`,
       fullName: fullName.trim(),
       mobile: mobileInput.trim(),
-      prnNo: prnNo.trim() || `2026${Math.floor(10000000 + Math.random() * 90000000)}`,
+      prnNo: prnNo && prnNo !== 'N/A' ? prnNo.trim() : 'N/A',
       rollNo: rollNo.trim() || `RN-${Math.floor(1000 + Math.random() * 9000)}`,
       course: selectedCourse,
       branch: selectedBranch,
@@ -202,26 +207,42 @@ export default function StudentDashboard({
 
   // Payment Status checks for student
   const currentStudentId = existingProfile?.id || matchedStudentRecord?.id;
-  const currentRollNo = rollNo || existingProfile?.rollNo;
+  const currentRollNo = rollNo || existingProfile?.rollNo || matchedStudentRecord?.rollNo;
+  const currentPrnNo = prnNo || existingProfile?.prnNo || matchedStudentRecord?.prnNo;
+  const currentEmail = currentUser?.email || existingProfile?.email || matchedStudentRecord?.email;
 
-  const myPayments = payments.filter(p => 
-    (currentStudentId && p.studentId === currentStudentId) || 
-    (currentRollNo && p.rollNo === currentRollNo)
-  );
+  const myPayments = (payments || []).filter(p => {
+    if (currentStudentId && p.studentId === currentStudentId) return true;
+    if (currentRollNo && p.rollNo && String(p.rollNo).toLowerCase() === String(currentRollNo).toLowerCase()) return true;
+    if (currentPrnNo && p.prnNo && String(p.prnNo).toLowerCase() === String(currentPrnNo).toLowerCase()) return true;
+    if (currentEmail && p.email && String(p.email).toLowerCase() === String(currentEmail).toLowerCase()) return true;
+    return false;
+  });
 
-  const isExamPaid = myPayments.some(p => p.feeType === 'examFee' && p.status === 'PAID');
-  const isTuitionPaid = myPayments.some(p => p.feeType === 'tuitionFee' && p.status === 'PAID');
+  const examAmount = feesConfig?.examFee || 2500;
+  const tuitionAmount = feesConfig?.tuitionFee || 45000;
+
+  const totalExamPaid = myPayments
+    .filter(p => p.feeType === 'examFee' && p.status === 'PAID')
+    .reduce((sum, p) => sum + (p.amount || 0), 0);
+
+  const totalTuitionPaid = myPayments
+    .filter(p => p.feeType === 'tuitionFee' && p.status === 'PAID')
+    .reduce((sum, p) => sum + (p.amount || 0), 0);
+
+  const isExamPaid = totalExamPaid >= examAmount && examAmount > 0;
+  const isTuitionPaid = totalTuitionPaid >= tuitionAmount && tuitionAmount > 0;
+
+  const remainingExamDue = Math.max(0, examAmount - totalExamPaid);
+  const remainingTuitionDue = Math.max(0, tuitionAmount - totalTuitionPaid);
 
   const examPaymentRecord = myPayments.find(p => p.feeType === 'examFee' && p.status === 'PAID');
   const tuitionPaymentRecord = myPayments.find(p => p.feeType === 'tuitionFee' && p.status === 'PAID');
 
-  const totalPaidAmount = myPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
-  const examAmount = feesConfig.examFee || 2500;
-  const tuitionAmount = feesConfig.tuitionFee || 45000;
-
+  const totalPaidAmount = totalExamPaid + totalTuitionPaid;
   const totalFeesDue = examAmount + tuitionAmount;
   const remainingDues = Math.max(0, totalFeesDue - totalPaidAmount);
-  const completionPercentage = Math.min(100, Math.round((totalPaidAmount / totalFeesDue) * 100));
+  const completionPercentage = totalFeesDue > 0 ? Math.min(100, Math.round((totalPaidAmount / totalFeesDue) * 100)) : 0;
 
   // Notify parent component of current wizard step
   useEffect(() => {
@@ -231,88 +252,152 @@ export default function StudentDashboard({
   return (
     <div className="space-y-8 animate-slide-up">
       
-      {/* 📱 STEP 1: MOBILE NUMBER SEARCH INPUT */}
+      {/* 🔢 STEP 1: ENROLMENT NUMBER (PRN) SEARCH INPUT (FULLY MOBILE RESPONSIVE HERO CLONE) */}
       {step === 'mobile' && (
-            <div className="card-interactive p-6 sm:p-8 relative overflow-hidden animate-fadeIn max-w-xl mx-auto">
-              <div className="space-y-6">
-                
-                <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold border border-indigo-100 shrink-0">
-                    <Phone className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold text-slate-900">Student Verification</h2>
-                    <p className="text-xs text-slate-500 font-medium">Enter your Mobile Number to access your fee portal.</p>
-                  </div>
-                </div>
+        <div className="relative overflow-hidden w-full min-h-[calc(100vh-64px)] flex items-center justify-center p-4 sm:p-8 lg:p-12 animate-fadeIn bg-slate-950">
+          
+          {/* Full Campus Background Photo */}
+          <img 
+            src="/college-bg.jpg" 
+            alt="Netaji Polytechnic College Campus" 
+            className="absolute inset-0 w-full h-full object-cover object-[22%_55%] transition-all duration-500" 
+          />
+          
+          {/* Dark Overlay for Readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/30 to-slate-950/70 lg:bg-gradient-to-r lg:from-slate-950/20 lg:via-transparent lg:to-slate-950/10 pointer-events-none" />
 
-                <form onSubmit={handleMobileNumberSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
-                      <Phone className="w-3.5 h-3.5 text-indigo-600" />
-                      <span>Enter Mobile Number *</span>
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500">+91</span>
-                      <input
-                        type="tel"
-                        required
-                        maxLength={10}
-                        placeholder="Enter 10-digit Mobile Number"
-                        value={mobileSearchInput}
-                        onChange={(e) => setMobileSearchInput(e.target.value.replace(/\D/g, ''))}
-                        className="w-full pl-12 pr-4 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none bg-slate-50/50 transition-all hover:border-slate-400 placeholder:text-slate-400"
-                      />
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs transition-all cursor-pointer"
-                  >
-                    <span>Next / Submit Mobile Number</span>
-                    <ArrowRight className="w-4 h-4 text-white" />
-                  </button>
-                </form>
-
-                {/* ⚠️ INLINE NOT FOUND ALERT BANNER (No dark screen overlay!) */}
-                {notFoundMobile && (
-                  <div className="p-4 rounded-2xl bg-amber-50/90 border border-amber-200 text-slate-800 space-y-3 animate-slide-up mt-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200">
-                        <AlertCircle className="w-4 h-4 text-amber-600" />
-                      </div>
-                      <div className="space-y-0.5">
-                        <h4 className="text-xs font-bold text-slate-900">Mobile Number Not Found (+91 {notFoundMobile})</h4>
-                        <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
-                          No record found in college database. If you are a new student, click below to register.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row items-center gap-2 pt-1 border-t border-amber-200/60">
-                      <button
-                        type="button"
-                        onClick={handleConfirmRegisterNewStudent}
-                        className="w-full sm:flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all cursor-pointer shadow-xs"
-                      >
-                        <UserPlus className="w-3.5 h-3.5" />
-                        <span>+ Register as New Student</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setNotFoundMobile(null)}
-                        className="w-full sm:w-auto px-3.5 py-2.5 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 rounded-xl border border-slate-300 transition-all cursor-pointer"
-                      >
-                        Dismiss
-                      </button>
-                    </div>
-                  </div>
-                )}
-
+          {/* 🏛️ DESKTOP ONLY: Dark Glassmorphism College Badge on Bottom Left */}
+          <div className="hidden lg:block absolute bottom-8 left-8 z-10 max-w-sm">
+            <div className="bg-slate-900/80 backdrop-blur-md border border-white/20 p-5 rounded-3xl shadow-2xl flex items-center gap-3.5 text-white">
+              <div className="w-12 h-12 rounded-full bg-slate-800/90 border border-slate-700 flex items-center justify-center shrink-0 shadow-inner">
+                <GraduationCap className="w-6 h-6 text-slate-200" />
+              </div>
+              <div>
+                <h3 className="font-bold text-base text-white leading-tight">
+                  Netaji Polytechnic College
+                </h3>
+                <p className="text-xs text-slate-300 font-medium mt-0.5">
+                  Dhule, Maharashtra
+                </p>
+                <p className="text-[11px] text-slate-400 font-medium mt-0.5">
+                  Approved by DTE & MSBTE
+                </p>
               </div>
             </div>
-          )}
+          </div>
+
+          {/* 📝 RESPONSIVE LAYOUT CONTAINER */}
+          <div className="relative z-10 w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 items-center gap-6">
+            
+            {/* 🏛️ MOBILE ONLY: Dark Glassmorphism College Badge on Top on Mobile */}
+            <div className="block lg:hidden w-full max-w-md mx-auto">
+              <div className="bg-slate-900/85 backdrop-blur-md border border-white/20 p-3.5 sm:p-4 rounded-2xl shadow-xl flex items-center gap-3 text-white">
+                <div className="w-10 h-10 rounded-full bg-slate-800/90 border border-slate-700 flex items-center justify-center shrink-0 shadow-inner">
+                  <GraduationCap className="w-5 h-5 text-slate-200" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-xs sm:text-sm text-white leading-tight">
+                    Netaji Polytechnic College
+                  </h3>
+                  <p className="text-[11px] text-slate-300 font-medium">
+                    Dhule, Maharashtra • Approved by DTE & MSBTE
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 📝 Floating White Verification Card */}
+            <div className="lg:col-span-6 lg:col-start-7 w-full">
+              <div className="bg-white rounded-3xl p-5 sm:p-8 shadow-2xl border border-white/90 max-w-md mx-auto lg:ml-auto w-full">
+                <div className="space-y-5 sm:space-y-6">
+                  
+                  {/* Header */}
+                  <div className="flex items-start gap-3 sm:gap-3.5">
+                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold border border-indigo-100/80 shrink-0 text-lg shadow-2xs">
+                      <Hash className="w-5 h-5 text-indigo-600" />
+                    </div>
+                    <div>
+                      <h2 className="text-base sm:text-xl font-extrabold text-slate-900 tracking-tight leading-snug">
+                        Student Fee Portal Verification
+                      </h2>
+                    </div>
+                  </div>
+
+                  {/* Form */}
+                  <form onSubmit={handleEnrolmentNumberSubmit} className="space-y-4 pt-1">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
+                        <Hash className="w-3.5 h-3.5 text-indigo-600" />
+                        <span>Enter Enrolment Number (PRN No) *</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. 25612400241 or 25623600001"
+                          value={enrolmentSearchInput}
+                          onChange={(e) => setEnrolmentSearchInput(e.target.value)}
+                          className="w-full pl-4 pr-4 py-3 rounded-xl border border-slate-300 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none bg-slate-50/50 transition-all hover:border-slate-400 placeholder:text-slate-400 shadow-2xs"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all cursor-pointer transform hover:-translate-y-0.5 active:scale-[0.99]"
+                    >
+                      <span>Verify Enrolment Number</span>
+                      <ArrowRight className="w-4 h-4 text-white" />
+                    </button>
+                  </form>
+
+                  {/* Register Option */}
+                  <div className="pt-3.5 sm:pt-4 border-t border-slate-100 space-y-2.5 sm:space-y-3">
+                    <p className="text-center text-xs text-slate-500 font-medium">
+                      Don't have an Enrolment Number?
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleConfirmRegisterNewStudent}
+                      className="w-full font-bold text-indigo-600 hover:text-indigo-800 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 transition-all cursor-pointer text-xs"
+                    >
+                      <UserPlus className="w-4 h-4 text-indigo-600" />
+                      <span>Register as New Student</span>
+                    </button>
+                  </div>
+
+                  {/* Alert Error */}
+                  {notFoundEnrolment && (
+                    <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-50/95 border border-amber-200 text-slate-800 space-y-2 animate-slide-up">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-2.5">
+                          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                          <div className="space-y-0.5">
+                            <h4 className="text-xs font-bold text-slate-900">Enrolment No Not Found ("{notFoundEnrolment}")</h4>
+                            <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
+                              No matching record found in database. Please check your Enrolment Number or contact Admin.
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setNotFoundEnrolment(null)}
+                          className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-amber-100 transition-all cursor-pointer shrink-0"
+                          title="Dismiss"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      )}
 
           {/* 🎓 STEP 2A: MATCHED EXISTING STUDENT -> SHOW ONLY NAME & SELECT COURSE */}
           {step === 'confirm-course' && (
@@ -528,26 +613,39 @@ export default function StudentDashboard({
               </button>
             </div>
 
-            {/* Profile Grid */}
-            <div className="mt-4 p-3.5 sm:p-4 bg-slate-50/80 rounded-xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            {/* Profile Grid (Fetched directly from Excel Sheet) */}
+            <div className="mt-4 p-3.5 sm:p-4 bg-slate-50/80 rounded-xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               
               <div className="space-y-0.5">
                 <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 flex items-center gap-1">
                   <User className="w-3 h-3 text-slate-400" /> Student Name
                 </p>
-                <p className="text-sm font-bold text-slate-900 truncate">{fullName || 'Sakshi Patil'}</p>
+                <p className="text-sm font-extrabold text-slate-900 truncate">{fullName || 'Student'}</p>
               </div>
 
               <div className="space-y-0.5">
                 <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                  <Phone className="w-3 h-3 text-slate-400" /> Mobile Number
+                  <Hash className="w-3 h-3 text-indigo-600" /> Enrolment No (PRN)
                 </p>
-                <p className="text-sm font-bold text-slate-900 font-mono">+91 {mobileInput}</p>
+                <p className="text-sm font-bold text-indigo-700 font-mono">{prnNo || 'N/A'}</p>
               </div>
 
               <div className="space-y-0.5">
-                <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">Course & Branch</p>
-                <p className="text-xs font-bold text-slate-900 break-words">{selectedCourse} - <span className="text-indigo-600">{selectedBranch}</span></p>
+                <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 flex items-center gap-1">
+                  <BookOpen className="w-3 h-3 text-slate-400" /> Scheme / Course
+                </p>
+                <p className="text-xs font-bold text-slate-900 break-words">
+                  <span className="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-bold border border-indigo-100">
+                    {matchedStudentRecord?.scheme || selectedScheme || selectedCourse}
+                  </span>
+                </p>
+              </div>
+
+              <div className="space-y-0.5">
+                <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 flex items-center gap-1">
+                  <Layers className="w-3 h-3 text-slate-400" /> Academic Year
+                </p>
+                <p className="text-sm font-bold text-slate-900">{year || '2nd Year'}</p>
               </div>
 
             </div>
@@ -659,11 +757,11 @@ export default function StudentDashboard({
                     onClick={() => onInitiatePayment({
                       feeType: 'examFee',
                       feeTitle: 'Exam Fee',
-                      amount: examAmount
+                      amount: remainingExamDue > 0 ? remainingExamDue : examAmount
                     })}
                     className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all cursor-pointer shadow-xs"
                   >
-                    <span>Pay ₹{examAmount.toLocaleString('en-IN')}</span>
+                    <span>Pay ₹{(remainingExamDue > 0 ? remainingExamDue : examAmount).toLocaleString('en-IN')}</span>
                     <ArrowRight className="w-4 h-4 text-white" />
                   </button>
                 )}
@@ -724,11 +822,11 @@ export default function StudentDashboard({
                     onClick={() => onInitiatePayment({
                       feeType: 'tuitionFee',
                       feeTitle: 'Tuition Fee',
-                      amount: tuitionAmount
+                      amount: remainingTuitionDue > 0 ? remainingTuitionDue : tuitionAmount
                     })}
                     className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all cursor-pointer shadow-xs"
                   >
-                    <span>Pay ₹{tuitionAmount.toLocaleString('en-IN')}</span>
+                    <span>Pay ₹{(remainingTuitionDue > 0 ? remainingTuitionDue : tuitionAmount).toLocaleString('en-IN')}</span>
                     <ArrowRight className="w-4 h-4 text-white" />
                   </button>
                 )}

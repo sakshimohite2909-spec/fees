@@ -15,6 +15,7 @@ export default function AdminDashboard({
   onUpdateFeesConfig,
   onAddStudent,
   onImportStudents,
+  onClearAllStudents,
   onDeleteStudent,
   onViewInvoice 
 }) {
@@ -22,6 +23,7 @@ export default function AdminDashboard({
   const [isSavedAlert, setIsSavedAlert] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [activeCourseTab, setActiveCourseTab] = useState('all'); // 'all' | 'Polytechnic' | 'Pharmacy' | 'Engineering'
 
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -34,26 +36,32 @@ export default function AdminDashboard({
     setTimeout(() => setIsSavedAlert(false), 3000);
   };
 
-  // Export current student directory to Excel (.xlsx)
+  // Export current student directory to Excel (.xlsx) with Top College Headline Banner
   const handleExportToExcel = () => {
-    const exportData = students.map(std => {
+    const titleRow = ["NETAJI SUBHASHCHANDRA BOSE EDUCATION TRUST'S NETAJI POLYTECHNIC COLLEGE"];
+    const headerRow = ["SRNO", "ENROLMENTNO", "NAME", "SCHEME", "Year", "TUITION FEE STATUS", "EXAM FEE STATUS"];
+
+    const dataRows = students.map((std, idx) => {
       const stdPayments = payments.filter(p => p.studentId === std.id || p.rollNo === std.rollNo);
       const tuitionPay = stdPayments.find(p => p.feeType === 'tuitionFee');
       const examPay = stdPayments.find(p => p.feeType === 'examFee');
 
-      return {
-        'Student Name': std.fullName,
-        'Mobile Number': std.mobile || std.educationDetails?.mobile || 'N/A',
-        'PRN No': std.prnNo,
-        'Branch': std.branch || std.educationDetails?.branch || 'Computer Engineering',
-        'Roll No': std.rollNo,
-        'Gmail ID': std.email,
-        'Tuition Fee Status': tuitionPay ? `PAID (₹${tuitionPay.amount})` : 'PENDING',
-        'Exam Fee Status': examPay ? `PAID (₹${examPay.amount})` : 'PENDING'
-      };
+      return [
+        idx + 1,
+        std.prnNo || 'N/A',
+        std.fullName || 'N/A',
+        std.course || std.educationDetails?.course || 'Engineering',
+        std.year || std.educationDetails?.year || '3rd Year',
+        tuitionPay ? `PAID (₹${tuitionPay.amount})` : 'PENDING',
+        examPay ? `PAID (₹${examPay.amount})` : 'PENDING'
+      ];
     });
 
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const worksheet = XLSX.utils.aoa_to_sheet([titleRow, [], headerRow, ...dataRows]);
+    worksheet['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }
+    ];
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Students_Database');
     XLSX.writeFile(workbook, `College_Students_Fee_Report_${new Date().toISOString().slice(0,10)}.xlsx`);
@@ -61,26 +69,20 @@ export default function AdminDashboard({
 
   // Download Sample Excel Template for Admin Upload
   const handleDownloadSampleExcel = () => {
-    const sampleData = [
-      {
-        'Name': 'Sakshi Patil',
-        'Mobile Number': '9876543210',
-        'PRN No': '20240325001192',
-        'Branch': 'Computer Engineering',
-        'Roll No': 'CS2026-042',
-        'Gmail ID': 'sakshpatil@gmail.com'
-      },
-      {
-        'Name': 'Rahul Deshmukh',
-        'Mobile Number': '9822114455',
-        'PRN No': '20240325001144',
-        'Branch': 'Information Technology',
-        'Roll No': 'CS2026-015',
-        'Gmail ID': 'rahul.deshmukh@gmail.com'
-      }
+    const titleRow = ["NETAJI SUBHASHCHANDRA BOSE EDUCATION TRUST'S NETAJI POLYTECHNIC COLLEGE"];
+    const headerRow = ["SRNO", "ENROLMENTNO", "NAME", "SCHEME", "Year"];
+
+    const sampleRows = [
+      [1, '20240325001192', 'Sakshi Patil', 'Engineering', '3rd Year'],
+      [2, '20240325001144', 'Rahul Deshmukh', 'Engineering', '3rd Year'],
+      [3, '20240325001188', 'Anita Shinde', 'Polytechnic', '2nd Year']
     ];
 
-    const worksheet = XLSX.utils.json_to_sheet(sampleData);
+    const worksheet = XLSX.utils.aoa_to_sheet([titleRow, [], headerRow, ...sampleRows]);
+    worksheet['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }
+    ];
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Students_Sample');
     XLSX.writeFile(workbook, 'Student_Data_Sample_Template.xlsx');
@@ -94,24 +96,61 @@ export default function AdminDashboard({
   const totalExpected = totalStudents * expectedPerStudent;
   const totalPending = Math.max(0, totalExpected - totalCollected);
 
-  // Filter students
+  // Valid non-dummy students list
+  const validStudentsList = students.filter(std => 
+    std.fullName && 
+    std.fullName !== 'Student' && 
+    std.fullName.toLowerCase() !== 'student name' && 
+    std.fullName.toLowerCase() !== 'candidate name' &&
+    std.prnNo !== 'N/A'
+  );
+
+  const polytechnicStudents = validStudentsList.filter(s => {
+    const c = (s.course || s.educationDetails?.course || 'Polytechnic').toLowerCase();
+    return c.includes('poly') || (!c.includes('pharm') && !c.includes('eng'));
+  });
+
+  const pharmacyStudents = validStudentsList.filter(s => 
+    (s.course || s.educationDetails?.course || '').toLowerCase().includes('pharm')
+  );
+
+  // Filter students (exclude dummy / invalid records)
   const filteredStudents = students.filter(std => {
+    // Hide dummy/empty student records
+    if (
+      !std.fullName || 
+      std.fullName === 'Student' || 
+      std.fullName.toLowerCase() === 'student name' || 
+      std.fullName.toLowerCase() === 'candidate name' ||
+      std.prnNo === 'N/A'
+    ) {
+      return false;
+    }
+
     const matchesSearch = 
       (std.fullName && std.fullName.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (std.rollNo && std.rollNo.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (std.prnNo && std.prnNo.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (std.mobile && std.mobile.includes(searchQuery)) ||
-      (std.branch && std.branch.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (std.email && std.email.toLowerCase().includes(searchQuery.toLowerCase()));
+      (std.scheme && std.scheme.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (std.course && std.course.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (std.educationDetails?.course && std.educationDetails.course.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    const stdCourse = (std.course || std.educationDetails?.course || 'Polytechnic').toLowerCase();
+    const matchesCourseTab = 
+      activeCourseTab === 'all' || 
+      (activeCourseTab === 'Polytechnic' && (stdCourse.includes('poly') || (!stdCourse.includes('pharm') && !stdCourse.includes('eng')))) ||
+      (activeCourseTab === 'Pharmacy' && stdCourse.includes('pharm'));
 
     const stdPayments = payments.filter(p => p.studentId === std.id || p.rollNo === std.rollNo);
     const hasPaidTuition = stdPayments.some(p => p.feeType === 'tuitionFee');
     const hasPaidExam = stdPayments.some(p => p.feeType === 'examFee');
     const isFullyPaid = hasPaidTuition && hasPaidExam;
 
-    if (statusFilter === 'paid') return matchesSearch && isFullyPaid;
-    if (statusFilter === 'pending') return matchesSearch && !isFullyPaid;
-    return matchesSearch;
+    let matchesStatus = true;
+    if (statusFilter === 'paid') matchesStatus = isFullyPaid;
+    if (statusFilter === 'pending') matchesStatus = !isFullyPaid;
+
+    return matchesSearch && matchesCourseTab && matchesStatus;
   });
 
   return (
@@ -305,7 +344,7 @@ export default function AdminDashboard({
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-5 pb-4 border-b border-slate-100">
               <div>
                 <h3 className="text-base font-bold text-slate-900">Student Directory Excel Sheet</h3>
-                <p className="text-xs text-slate-500 font-medium">Name, Mobile Number, PRN No & Branch records</p>
+                <p className="text-xs text-slate-500 font-medium">Name, Enrolment No, Scheme & Year records</p>
               </div>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
@@ -328,7 +367,68 @@ export default function AdminDashboard({
                   <span>Add Student</span>
                 </button>
 
+                {/* 🗑️ Clear All Students Button */}
+                {onClearAllStudents && students.length > 0 && (
+                  <button
+                    onClick={() => {
+                      if (window.confirm('Are you sure you want to clear all student records? You can upload a fresh Excel sheet anytime.')) {
+                        onClearAllStudents();
+                      }
+                    }}
+                    title="Clear all student records"
+                    className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-xs border border-rose-200 transition-all cursor-pointer"
+                  >
+                    <Trash2 className="w-4 h-4 text-rose-600" />
+                    <span>Clear Data</span>
+                  </button>
+                )}
+
               </div>
+            </div>
+
+            {/* Clean Compact Course Filter Tabs (Polytechnic vs Pharmacy) */}
+            <div className="flex flex-wrap items-center gap-2 mb-4 p-1 bg-slate-100/80 rounded-xl border border-slate-200">
+              <button
+                type="button"
+                onClick={() => setActiveCourseTab('all')}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  activeCourseTab === 'all'
+                    ? 'bg-white text-indigo-600 shadow-xs border border-slate-200/80'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                All Courses ({validStudentsList.length})
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveCourseTab('Polytechnic')}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  activeCourseTab === 'Polytechnic'
+                    ? 'bg-white text-indigo-600 shadow-xs border border-slate-200/80'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>🎓 Polytechnic</span>
+                <span className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-[10px] font-bold">
+                  {polytechnicStudents.length}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveCourseTab('Pharmacy')}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  activeCourseTab === 'Pharmacy'
+                    ? 'bg-white text-emerald-600 shadow-xs border border-slate-200/80'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>💊 Pharmacy</span>
+                <span className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full text-[10px] font-bold">
+                  {pharmacyStudents.length}
+                </span>
+              </button>
             </div>
 
             {/* Filter & Search Toolbar */}
@@ -337,7 +437,7 @@ export default function AdminDashboard({
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
                 <input
                   type="text"
-                  placeholder="Search by Name, Mobile, PRN No, Branch..."
+                  placeholder="Search by NAME, ENROLMENTNO, SCHEME..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
@@ -358,70 +458,97 @@ export default function AdminDashboard({
             {/* Excel Sheet Table Grid */}
             <div className="overflow-x-auto border border-slate-200 rounded-xl">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-700 font-semibold uppercase border-b border-slate-200">
+                <thead className="bg-slate-50 text-slate-700 font-bold uppercase border-b border-slate-200">
                   <tr>
-                    <th className="py-3 px-3">Student Name</th>
-                    <th className="py-3 px-3">Mobile Number</th>
-                    <th className="py-3 px-3">PRN No</th>
-                    <th className="py-3 px-3">Branch / Dept</th>
-                    <th className="py-3 px-3">Tuition Fee</th>
-                    <th className="py-3 px-3">Exam Fee</th>
-                    <th className="py-3 px-3 text-right">Action</th>
+                    <th className="py-3 px-3">SRNO</th>
+                    <th className="py-3 px-3">ENROLMENTNO</th>
+                    <th className="py-3 px-3">NAME</th>
+                    <th className="py-3 px-3">SCHEME</th>
+                    <th className="py-3 px-3">YEAR</th>
+                    <th className="py-3 px-3">TUITION FEE</th>
+                    <th className="py-3 px-3">EXAM FEE</th>
+                    <th className="py-3 px-3 text-right">ACTION</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium">
                   {filteredStudents.length === 0 ? (
                     <tr>
-                      <td colSpan="7" className="text-center py-8 text-slate-400 font-medium bg-slate-50">
+                      <td colSpan="8" className="text-center py-8 text-slate-400 font-medium bg-slate-50">
                         No student records found in database. Click "Upload Excel Sheet" or "Add Student".
                       </td>
                     </tr>
                   ) : (
-                    filteredStudents.map((std) => {
-                      const stdPayments = payments.filter(p => p.studentId === std.id || p.rollNo === std.rollNo);
+                    filteredStudents.map((std, idx) => {
+                      const stdPayments = payments.filter(p => (std.id && p.studentId === std.id) || (std.rollNo && p.rollNo === std.rollNo) || (std.prnNo && p.prnNo === std.prnNo));
+                      const totalTuitionPaidForStd = stdPayments
+                        .filter(p => p.feeType === 'tuitionFee' && p.status === 'PAID')
+                        .reduce((sum, p) => sum + (p.amount || 0), 0);
+                      const totalExamPaidForStd = stdPayments
+                        .filter(p => p.feeType === 'examFee' && p.status === 'PAID')
+                        .reduce((sum, p) => sum + (p.amount || 0), 0);
+
+                      const reqTuitionFee = feesConfig.tuitionFee || 45000;
+                      const reqExamFee = feesConfig.examFee || 2500;
+
+                      const isTuitionFullyPaid = totalTuitionPaidForStd >= reqTuitionFee && reqTuitionFee > 0;
+                      const isExamFullyPaid = totalExamPaidForStd >= reqExamFee && reqExamFee > 0;
+
                       const tuitionPay = stdPayments.find(p => p.feeType === 'tuitionFee');
                       const examPay = stdPayments.find(p => p.feeType === 'examFee');
 
                       return (
-                        <tr key={std.id} className="hover:bg-slate-50/60 transition-colors">
+                        <tr key={std.id ? `${std.id}_${idx}` : idx} className="hover:bg-slate-50/60 transition-colors">
                           
-                          {/* Student Name */}
+                          {/* SRNO */}
                           <td className="py-3 px-3">
-                            <p className="font-semibold text-slate-900">{std.fullName}</p>
-                            <p className="text-[10px] text-slate-400 font-mono">{std.email}</p>
+                            <span className="font-mono font-bold text-slate-700">{idx + 1}</span>
                           </td>
 
-                          {/* Mobile Number */}
+                          {/* ENROLMENTNO */}
                           <td className="py-3 px-3">
-                            <span className="font-mono text-slate-700 flex items-center gap-1">
-                              <Phone className="w-3 h-3 text-slate-400" />
-                              {std.mobile || std.educationDetails?.mobile || 'N/A'}
-                            </span>
-                          </td>
-
-                          {/* PRN No */}
-                          <td className="py-3 px-3">
-                            <span className="font-mono font-semibold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                            <span className="font-mono font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-100">
                               {std.prnNo || 'N/A'}
                             </span>
                           </td>
 
-                          {/* Branch */}
+                          {/* NAME */}
+                          <td className="py-3 px-3">
+                            <p className="font-semibold text-slate-900">{std.fullName}</p>
+                          </td>
+
+                          {/* SCHEME (Course / Scheme Code) */}
+                          <td className="py-3 px-3">
+                            <span className="font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded text-[11px] border border-indigo-100/80">
+                              {std.scheme || std.educationDetails?.scheme || std.course || std.educationDetails?.course || 'Polytechnic'}
+                            </span>
+                          </td>
+
+                          {/* YEAR */}
                           <td className="py-3 px-3">
                             <span className="font-medium text-slate-700">
-                              {std.branch || std.educationDetails?.branch || 'Computer Engineering'}
+                              {std.year || std.educationDetails?.year || '2nd Year'}
                             </span>
                           </td>
 
                           {/* Tuition Fee */}
                           <td className="py-3 px-3">
-                            {tuitionPay ? (
-                              <button
-                                onClick={() => onViewInvoice(tuitionPay)}
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold text-[11px]"
-                              >
-                                <CheckCircle className="w-3 h-3 text-emerald-600" /> ₹{tuitionPay.amount?.toLocaleString('en-IN')}
-                              </button>
+                            {isTuitionFullyPaid ? (
+                              <div className="flex flex-col items-start gap-1">
+                                <button
+                                  onClick={() => onViewInvoice(tuitionPay)}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold text-[11px] hover:bg-emerald-100 transition-all cursor-pointer shadow-2xs"
+                                >
+                                  <CheckCircle className="w-3 h-3 text-emerald-600" /> ₹{totalTuitionPaidForStd?.toLocaleString('en-IN')}
+                                </button>
+                                <span className="text-[10px] font-semibold text-slate-500 flex items-center gap-1 font-mono">
+                                  <Clock className="w-3 h-3 text-slate-400" />
+                                  {tuitionPay?.dateTime || tuitionPay?.date ? `${tuitionPay.date || ''} ${tuitionPay.time || ''}` : tuitionPay?.timestamp ? new Date(tuitionPay.timestamp).toLocaleString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : 'Paid'}
+                                </span>
+                              </div>
+                            ) : totalTuitionPaidForStd > 0 ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 text-amber-700 font-semibold text-[11px] border border-amber-200">
+                                Paid ₹{totalTuitionPaidForStd?.toLocaleString('en-IN')} / ₹{reqTuitionFee?.toLocaleString('en-IN')}
+                              </span>
                             ) : (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 text-amber-700 font-medium text-[11px] border border-amber-200">
                                 Pending
@@ -431,13 +558,23 @@ export default function AdminDashboard({
 
                           {/* Exam Fee */}
                           <td className="py-3 px-3">
-                            {examPay ? (
-                              <button
-                                onClick={() => onViewInvoice(examPay)}
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold text-[11px]"
-                              >
-                                <CheckCircle className="w-3 h-3 text-emerald-600" /> ₹{examPay.amount?.toLocaleString('en-IN')}
-                              </button>
+                            {isExamFullyPaid ? (
+                              <div className="flex flex-col items-start gap-1">
+                                <button
+                                  onClick={() => onViewInvoice(examPay)}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold text-[11px] hover:bg-emerald-100 transition-all cursor-pointer shadow-2xs"
+                                >
+                                  <CheckCircle className="w-3 h-3 text-emerald-600" /> ₹{totalExamPaidForStd?.toLocaleString('en-IN')}
+                                </button>
+                                <span className="text-[10px] font-semibold text-slate-500 flex items-center gap-1 font-mono">
+                                  <Clock className="w-3 h-3 text-slate-400" />
+                                  {examPay?.dateTime || examPay?.date ? `${examPay.date || ''} ${examPay.time || ''}` : examPay?.timestamp ? new Date(examPay.timestamp).toLocaleString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : 'Paid'}
+                                </span>
+                              </div>
+                            ) : totalExamPaidForStd > 0 ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 text-amber-700 font-semibold text-[11px] border border-amber-200">
+                                Paid ₹{totalExamPaidForStd?.toLocaleString('en-IN')} / ₹{reqExamFee?.toLocaleString('en-IN')}
+                              </span>
                             ) : (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 text-amber-700 font-medium text-[11px] border border-amber-200">
                                 Pending

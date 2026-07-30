@@ -386,31 +386,45 @@ export default function AdminDashboard({
               </div>
             </div>
 
-            {/* Clean Compact Course Filter Tabs (Polytechnic vs Pharmacy) */}
-            <div className="flex flex-wrap items-center gap-2 mb-4 p-1 bg-slate-100/80 rounded-xl border border-slate-200">
+            {/* 🎓 Attractive Vibrant Course Filter Tabs (Polytechnic vs Pharmacy) */}
+            <div className="flex flex-wrap items-center gap-2.5 mb-5 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200/80 shadow-inner">
               <button
                 type="button"
                 onClick={() => setActiveCourseTab('all')}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-300 cursor-pointer flex items-center gap-2 ${
                   activeCourseTab === 'all'
-                    ? 'bg-white text-indigo-600 shadow-xs border border-slate-200/80'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/30 ring-2 ring-slate-900/20 scale-[1.02]'
+                    : 'bg-white/80 hover:bg-white text-slate-600 hover:text-slate-900 border border-slate-200/80 shadow-2xs'
                 }`}
               >
-                All Courses ({validStudentsList.length})
+                <span>All Courses</span>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
+                  activeCourseTab === 'all'
+                    ? 'bg-white/20 text-white backdrop-blur-xs border border-white/30'
+                    : 'bg-slate-200/80 text-slate-700'
+                }`}>
+                  {validStudentsList.length}
+                </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveCourseTab('Polytechnic')}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-300 cursor-pointer flex items-center gap-2 ${
                   activeCourseTab === 'Polytechnic'
-                    ? 'bg-white text-indigo-600 shadow-xs border border-slate-200/80'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-gradient-to-r from-indigo-600 via-indigo-700 to-indigo-800 text-white shadow-lg shadow-indigo-600/35 ring-2 ring-indigo-500/30 scale-[1.02]'
+                    : 'bg-white/80 hover:bg-white text-slate-700 hover:text-indigo-600 border border-slate-200/80 shadow-2xs'
                 }`}
               >
-                <span>🎓 Polytechnic</span>
-                <span className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-[10px] font-bold">
+                <span className="flex items-center gap-1.5">
+                  <span className="text-sm">🎓</span>
+                  <span>Polytechnic</span>
+                </span>
+                <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-black tracking-tight ${
+                  activeCourseTab === 'Polytechnic'
+                    ? 'bg-white/25 text-white backdrop-blur-xs border border-white/30 shadow-inner'
+                    : 'bg-indigo-50 text-indigo-700 border border-indigo-100/80'
+                }`}>
                   {polytechnicStudents.length}
                 </span>
               </button>
@@ -418,14 +432,21 @@ export default function AdminDashboard({
               <button
                 type="button"
                 onClick={() => setActiveCourseTab('Pharmacy')}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-300 cursor-pointer flex items-center gap-2 ${
                   activeCourseTab === 'Pharmacy'
-                    ? 'bg-white text-emerald-600 shadow-xs border border-slate-200/80'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-800 text-white shadow-lg shadow-emerald-600/35 ring-2 ring-emerald-500/30 scale-[1.02]'
+                    : 'bg-white/80 hover:bg-white text-slate-700 hover:text-emerald-600 border border-slate-200/80 shadow-2xs'
                 }`}
               >
-                <span>💊 Pharmacy</span>
-                <span className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full text-[10px] font-bold">
+                <span className="flex items-center gap-1.5">
+                  <span className="text-sm">💊</span>
+                  <span>Pharmacy</span>
+                </span>
+                <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-black tracking-tight ${
+                  activeCourseTab === 'Pharmacy'
+                    ? 'bg-white/25 text-white backdrop-blur-xs border border-white/30 shadow-inner'
+                    : 'bg-emerald-50 text-emerald-700 border border-emerald-100/80'
+                }`}>
                   {pharmacyStudents.length}
                 </span>
               </button>

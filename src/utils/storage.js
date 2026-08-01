@@ -110,7 +110,10 @@ export const getStudents = () => {
   if (!saved) return DEFAULT_STUDENTS;
   try {
     const list = JSON.parse(saved);
-    return Array.isArray(list) && list.length > 0 ? list : DEFAULT_STUDENTS;
+    if (!Array.isArray(list) || list.length === 0) return DEFAULT_STUDENTS;
+    // Purge legacy corrupted mock records
+    const cleanList = list.filter(s => s.fullName !== 'Polytechnic Student' && s.id !== 'std_25612400241');
+    return cleanList.length > 0 ? cleanList : DEFAULT_STUDENTS;
   } catch (e) {
     return DEFAULT_STUDENTS;
   }

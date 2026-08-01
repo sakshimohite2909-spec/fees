@@ -122,8 +122,11 @@ export default function StudentDashboard({
     const qClean = cleanStr(queryStr);
     if (!qClean) return null;
 
+    // Filter out corrupted legacy mock objects
+    const cleanList = (list || []).filter(s => s.fullName !== 'Polytechnic Student' && s.id !== 'std_25612400241');
+
     // Exact match on PRN, Roll No, ID, or Full Name
-    let match = (list || []).find(s => 
+    let match = cleanList.find(s => 
       cleanStr(s.prnNo) === qClean || 
       cleanStr(s.rollNo) === qClean || 
       cleanStr(s.id) === qClean ||
@@ -132,7 +135,7 @@ export default function StudentDashboard({
     if (match) return match;
 
     // Partial match on PRN or Name
-    match = (list || []).find(s => {
+    match = cleanList.find(s => {
       const pClean = cleanStr(s.prnNo);
       const nClean = cleanStr(s.fullName);
       return (pClean && (pClean.includes(qClean) || qClean.includes(pClean))) ||
@@ -818,10 +821,36 @@ export default function StudentDashboard({
             <div className="mt-4 p-3.5 sm:p-4 bg-slate-50/80 rounded-xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
               
               <div className="space-y-0.5">
-                <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                  <User className="w-3 h-3 text-slate-400" /> Student Name
+                <div className="flex items-center justify-between">
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 flex items-center gap-1">
+                    <User className="w-3 h-3 text-slate-400" /> Student Name
+                  </p>
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      const inputName = prompt('Enter Student Full Name:', fullName !== 'Polytechnic Student' && fullName !== 'Student' ? fullName : '');
+                      if (inputName && inputName.trim()) {
+                        const cleanName = inputName.trim();
+                        setFullName(cleanName);
+                        onSaveStudent({
+                          ...(matchedStudentRecord || {}),
+                          fullName: cleanName,
+                          mobile: mobileInput,
+                          course: selectedCourse,
+                          branch: selectedBranch,
+                          rollNo,
+                          prnNo
+                        }, true);
+                      }
+                    }}
+                    className="text-[10px] text-indigo-600 hover:text-indigo-800 font-bold hover:underline cursor-pointer"
+                  >
+                    Edit Name
+                  </button>
+                </div>
+                <p className="text-sm font-extrabold text-slate-900 truncate">
+                  {fullName && fullName !== 'Polytechnic Student' ? fullName : (matchedStudentRecord?.fullName && matchedStudentRecord.fullName !== 'Polytechnic Student' ? matchedStudentRecord.fullName : 'Student')}
                 </p>
-                <p className="text-sm font-extrabold text-slate-900 truncate">{fullName || 'Student'}</p>
               </div>
 
               <div className="space-y-0.5">

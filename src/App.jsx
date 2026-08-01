@@ -43,12 +43,17 @@ export default function App() {
 
   useEffect(() => {
     const user = getCurrentUser();
-    if (user) {
+    if (user && user.fullName !== 'Polytechnic Student') {
       setLocalCurrentUser(user);
+    } else if (user && user.fullName === 'Polytechnic Student') {
+      setCurrentUser(null);
     }
 
-    // Auto-sync existing local student database to Firebase Firestore if present
-    const localStudents = getStudents();
+    // Auto-purge legacy corrupted mock records from local storage
+    const localStudents = getStudents().filter(s => s.fullName !== 'Polytechnic Student' && s.id !== 'std_25612400241');
+    localStorage.setItem('edupay_students', JSON.stringify(localStudents));
+    setStudents(localStudents);
+
     if (localStudents && localStudents.length > 0) {
       syncStudentsToFirestore(localStudents);
     }
@@ -57,8 +62,11 @@ export default function App() {
     const loadFirebaseDatabase = async () => {
       const dbStudents = await fetchStudentsFromFirestore();
       if (dbStudents && dbStudents.length > 0) {
-        setStudents(dbStudents);
-        localStorage.setItem('edupay_students', JSON.stringify(dbStudents));
+        const cleanDbStudents = dbStudents.filter(s => s.fullName !== 'Polytechnic Student' && s.id !== 'std_25612400241');
+        if (cleanDbStudents.length > 0) {
+          setStudents(cleanDbStudents);
+          localStorage.setItem('edupay_students', JSON.stringify(cleanDbStudents));
+        }
       }
       const dbPayments = await fetchPaymentsFromFirestore();
       if (dbPayments && dbPayments.length > 0) {

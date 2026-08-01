@@ -1,4 +1,10 @@
-// LocalStorage persistence manager for EduPay
+import { 
+  syncStudentsToFirestore, 
+  syncPaymentToFirestore, 
+  deleteStudentFromFirestore, 
+  clearFirestoreStudentsCollection, 
+  clearFirestorePaymentsCollection 
+} from './firebase';
 
 const STORAGE_KEYS = {
   FEES_CONFIG: 'edupay_fees_config',
@@ -15,6 +21,9 @@ const DEFAULT_FEES_CONFIG = {
   examFee: 2500,
   examDueDate: '2026-08-25',
   examDescription: 'Semester Examination & Hall Ticket Fee',
+  backlogFee: 1500,
+  backlogDueDate: '2026-09-15',
+  backlogDescription: 'Backlog Paper & Re-examination Fee',
   academicYear: '2026-2027',
   updatedAt: new Date().toISOString()
 };
@@ -77,22 +86,8 @@ const DEFAULT_STUDENTS = [
   }
 ];
 
-// Initial Payment Records
-const DEFAULT_PAYMENTS = [
-  {
-    id: 'pay_908123',
-    razorpayPaymentId: 'pay_Pz92KxL88102a',
-    studentId: 'std_102',
-    studentName: 'Rahul Deshmukh',
-    rollNo: 'CS2026-015',
-    feeType: 'tuitionFee',
-    feeTitle: 'Tuition Fee',
-    amount: 45000,
-    status: 'PAID',
-    paymentMethod: 'Razorpay UPI / NetBanking',
-    timestamp: '2026-07-23T11:20:00Z'
-  }
-];
+// Initial Payment Records (Default empty so fee status shows PENDING until student pays)
+const DEFAULT_PAYMENTS = [];
 
 export const getFeesConfig = () => {
   const saved = localStorage.getItem(STORAGE_KEYS.FEES_CONFIG);
@@ -117,7 +112,11 @@ export const getStudents = () => {
 
 export const saveStudent = (studentData) => {
   const students = getStudents();
-  const index = students.findIndex(s => (studentData.email && s.email === studentData.email) || (studentData.prnNo && s.prnNo === studentData.prnNo) || s.id === studentData.id);
+  const index = students.findIndex(s => 
+    (studentData.id && s.id === studentData.id) ||
+    (studentData.prnNo && studentData.prnNo !== 'N/A' && s.prnNo && s.prnNo !== 'N/A' && s.prnNo === studentData.prnNo) ||
+    (studentData.email && studentData.email !== 'student@gmail.com' && s.email && s.email === studentData.email)
+  );
   
   const formattedStudent = {
     id: studentData.id || `std_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
@@ -126,15 +125,19 @@ export const saveStudent = (studentData) => {
     prnNo: studentData.prnNo || 'N/A',
     mobile: studentData.mobile || studentData.educationDetails?.mobile || 'N/A',
     course: studentData.course || studentData.educationDetails?.course || 'Engineering',
+    scheme: studentData.scheme || studentData.educationDetails?.scheme || 'Polytechnic',
+    year: studentData.year || studentData.educationDetails?.year || '2nd Year',
+    semester: studentData.semester || studentData.educationDetails?.semester || '4th Semester',
     branch: studentData.branch || studentData.educationDetails?.branch || 'Computer Engineering',
     email: studentData.email || `${(studentData.fullName || 'student').toLowerCase().replace(/\s+/g, '')}@gmail.com`,
     educationDetails: {
       course: studentData.course || studentData.educationDetails?.course || 'Engineering',
+      scheme: studentData.scheme || studentData.educationDetails?.scheme || 'Polytechnic',
+      year: studentData.year || studentData.educationDetails?.year || '2nd Year',
+      semester: studentData.semester || studentData.educationDetails?.semester || '4th Semester',
       branch: studentData.branch || studentData.educationDetails?.branch || 'Computer Engineering',
-      year: studentData.year || studentData.educationDetails?.year || '3rd Year',
-      semester: studentData.semester || studentData.educationDetails?.semester || '5th Semester',
       mobile: studentData.mobile || studentData.educationDetails?.mobile || 'N/A',
-      collegeName: 'Government Engineering College'
+      collegeName: 'Netaji Polytechnic / Pharmacy College'
     },
     registeredAt: studentData.registeredAt || new Date().toISOString()
   };
@@ -148,6 +151,8 @@ export const saveStudent = (studentData) => {
   }
   
   localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(updatedList));
+  // Sync to Firebase Firestore database
+  syncStudentsToFirestore(updatedList);
   return updatedList;
 };
 
@@ -168,6 +173,7 @@ export const saveMultipleStudents = (newStudentsList, replaceAll = true) => {
       course: newStd.course || 'Polytechnic',
       scheme: newStd.scheme || newStd.course || 'Polytechnic',
       year: newStd.year || '2nd Year',
+      semester: newStd.semester || newStd.educationDetails?.semester || '4th Semester',
       branch: newStd.branch || (newStd.course === 'Engineering' ? 'Computer Engineering' : 'N/A'),
       rollNo: newStd.rollNo || `RN-${Math.floor(100 + Math.random() * 900)}`,
       email: newStd.email || `${(newStd.fullName || 'student').toLowerCase().replace(/[^a-z0-9]/g, '')}@gmail.com`,
@@ -175,8 +181,8 @@ export const saveMultipleStudents = (newStudentsList, replaceAll = true) => {
         course: newStd.course || 'Polytechnic',
         scheme: newStd.scheme || newStd.course || 'Polytechnic',
         year: newStd.year || '2nd Year',
+        semester: newStd.semester || newStd.educationDetails?.semester || '4th Semester',
         branch: newStd.branch || (newStd.course === 'Engineering' ? 'Computer Engineering' : 'N/A'),
-        semester: '4th Semester',
         mobile: newStd.mobile || 'N/A',
         collegeName: 'Netaji Polytechnic / Pharmacy College'
       },
@@ -192,11 +198,14 @@ export const saveMultipleStudents = (newStudentsList, replaceAll = true) => {
   });
 
   localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(existingStudents));
+  // Sync full Excel student directory list to Firebase Firestore database
+  syncStudentsToFirestore(existingStudents);
   return existingStudents;
 };
 
 export const clearAllStudents = () => {
   localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify([]));
+  clearFirestoreStudentsCollection();
   return [];
 };
 
@@ -204,6 +213,7 @@ export const deleteStudent = (studentId) => {
   const students = getStudents();
   const filtered = students.filter(s => s.id !== studentId);
   localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(filtered));
+  deleteStudentFromFirestore(studentId);
   return filtered;
 };
 
@@ -229,7 +239,22 @@ export const recordPayment = (paymentData) => {
   };
   const updated = [newPayment, ...payments];
   localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify(updated));
+  // Sync new payment transaction to Firebase Firestore database
+  syncPaymentToFirestore(newPayment);
   return newPayment;
+};
+
+export const clearAllPayments = () => {
+  localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify([]));
+  clearFirestorePaymentsCollection();
+  return [];
+};
+
+export const deletePayment = (paymentId) => {
+  const payments = getPayments();
+  const filtered = payments.filter(p => p.id !== paymentId);
+  localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify(filtered));
+  return filtered;
 };
 
 export const getCurrentUser = () => {

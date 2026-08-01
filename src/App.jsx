@@ -8,10 +8,11 @@ import InvoiceModal from './components/InvoiceModal';
 import { 
   getFeesConfig, saveFeesConfig, 
   getStudents, saveStudent, saveMultipleStudents, clearAllStudents, deleteStudent,
-  getPayments, recordPayment, 
+  getPayments, recordPayment, clearAllPayments, deletePayment,
   getCurrentUser, setCurrentUser 
 } from './utils/storage';
 import './utils/firebase';
+import { fetchStudentsFromFirestore, fetchPaymentsFromFirestore, syncStudentsToFirestore } from './utils/firebase';
 
 export default function App() {
   // Check URL pathname for /admin
@@ -45,6 +46,27 @@ export default function App() {
     if (user) {
       setLocalCurrentUser(user);
     }
+
+    // Auto-sync existing local student database to Firebase Firestore if present
+    const localStudents = getStudents();
+    if (localStudents && localStudents.length > 0) {
+      syncStudentsToFirestore(localStudents);
+    }
+
+    // Fetch latest Firestore database records if available
+    const loadFirebaseDatabase = async () => {
+      const dbStudents = await fetchStudentsFromFirestore();
+      if (dbStudents && dbStudents.length > 0) {
+        setStudents(dbStudents);
+        localStorage.setItem('edupay_students', JSON.stringify(dbStudents));
+      }
+      const dbPayments = await fetchPaymentsFromFirestore();
+      if (dbPayments && dbPayments.length > 0) {
+        setPayments(dbPayments);
+        localStorage.setItem('edupay_payments', JSON.stringify(dbPayments));
+      }
+    };
+    loadFirebaseDatabase();
 
     const syncRoleFromPath = () => {
       if (checkIsAdminPath()) {
@@ -101,11 +123,13 @@ export default function App() {
     }
   };
 
-  const handleSaveStudent = (studentData) => {
+  const handleSaveStudent = (studentData, isSelfRegistration = false) => {
     const updatedList = saveStudent(studentData);
-    setStudents(updatedList);
-    setLocalCurrentUser(studentData);
-    setCurrentUser(studentData);
+    setStudents([...updatedList]);
+    if (isSelfRegistration || activeRole !== 'admin') {
+      setLocalCurrentUser(studentData);
+      setCurrentUser(studentData);
+    }
   };
 
   const handleImportStudents = (studentsList) => {
@@ -128,25 +152,61 @@ export default function App() {
     setFeesConfig(updated);
   };
 
+  const handleUpdateSelectedStudentsFees = (studentIds, customFeeData) => {
+    if (!studentIds || studentIds.length === 0) return;
+    const updatedList = students.map(std => {
+      if (studentIds.includes(std.id) || (std.prnNo && studentIds.includes(std.prnNo))) {
+        return {
+          ...std,
+          customFees: {
+            academicYear: customFeeData.academicYear || '2026-2027',
+            examFee: customFeeData.examFee !== undefined && customFeeData.examFee !== '' ? Number(customFeeData.examFee) : (std.customFees?.examFee ?? feesConfig?.examFee ?? 40000),
+            examDueDate: customFeeData.examDueDate || std.customFees?.examDueDate || feesConfig?.examDueDate || '2026-07-29',
+            tuitionFee: customFeeData.tuitionFee !== undefined && customFeeData.tuitionFee !== '' ? Number(customFeeData.tuitionFee) : (std.customFees?.tuitionFee ?? feesConfig?.tuitionFee ?? 20000),
+            tuitionDueDate: customFeeData.tuitionDueDate || std.customFees?.tuitionDueDate || feesConfig?.tuitionDueDate || '2026-10-15',
+            backlogFee: customFeeData.backlogFee !== undefined && customFeeData.backlogFee !== '' ? Number(customFeeData.backlogFee) : (std.customFees?.backlogFee ?? feesConfig?.backlogFee ?? 0),
+            backlogDueDate: customFeeData.backlogDueDate || std.customFees?.backlogDueDate || feesConfig?.backlogDueDate || '2026-09-15',
+            updatedAt: new Date().toISOString()
+          }
+        };
+      }
+      return std;
+    });
+    setStudents(updatedList);
+    localStorage.setItem('edupay_students', JSON.stringify(updatedList));
+    syncStudentsToFirestore(updatedList);
+
+    // Sync logged in currentUser if applicable
+    const u = getCurrentUser();
+    if (u) {
+      const targetStd = updatedList.find(s => s.id === u.id || (u.prnNo && s.prnNo === u.prnNo));
+      if (targetStd) {
+        setCurrentUser(targetStd);
+        saveCurrentUser(targetStd);
+      }
+    }
+  };
+
+  const handleClearAllPayments = () => {
+    const updatedList = clearAllPayments();
+    setPayments(updatedList);
+  };
+
+  const handleDeletePayment = (paymentId) => {
+    const updatedList = deletePayment(paymentId);
+    setPayments(updatedList);
+  };
+
   const handleInitiatePayment = (feeDetails) => {
-    const activeUser = currentUser || {
-      id: `std_${Date.now()}`,
-      fullName: 'Sakshi Patil',
-      email: 'sakshi@gmail.com',
-      rollNo: 'CS2026-042'
-    };
-
-    const studentProfile = students.find(s => s.email === activeUser.email) || students[0] || {
-      id: activeUser.id || `std_${Date.now()}`,
-      fullName: activeUser.fullName || 'Student',
-      rollNo: activeUser.rollNo || 'CS2026-042'
-    };
-
     setActivePaymentRequest({
-      ...feeDetails,
-      studentId: studentProfile.id || `std_${Date.now()}`,
-      studentName: studentProfile.fullName || activeUser.fullName || 'Student',
-      rollNo: studentProfile.rollNo || 'CS2026-042'
+      feeType: feeDetails.feeType,
+      feeTitle: feeDetails.feeTitle,
+      amount: feeDetails.amount,
+      studentId: feeDetails.studentId || currentUser?.id || `std_${Date.now()}`,
+      studentName: feeDetails.studentName || currentUser?.fullName || 'Student',
+      rollNo: feeDetails.rollNo || currentUser?.rollNo || 'N/A',
+      prnNo: feeDetails.prnNo || currentUser?.prnNo || 'N/A',
+      email: feeDetails.email || currentUser?.email || ''
     });
   };
 
@@ -158,6 +218,7 @@ export default function App() {
       studentId: activePaymentRequest.studentId,
       studentName: activePaymentRequest.studentName,
       rollNo: activePaymentRequest.rollNo,
+      prnNo: activePaymentRequest.prnNo,
       feeType: activePaymentRequest.feeType,
       feeTitle: activePaymentRequest.feeTitle,
       amount: activePaymentRequest.amount,
@@ -195,6 +256,8 @@ export default function App() {
             onSaveStudent={handleSaveStudent}
             onInitiatePayment={handleInitiatePayment}
             onViewInvoice={(trx) => setActiveInvoice(trx)}
+            onClearAllPayments={handleClearAllPayments}
+            onDeletePayment={handleDeletePayment}
             onOpenAuth={handleOpenAuth}
             onStepChange={(st) => setCurrentStep(st)}
           />
@@ -204,10 +267,13 @@ export default function App() {
             students={students}
             payments={payments}
             onUpdateFeesConfig={handleUpdateFeesConfig}
+            onUpdateSelectedStudentsFees={handleUpdateSelectedStudentsFees}
             onAddStudent={handleSaveStudent}
             onImportStudents={handleImportStudents}
             onClearAllStudents={handleClearAllStudents}
             onDeleteStudent={handleDeleteStudent}
+            onClearAllPayments={handleClearAllPayments}
+            onDeletePayment={handleDeletePayment}
             onViewInvoice={(trx) => setActiveInvoice(trx)}
           />
         )}

@@ -3,7 +3,7 @@ import {
   CreditCard, CheckCircle, Clock, FileText, 
   Sparkles, Award, ArrowRight, ShieldCheck, Download, Edit3, Save, Check,
   Phone, BookOpen, Layers, Zap, Building2, CheckCircle2, ChevronRight, User, Hash, GraduationCap,
-  Search, UserPlus, AlertCircle, X
+  Search, UserPlus, AlertCircle, X, Trash2, Calendar
 } from 'lucide-react';
 
 export default function StudentDashboard({ 
@@ -14,6 +14,8 @@ export default function StudentDashboard({
   onSaveStudent, 
   onInitiatePayment,
   onViewInvoice,
+  onClearAllPayments,
+  onDeletePayment,
   onOpenAuth,
   onStepChange
 }) {
@@ -37,11 +39,12 @@ export default function StudentDashboard({
     if (str.includes('pharm')) return 'Pharmacy';
     return 'Engineering';
   };
-
+  // Helper to validate enrolment input (alphanumeric only)
+  const isValidEnrolment = (val) => /^[a-zA-Z0-9]+$/.test(val.trim());
   // Find existing student profile or initialize default
   const existingProfile = students.find(s => s.email === currentUser?.email) || null;
 
-  const defaultMobile = existingProfile?.mobile || existingProfile?.educationDetails?.mobile || currentUser?.mobile || '9876543210';
+  const defaultMobile = existingProfile?.mobile || existingProfile?.educationDetails?.mobile || currentUser?.mobile || '';
   const defaultCourse = getNormalizedCourse(existingProfile?.educationDetails?.course);
   const defaultBranch = existingProfile?.educationDetails?.branch || 'Computer Engineering';
 
@@ -52,6 +55,7 @@ export default function StudentDashboard({
   });
 
   const [enrolmentSearchInput, setEnrolmentSearchInput] = useState('');
+  const [enrolmentError, setEnrolmentError] = useState('');
   const [matchedStudentRecord, setMatchedStudentRecord] = useState(null);
 
   const [mobileInput, setMobileInput] = useState(defaultMobile);
@@ -63,6 +67,14 @@ export default function StudentDashboard({
   const [prnNo, setPrnNo] = useState(existingProfile?.prnNo || '');
   const [year, setYear] = useState(existingProfile?.educationDetails?.year || '2nd Year');
   const [semester, setSemester] = useState(existingProfile?.educationDetails?.semester || '4th Semester');
+
+  // Custom Partial Installment Payment Amounts State
+  const [partialTuitionInput, setPartialTuitionInput] = useState('');
+  const [isPartialTuitionMode, setIsPartialTuitionMode] = useState(false);
+  const [partialExamInput, setPartialExamInput] = useState('');
+  const [isPartialExamMode, setIsPartialExamMode] = useState(false);
+  const [partialBacklogInput, setPartialBacklogInput] = useState('');
+  const [isPartialBacklogMode, setIsPartialBacklogMode] = useState(false);
 
   // Track if verification step has been submitted
   const [isMobileSubmitted, setIsMobileSubmitted] = useState(!!currentUser && !!existingProfile?.prnNo);
@@ -106,14 +118,26 @@ export default function StudentDashboard({
   const handleEnrolmentNumberSubmit = (e) => {
     e.preventDefault();
     const query = enrolmentSearchInput.trim().toLowerCase();
-    if (!query) return;
+    if (!query) {
+      setEnrolmentError('कृपया एन्कॉलमेंट नंबर प्रविष्ट करा');
+      return;
+    }
+    if (!isValidEnrolment(query)) {
+      setEnrolmentError('केवळ अक्षर-आंकी वर्ण (अल्फान्यूमेरिक) वापरा');
+      return;
+    }
+    setEnrolmentError('');
 
-    // Search in students database by Enrolment No (PRN) or Roll No
+    // Search in students database by Enrolment No (PRN) or Roll No or Name (exact first, then partial)
     const match = students.find(s => {
       const prn = (s.prnNo || '').toLowerCase().trim();
       const roll = (s.rollNo || '').toLowerCase().trim();
       const name = (s.fullName || '').toLowerCase().trim();
-      return prn === query || roll === query || (prn && prn.includes(query)) || (name && name.includes(query));
+      return prn === query || roll === query || name === query;
+    }) || students.find(s => {
+      const prn = (s.prnNo || '').toLowerCase().trim();
+      const name = (s.fullName || '').toLowerCase().trim();
+      return (prn && prn.includes(query)) || (name && name.includes(query));
     });
 
     if (match) {
@@ -147,6 +171,7 @@ export default function StudentDashboard({
   const handleConfirmRegisterNewStudent = () => {
     setNotFoundEnrolment(null);
     setFullName('');
+    setMobileInput('');
     setRollNo(`RN-${Math.floor(1000 + Math.random() * 9000)}`);
     setPrnNo('N/A');
     setSelectedCourse('');
@@ -167,7 +192,7 @@ export default function StudentDashboard({
       prnNo
     };
 
-    onSaveStudent(studentData);
+    onSaveStudent(studentData, true);
     setIsMobileSubmitted(true);
     setShowEditForm(false);
     setStep('dashboard');
@@ -199,7 +224,7 @@ export default function StudentDashboard({
       }
     };
 
-    onSaveStudent(newStudentData);
+    onSaveStudent(newStudentData, true);
     setIsMobileSubmitted(true);
     setShowEditForm(false);
     setStep('dashboard');
@@ -213,14 +238,28 @@ export default function StudentDashboard({
 
   const myPayments = (payments || []).filter(p => {
     if (currentStudentId && p.studentId === currentStudentId) return true;
-    if (currentRollNo && p.rollNo && String(p.rollNo).toLowerCase() === String(currentRollNo).toLowerCase()) return true;
-    if (currentPrnNo && p.prnNo && String(p.prnNo).toLowerCase() === String(currentPrnNo).toLowerCase()) return true;
+    if (currentPrnNo && currentPrnNo !== 'N/A' && p.prnNo && String(p.prnNo).toLowerCase() === String(currentPrnNo).toLowerCase()) return true;
+    if (currentRollNo && currentRollNo !== 'N/A' && p.rollNo && String(p.rollNo).toLowerCase() === String(currentRollNo).toLowerCase()) return true;
     if (currentEmail && p.email && String(p.email).toLowerCase() === String(currentEmail).toLowerCase()) return true;
     return false;
   });
 
-  const examAmount = feesConfig?.examFee || 2500;
-  const tuitionAmount = feesConfig?.tuitionFee || 45000;
+  const latestStudentObj = (students || []).find(s => 
+    (currentStudentId && s.id === currentStudentId) || 
+    (currentPrnNo && currentPrnNo !== 'N/A' && s.prnNo && String(s.prnNo).toLowerCase() === String(currentPrnNo).toLowerCase()) ||
+    (currentRollNo && currentRollNo !== 'N/A' && s.rollNo && String(s.rollNo).toLowerCase() === String(currentRollNo).toLowerCase()) ||
+    (currentEmail && s.email && String(s.email).toLowerCase() === String(currentEmail).toLowerCase())
+  );
+  const studentCustomFees = latestStudentObj?.customFees || existingProfile?.customFees || matchedStudentRecord?.customFees;
+  const currentSemester = (studentCustomFees?.targetSemester && studentCustomFees?.targetSemester !== 'All')
+    ? studentCustomFees.targetSemester
+    : (studentCustomFees?.semester || latestStudentObj?.semester || semester || matchedStudentRecord?.semester || feesConfig?.targetSemester || '4th Semester');
+  const examAmount = studentCustomFees?.examFee ?? feesConfig?.examFee ?? 2500;
+  const tuitionAmount = studentCustomFees?.tuitionFee ?? feesConfig?.tuitionFee ?? 45000;
+  const backlogAmount = studentCustomFees?.backlogFee ?? 0;
+  const examDueDate = studentCustomFees?.examDueDate || feesConfig?.examDueDate || '2026-08-25';
+  const tuitionDueDate = studentCustomFees?.tuitionDueDate || feesConfig?.tuitionDueDate || '2026-08-15';
+  const backlogDueDate = studentCustomFees?.backlogDueDate || feesConfig?.backlogDueDate || '2026-09-15';
 
   const totalExamPaid = myPayments
     .filter(p => p.feeType === 'examFee' && p.status === 'PAID')
@@ -230,17 +269,24 @@ export default function StudentDashboard({
     .filter(p => p.feeType === 'tuitionFee' && p.status === 'PAID')
     .reduce((sum, p) => sum + (p.amount || 0), 0);
 
+  const totalBacklogPaid = myPayments
+    .filter(p => p.feeType === 'backlogFee' && p.status === 'PAID')
+    .reduce((sum, p) => sum + (p.amount || 0), 0);
+
   const isExamPaid = totalExamPaid >= examAmount && examAmount > 0;
   const isTuitionPaid = totalTuitionPaid >= tuitionAmount && tuitionAmount > 0;
+  const isBacklogPaid = totalBacklogPaid >= backlogAmount && backlogAmount > 0;
 
   const remainingExamDue = Math.max(0, examAmount - totalExamPaid);
   const remainingTuitionDue = Math.max(0, tuitionAmount - totalTuitionPaid);
+  const remainingBacklogDue = Math.max(0, backlogAmount - totalBacklogPaid);
 
   const examPaymentRecord = myPayments.find(p => p.feeType === 'examFee' && p.status === 'PAID');
   const tuitionPaymentRecord = myPayments.find(p => p.feeType === 'tuitionFee' && p.status === 'PAID');
+  const backlogPaymentRecord = myPayments.find(p => p.feeType === 'backlogFee' && p.status === 'PAID');
 
-  const totalPaidAmount = totalExamPaid + totalTuitionPaid;
-  const totalFeesDue = examAmount + tuitionAmount;
+  const totalPaidAmount = totalExamPaid + totalTuitionPaid + totalBacklogPaid;
+  const totalFeesDue = examAmount + tuitionAmount + backlogAmount;
   const remainingDues = Math.max(0, totalFeesDue - totalPaidAmount);
   const completionPercentage = totalFeesDue > 0 ? Math.min(100, Math.round((totalPaidAmount / totalFeesDue) * 100)) : 0;
 
@@ -296,14 +342,21 @@ export default function StudentDashboard({
                     required
                     placeholder="e.g. 25612400241 or 25623600001"
                     value={enrolmentSearchInput}
-                    onChange={(e) => setEnrolmentSearchInput(e.target.value)}
+                    onChange={(e) => {
+                      setEnrolmentSearchInput(e.target.value);
+                      if (enrolmentError) setEnrolmentError('');
+                    }}
                     className="w-full pl-4 pr-4 py-3 rounded-xl border border-slate-300 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50/50 shadow-2xs"
                   />
+                  {enrolmentError && (
+                    <p className="mt-1 text-xs text-red-600">{enrolmentError}</p>
+                  )}
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all cursor-pointer active:scale-[0.99]"
+                  disabled={!enrolmentSearchInput.trim() || !isValidEnrolment(enrolmentSearchInput)}
+                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all cursor-pointer active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span>Verify Enrolment Number</span>
                   <ArrowRight className="w-4 h-4 text-white" />
@@ -396,9 +449,15 @@ export default function StudentDashboard({
                           required
                           placeholder="e.g. 25612400241 or 25623600001"
                           value={enrolmentSearchInput}
-                          onChange={(e) => setEnrolmentSearchInput(e.target.value)}
+                          onChange={(e) => {
+                            setEnrolmentSearchInput(e.target.value);
+                            if (enrolmentError) setEnrolmentError('');
+                          }}
                           className="w-full pl-4 pr-4 py-3 rounded-xl border border-slate-300 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50/50 shadow-2xs"
                         />
+                        {enrolmentError && (
+                          <p className="mt-1 text-xs text-red-600">{enrolmentError}</p>
+                        )}
                       </div>
 
                       <button
@@ -560,7 +619,9 @@ export default function StudentDashboard({
                     </div>
                     <div>
                       <h2 className="text-lg font-bold text-slate-900">Add New Student Profile</h2>
-                      <p className="text-xs text-slate-500 font-medium">No record found for +91 {mobileInput}. Fill details to register.</p>
+                      <p className="text-xs text-slate-500 font-medium">
+                        {mobileInput ? `No record found for +91 ${mobileInput}. Fill details to register.` : 'Fill details below to register a new student profile.'}
+                      </p>
                     </div>
                   </div>
                   <button
@@ -568,7 +629,7 @@ export default function StudentDashboard({
                     onClick={() => setStep('mobile')}
                     className="text-xs font-semibold text-indigo-600 hover:underline px-2.5 py-1 rounded bg-indigo-50"
                   >
-                    Change Number
+                    Back
                   </button>
                 </div>
 
@@ -583,6 +644,17 @@ export default function StudentDashboard({
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Mobile Number (Optional)</label>
+                    <input
+                      type="tel"
+                      placeholder="Enter 10-digit Mobile Number"
+                      value={mobileInput}
+                      onChange={(e) => setMobileInput(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-medium font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                     />
                   </div>
 
@@ -670,8 +742,8 @@ export default function StudentDashboard({
               </button>
             </div>
 
-            {/* Profile Grid (Fetched directly from Excel Sheet) */}
-            <div className="mt-4 p-3.5 sm:p-4 bg-slate-50/80 rounded-xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {/* Profile Grid (Fetched directly from Excel Sheet & Admin Fee Config) */}
+            <div className="mt-4 p-3.5 sm:p-4 bg-slate-50/80 rounded-xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
               
               <div className="space-y-0.5">
                 <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 flex items-center gap-1">
@@ -703,6 +775,15 @@ export default function StudentDashboard({
                   <Layers className="w-3 h-3 text-slate-400" /> Academic Year
                 </p>
                 <p className="text-sm font-bold text-slate-900">{year || '2nd Year'}</p>
+              </div>
+
+              <div className="space-y-0.5">
+                <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 flex items-center gap-1">
+                  <Calendar className="w-3 h-3 text-indigo-600" /> Semester
+                </p>
+                <p className="text-sm font-extrabold text-indigo-900 bg-indigo-100/70 border border-indigo-200/80 px-2.5 py-0.5 rounded-lg inline-block">
+                  {currentSemester}
+                </p>
               </div>
 
             </div>
@@ -756,10 +837,163 @@ export default function StudentDashboard({
               </div>
             </div>
 
-            {/* Fee Cards Grid (Exam Fee & Tuition Fee) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {/* Fee Cards Grid (Exam Fee, Tuition Fee & Backlog Fee if applicable) */}
+            <div className={`grid grid-cols-1 ${backlogAmount > 0 ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-5`}>
               
-              {/* CARD 1: EXAM FEE */}
+              {/* CARD 1: TUITION FEE */}
+              <div className={`card-interactive p-5 flex flex-col justify-between ${
+                isTuitionPaid ? 'border-emerald-300 bg-emerald-50/20' : ''
+              }`}>
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                      Tuition Fee
+                    </span>
+                    {isTuitionPaid ? (
+                      <span className="bg-emerald-600 text-white text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                        <CheckCircle className="w-3 h-3" /> PAID
+                      </span>
+                    ) : totalTuitionPaid > 0 ? (
+                      <span className="bg-purple-100 text-purple-800 border border-purple-200 text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-purple-600" /> Partial Paid
+                      </span>
+                    ) : (
+                      <span className="bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> Mandatory
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold mb-3 border border-indigo-100">
+                    <CreditCard className="w-5 h-5 text-indigo-600" />
+                  </div>
+
+                  <h4 className="text-lg font-bold text-slate-900 mb-0.5">Tuition Fee</h4>
+                  <p className="text-xs text-slate-500 font-medium mb-3 min-h-[32px]">
+                    {feesConfig.tuitionDescription || 'Semester Tuition & Academic Fee'}
+                  </p>
+
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 mb-3 space-y-1.5">
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-[11px] font-semibold text-slate-500 uppercase">Total Fee</span>
+                      <span className="text-lg font-extrabold text-slate-900">
+                        ₹{tuitionAmount.toLocaleString('en-IN')}
+                      </span>
+                    </div>
+
+                    {totalTuitionPaid > 0 && (
+                      <div className="flex items-center justify-between text-xs text-emerald-700 font-bold pt-1 border-t border-slate-200">
+                        <span>Paid So Far:</span>
+                        <span>₹{totalTuitionPaid.toLocaleString('en-IN')}</span>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between text-xs text-amber-700 font-bold pt-1 border-t border-slate-200">
+                      <span>Remaining Due:</span>
+                      <span className="text-sm font-black text-amber-700">₹{remainingTuitionDue.toLocaleString('en-IN')}</span>
+                    </div>
+
+                    <div className="flex items-center gap-1 text-[11px] text-slate-500 font-medium pt-1 border-t border-slate-200">
+                      <Clock className="w-3 h-3 text-slate-400" /> Due: {tuitionDueDate}
+                    </div>
+                  </div>
+                </div>
+
+                {isTuitionPaid ? (
+                  <button
+                    onClick={() => onViewInvoice(tuitionPaymentRecord)}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-semibold text-xs border border-emerald-200 transition-all cursor-pointer"
+                  >
+                    <Download className="w-4 h-4 text-emerald-600" />
+                    <span>Download Receipt</span>
+                  </button>
+                ) : (
+                  <div className="space-y-2 mt-2">
+                    {/* Partial Installment Toggle Button */}
+                    <div className="flex items-center justify-between gap-1 text-[11px]">
+                      <button
+                        type="button"
+                        onClick={() => setIsPartialTuitionMode(false)}
+                        className={`flex-1 py-1 px-2 rounded-lg font-bold transition-all ${
+                          !isPartialTuitionMode ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        }`}
+                      >
+                        Full Due (₹{remainingTuitionDue.toLocaleString('en-IN')})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsPartialTuitionMode(true)}
+                        className={`flex-1 py-1 px-2 rounded-lg font-bold transition-all ${
+                          isPartialTuitionMode ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        }`}
+                      >
+                        Custom Installment
+                      </button>
+                    </div>
+
+                    {isPartialTuitionMode && (
+                      <div className="p-2.5 rounded-xl bg-purple-50 border border-purple-200 space-y-2 animate-fadeIn">
+                        <label className="block text-[10px] font-bold text-purple-900 uppercase">Enter Installment Amount (₹)</label>
+                        <input
+                          type="number"
+                          min="1"
+                          max={remainingTuitionDue}
+                          placeholder={`e.g. 5000 (Max: ₹${remainingTuitionDue})`}
+                          value={partialTuitionInput}
+                          onChange={(e) => setPartialTuitionInput(e.target.value)}
+                          className="w-full px-3 py-1.5 rounded-lg border border-purple-300 text-xs font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                        <div className="flex flex-wrap gap-1">
+                          {[5000, 10000, 15000].filter(amt => amt < remainingTuitionDue).map(amt => (
+                            <button
+                              key={amt}
+                              type="button"
+                              onClick={() => setPartialTuitionInput(String(amt))}
+                              className="text-[10px] font-bold px-2 py-0.5 rounded bg-white text-purple-700 border border-purple-200 hover:bg-purple-100"
+                            >
+                              +₹{amt.toLocaleString('en-IN')}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() => {
+                        const payAmt = isPartialTuitionMode && Number(partialTuitionInput) > 0
+                          ? Math.min(Number(partialTuitionInput), remainingTuitionDue)
+                          : remainingTuitionDue;
+
+                        if (payAmt <= 0) return;
+
+                        onInitiatePayment({
+                          feeType: 'tuitionFee',
+                          feeTitle: isPartialTuitionMode ? `Tuition Fee Installment (₹${payAmt.toLocaleString('en-IN')})` : 'Tuition Fee',
+                          amount: payAmt,
+                          studentId: currentStudentId || matchedStudentRecord?.id || existingProfile?.id,
+                          studentName: fullName || matchedStudentRecord?.fullName || existingProfile?.fullName || 'Student',
+                          rollNo: currentRollNo || matchedStudentRecord?.rollNo || 'N/A',
+                          prnNo: currentPrnNo || matchedStudentRecord?.prnNo || 'N/A',
+                          email: currentEmail || matchedStudentRecord?.email || ''
+                        });
+                      }}
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all cursor-pointer shadow-xs"
+                    >
+                      <span>
+                        Pay ₹{
+                          (isPartialTuitionMode && Number(partialTuitionInput) > 0 
+                            ? Math.min(Number(partialTuitionInput), remainingTuitionDue) 
+                            : remainingTuitionDue
+                          ).toLocaleString('en-IN')
+                        } Now
+                      </span>
+                      <ArrowRight className="w-4 h-4 text-white" />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* CARD 2: EXAM FEE */}
               <div className={`card-interactive p-5 flex flex-col justify-between ${
                 isExamPaid ? 'border-emerald-300 bg-emerald-50/20' : ''
               }`}>
@@ -796,7 +1030,7 @@ export default function StudentDashboard({
                       </span>
                     </div>
                     <div className="flex items-center gap-1 text-xs text-slate-500 font-medium pt-1 border-t border-slate-200/80">
-                      <Clock className="w-3 h-3 text-slate-400" /> Due: {feesConfig.examDueDate || '2026-08-25'}
+                      <Clock className="w-3 h-3 text-slate-400" /> Due: {examDueDate}
                     </div>
                   </div>
                 </div>
@@ -814,7 +1048,12 @@ export default function StudentDashboard({
                     onClick={() => onInitiatePayment({
                       feeType: 'examFee',
                       feeTitle: 'Exam Fee',
-                      amount: remainingExamDue > 0 ? remainingExamDue : examAmount
+                      amount: remainingExamDue > 0 ? remainingExamDue : examAmount,
+                      studentId: currentStudentId || matchedStudentRecord?.id || existingProfile?.id,
+                      studentName: fullName || matchedStudentRecord?.fullName || existingProfile?.fullName || 'Student',
+                      rollNo: currentRollNo || matchedStudentRecord?.rollNo || 'N/A',
+                      prnNo: currentPrnNo || matchedStudentRecord?.prnNo || 'N/A',
+                      email: currentEmail || matchedStudentRecord?.email || ''
                     })}
                     className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all cursor-pointer shadow-xs"
                   >
@@ -824,70 +1063,77 @@ export default function StudentDashboard({
                 )}
               </div>
 
-              {/* CARD 2: TUITION FEE */}
-              <div className={`card-interactive p-5 flex flex-col justify-between ${
-                isTuitionPaid ? 'border-emerald-300 bg-emerald-50/20' : ''
-              }`}>
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
-                      Tuition Fee
-                    </span>
-                    {isTuitionPaid ? (
-                      <span className="bg-emerald-600 text-white text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3" /> PAID
+              {/* CARD 3: BACKLOG / RE-EXAM EXTRA FEE (Only shown if Admin set backlog fee for this student) */}
+              {backlogAmount > 0 && (
+                <div className={`card-interactive p-5 flex flex-col justify-between ${
+                  isBacklogPaid ? 'border-emerald-300 bg-emerald-50/20' : 'border-amber-300 bg-amber-50/20'
+                }`}>
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200">
+                        Backlog / Re-Exam Fee
                       </span>
-                    ) : (
-                      <span className="bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                        <Clock className="w-3 h-3" /> Mandatory
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold mb-3 border border-indigo-100">
-                    <CreditCard className="w-5 h-5 text-indigo-600" />
-                  </div>
-
-                  <h4 className="text-lg font-bold text-slate-900 mb-0.5">Tuition Fee</h4>
-                  <p className="text-xs text-slate-500 font-medium mb-3 min-h-[32px]">
-                    {feesConfig.tuitionDescription || 'Semester Tuition & Academic Fee'}
-                  </p>
-
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 mb-4">
-                    <div className="flex items-baseline justify-between mb-1">
-                      <span className="text-xs font-semibold text-slate-500 uppercase">Amount</span>
-                      <span className="text-xl font-bold text-slate-900">
-                        ₹{tuitionAmount.toLocaleString('en-IN')}
-                      </span>
+                      {isBacklogPaid ? (
+                        <span className="bg-emerald-600 text-white text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                          <CheckCircle className="w-3 h-3" /> PAID
+                        </span>
+                      ) : (
+                        <span className="bg-amber-500 text-white text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                          <Clock className="w-3 h-3" /> Extra Fee
+                        </span>
+                      )}
                     </div>
-                    <div className="flex items-center gap-1 text-xs text-slate-500 font-medium pt-1 border-t border-slate-200">
-                      <Clock className="w-3 h-3 text-slate-400" /> Due: {feesConfig.tuitionDueDate || '2026-08-15'}
+
+                    <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold mb-3 border border-amber-200">
+                      <Sparkles className="w-5 h-5 text-amber-700" />
+                    </div>
+
+                    <h4 className="text-lg font-bold text-slate-900 mb-0.5">Backlog Paper Fee</h4>
+                    <p className="text-xs text-slate-500 font-medium mb-3 min-h-[32px]">
+                      {feesConfig.backlogDescription || 'Backlog Paper & Re-examination Extra Fee'}
+                    </p>
+
+                    <div className="p-3 bg-slate-50/80 rounded-xl border border-slate-200/80 mb-4">
+                      <div className="flex items-baseline justify-between mb-1">
+                        <span className="text-xs font-semibold text-slate-500 uppercase">Amount</span>
+                        <span className="text-xl font-bold text-slate-900">
+                          ₹{backlogAmount.toLocaleString('en-IN')}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-slate-500 font-medium pt-1 border-t border-slate-200/80">
+                        <Clock className="w-3 h-3 text-slate-400" /> Due: {backlogDueDate}
+                      </div>
                     </div>
                   </div>
+
+                  {isBacklogPaid ? (
+                    <button
+                      onClick={() => onViewInvoice(backlogPaymentRecord)}
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-semibold text-xs border border-emerald-200 transition-all cursor-pointer"
+                    >
+                      <Download className="w-4 h-4 text-emerald-600" />
+                      <span>Download Receipt</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => onInitiatePayment({
+                        feeType: 'backlogFee',
+                        feeTitle: 'Backlog / Re-Exam Fee',
+                        amount: remainingBacklogDue > 0 ? remainingBacklogDue : backlogAmount,
+                        studentId: currentStudentId || matchedStudentRecord?.id || existingProfile?.id,
+                        studentName: fullName || matchedStudentRecord?.fullName || existingProfile?.fullName || 'Student',
+                        rollNo: currentRollNo || matchedStudentRecord?.rollNo || 'N/A',
+                        prnNo: currentPrnNo || matchedStudentRecord?.prnNo || 'N/A',
+                        email: currentEmail || matchedStudentRecord?.email || ''
+                      })}
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs transition-all cursor-pointer shadow-xs"
+                    >
+                      <span>Pay ₹{(remainingBacklogDue > 0 ? remainingBacklogDue : backlogAmount).toLocaleString('en-IN')} Now</span>
+                      <ArrowRight className="w-4 h-4 text-white" />
+                    </button>
+                  )}
                 </div>
-
-                {isTuitionPaid ? (
-                  <button
-                    onClick={() => onViewInvoice(tuitionPaymentRecord)}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-semibold text-xs border border-emerald-200 transition-all cursor-pointer"
-                  >
-                    <Download className="w-4 h-4 text-emerald-600" />
-                    <span>Download Receipt</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => onInitiatePayment({
-                      feeType: 'tuitionFee',
-                      feeTitle: 'Tuition Fee',
-                      amount: remainingTuitionDue > 0 ? remainingTuitionDue : tuitionAmount
-                    })}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all cursor-pointer shadow-xs"
-                  >
-                    <span>Pay ₹{(remainingTuitionDue > 0 ? remainingTuitionDue : tuitionAmount).toLocaleString('en-IN')}</span>
-                    <ArrowRight className="w-4 h-4 text-white" />
-                  </button>
-                )}
-              </div>
+              )}
 
             </div>
 
@@ -928,13 +1174,26 @@ export default function StudentDashboard({
                           <td className="py-3 px-3 font-mono text-emerald-700 font-medium bg-emerald-50/50 px-2 rounded">{pay.razorpayPaymentId}</td>
                           <td className="py-3 px-3 font-semibold text-slate-900">₹{pay.amount?.toLocaleString('en-IN')}</td>
                           <td className="py-3 px-3 text-slate-600">{pay.paymentMethod}</td>
-                          <td className="py-3 px-3 text-right">
+                          <td className="py-3 px-3 text-right flex items-center justify-end gap-2">
                             <button
                               onClick={() => onViewInvoice(pay)}
                               className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-[11px] transition-all cursor-pointer"
                             >
                               <Download className="w-3.5 h-3.5 text-slate-300" /> Receipt
                             </button>
+                            {onDeletePayment && (
+                              <button
+                                onClick={() => {
+                                  if (window.confirm('Reset this test payment status back to PENDING?')) {
+                                    onDeletePayment(pay.id);
+                                  }
+                                }}
+                                title="Reset fee status to Pending"
+                                className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
                           </td>
                         </tr>
                       ))}

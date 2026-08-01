@@ -251,7 +251,7 @@ export default function InvoiceModal({ isOpen, onClose, transaction }) {
               </>
             ) : (
               <>
-                <Download className="w-4 h-4 text-purple-700" />
+                <Download className="w-4 h-4 text-white" />
                 <span>Download PDF Receipt</span>
               </>
             )}

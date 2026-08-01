@@ -3,8 +3,9 @@ import {
   CreditCard, CheckCircle, Clock, FileText, 
   Sparkles, Award, ArrowRight, ShieldCheck, Download, Edit3, Save, Check,
   Phone, BookOpen, Layers, Zap, Building2, CheckCircle2, ChevronRight, User, Hash, GraduationCap,
-  Search, UserPlus, AlertCircle, X, Trash2, Calendar
+  Search, UserPlus, AlertCircle, X, Trash2, Calendar, Loader2
 } from 'lucide-react';
+import { fetchStudentsFromFirestore } from '../utils/firebase';
 
 export default function StudentDashboard({ 
   currentUser, 
@@ -113,11 +114,37 @@ export default function StudentDashboard({
   };
 
   const [notFoundEnrolment, setNotFoundEnrolment] = useState(null);
+  const [isSearchingDb, setIsSearchingDb] = useState(false);
+
+  const cleanStr = (val) => String(val || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+  const findStudentMatch = (queryStr, list) => {
+    const qClean = cleanStr(queryStr);
+    if (!qClean) return null;
+
+    // Exact match on PRN, Roll No, ID, or Full Name
+    let match = (list || []).find(s => 
+      cleanStr(s.prnNo) === qClean || 
+      cleanStr(s.rollNo) === qClean || 
+      cleanStr(s.id) === qClean ||
+      cleanStr(s.fullName) === qClean
+    );
+    if (match) return match;
+
+    // Partial match on PRN or Name
+    match = (list || []).find(s => {
+      const pClean = cleanStr(s.prnNo);
+      const nClean = cleanStr(s.fullName);
+      return (pClean && (pClean.includes(qClean) || qClean.includes(pClean))) ||
+             (nClean && nClean.includes(qClean));
+    });
+    return match || null;
+  };
 
   // 1️⃣ STEP 1: Enrolment Number Search Handler (Fetch direct Excel student data)
-  const handleEnrolmentNumberSubmit = (e) => {
+  const handleEnrolmentNumberSubmit = async (e) => {
     e.preventDefault();
-    const query = enrolmentSearchInput.trim().toLowerCase();
+    const query = enrolmentSearchInput.trim();
     if (!query) {
       setEnrolmentError('कृपया एन्कॉलमेंट नंबर प्रविष्ट करा');
       return;
@@ -127,21 +154,30 @@ export default function StudentDashboard({
       return;
     }
     setEnrolmentError('');
+    setIsSearchingDb(true);
 
-    // Search in students database by Enrolment No (PRN) or Roll No or Name (exact first, then partial)
-    const match = students.find(s => {
-      const prn = (s.prnNo || '').toLowerCase().trim();
-      const roll = (s.rollNo || '').toLowerCase().trim();
-      const name = (s.fullName || '').toLowerCase().trim();
-      return prn === query || roll === query || name === query;
-    }) || students.find(s => {
-      const prn = (s.prnNo || '').toLowerCase().trim();
-      const name = (s.fullName || '').toLowerCase().trim();
-      return (prn && prn.includes(query)) || (name && name.includes(query));
-    });
+    // Search in current state first
+    let match = findStudentMatch(query, students);
+
+    // Fallback: Live search in Firestore database if not found locally
+    if (!match) {
+      try {
+        const firestoreStudents = await fetchStudentsFromFirestore();
+        if (firestoreStudents && firestoreStudents.length > 0) {
+          match = findStudentMatch(query, firestoreStudents);
+          if (match) {
+            localStorage.setItem('edupay_students', JSON.stringify(firestoreStudents));
+          }
+        }
+      } catch (err) {
+        console.warn('Firestore live fetch error:', err);
+      }
+    }
+
+    setIsSearchingDb(false);
 
     if (match) {
-      // MATCH FOUND in Excel Database!
+      // MATCH FOUND!
       const matchedCourse = getNormalizedCourse(match.course || match.educationDetails?.course || match.scheme);
       const matchedBranch = match.branch || match.educationDetails?.branch || (matchedCourse === 'Engineering' ? 'Computer Engineering' : 'N/A');
       const matchedScheme = match.scheme || match.course || matchedCourse;
@@ -158,24 +194,25 @@ export default function StudentDashboard({
       setYear(matchedYear);
       setNotFoundEnrolment(null);
 
-      // Directly open student fee portal dashboard with fetched Excel data!
+      // Directly open student fee portal dashboard with fetched data!
       setIsMobileSubmitted(true);
       setStep('dashboard');
     } else {
-      // NO MATCH FOUND in Excel Database
+      // NO MATCH FOUND in Database
       setMatchedStudentRecord(null);
       setNotFoundEnrolment(query);
     }
   };
 
   const handleConfirmRegisterNewStudent = () => {
+    const prefilledPrn = notFoundEnrolment || enrolmentSearchInput.trim() || 'N/A';
     setNotFoundEnrolment(null);
     setFullName('');
     setMobileInput('');
     setRollNo(`RN-${Math.floor(1000 + Math.random() * 9000)}`);
-    setPrnNo('N/A');
-    setSelectedCourse('');
-    setSelectedBranch('');
+    setPrnNo(prefilledPrn);
+    setSelectedCourse('Polytechnic');
+    setSelectedBranch('Computer Engineering');
     setStep('new-student');
   };
 
@@ -355,11 +392,20 @@ export default function StudentDashboard({
 
                 <button
                   type="submit"
-                  disabled={!enrolmentSearchInput.trim() || !isValidEnrolment(enrolmentSearchInput)}
+                  disabled={!enrolmentSearchInput.trim() || !isValidEnrolment(enrolmentSearchInput) || isSearchingDb}
                   className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all cursor-pointer active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <span>Verify Enrolment Number</span>
-                  <ArrowRight className="w-4 h-4 text-white" />
+                  {isSearchingDb ? (
+                    <>
+                      <Loader2 className="w-4 h-4 text-white animate-spin" />
+                      <span>Checking Database...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Verify Enrolment Number</span>
+                      <ArrowRight className="w-4 h-4 text-white" />
+                    </>
+                  )}
                 </button>
               </form>
 
@@ -382,11 +428,19 @@ export default function StudentDashboard({
                   <div className="flex items-start justify-between gap-2.5">
                     <div className="flex items-start gap-2">
                       <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                      <div className="space-y-0.5">
+                      <div className="space-y-1">
                         <h4 className="text-xs font-bold text-slate-900">Enrolment No Not Found ("{notFoundEnrolment}")</h4>
                         <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
-                          No matching record found in database. Please check your Enrolment Number or contact Admin.
+                          No matching record found in database. Please check your Enrolment Number or register below.
                         </p>
+                        <button
+                          type="button"
+                          onClick={handleConfirmRegisterNewStudent}
+                          className="mt-1 text-[11px] font-bold text-indigo-700 hover:text-indigo-900 bg-indigo-100/90 hover:bg-indigo-200 px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+                        >
+                          <UserPlus className="w-3.5 h-3.5 text-indigo-600" />
+                          <span>Register "{notFoundEnrolment}" Now</span>
+                        </button>
                       </div>
                     </div>
                     <button
@@ -462,10 +516,20 @@ export default function StudentDashboard({
 
                       <button
                         type="submit"
-                        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all cursor-pointer transform hover:-translate-y-0.5"
+                        disabled={!enrolmentSearchInput.trim() || !isValidEnrolment(enrolmentSearchInput) || isSearchingDb}
+                        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all cursor-pointer transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <span>Verify Enrolment Number</span>
-                        <ArrowRight className="w-4 h-4 text-white" />
+                        {isSearchingDb ? (
+                          <>
+                            <Loader2 className="w-4 h-4 text-white animate-spin" />
+                            <span>Checking Database...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Verify Enrolment Number</span>
+                            <ArrowRight className="w-4 h-4 text-white" />
+                          </>
+                        )}
                       </button>
                     </form>
 
@@ -488,11 +552,19 @@ export default function StudentDashboard({
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-2.5">
                             <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                            <div className="space-y-0.5">
+                            <div className="space-y-1">
                               <h4 className="text-xs font-bold text-slate-900">Enrolment No Not Found ("{notFoundEnrolment}")</h4>
                               <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
-                                No matching record found in database. Please check your Enrolment Number or contact Admin.
+                                No matching record found in database. Please check your Enrolment Number or register below.
                               </p>
+                              <button
+                                type="button"
+                                onClick={handleConfirmRegisterNewStudent}
+                                className="mt-1 text-[11px] font-bold text-indigo-700 hover:text-indigo-900 bg-indigo-100/90 hover:bg-indigo-200 px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+                              >
+                                <UserPlus className="w-3.5 h-3.5 text-indigo-600" />
+                                <span>Register "{notFoundEnrolment}" Now</span>
+                              </button>
                             </div>
                           </div>
                           <button

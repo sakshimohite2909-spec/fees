@@ -75,14 +75,28 @@ export default function ExcelUploadModal({ isOpen, onClose, onImportSuccess }) {
 
           if (rawRows && rawRows.length > 0) {
             const normalizedSheetRows = rawRows.map((row) => {
-              // Fuzzy key matcher to handle spaces, dots, case differences, and aliases
+              // Fuzzy key matcher to handle spaces, dots, case differences, and aliases (2-Pass: Exact first, then Fuzzy)
               const getVal = (...keys) => {
                 const rowKeys = Object.keys(row);
+                // Pass 1: Exact key matches
                 for (const target of keys) {
                   const cleanTarget = String(target).toLowerCase().replace(/[^a-z0-9]/g, '');
                   for (const key of rowKeys) {
                     const cleanKey = String(key).toLowerCase().replace(/[^a-z0-9]/g, '');
-                    if (cleanKey === cleanTarget || (cleanTarget.length >= 3 && cleanKey.includes(cleanTarget))) {
+                    if (cleanKey === cleanTarget) {
+                      const val = row[key];
+                      if (val !== undefined && val !== null && String(val).trim() !== '') {
+                        return String(val).trim();
+                      }
+                    }
+                  }
+                }
+                // Pass 2: Partial matches
+                for (const target of keys) {
+                  const cleanTarget = String(target).toLowerCase().replace(/[^a-z0-9]/g, '');
+                  for (const key of rowKeys) {
+                    const cleanKey = String(key).toLowerCase().replace(/[^a-z0-9]/g, '');
+                    if (cleanTarget.length >= 4 && (cleanKey.includes(cleanTarget) || cleanTarget.includes(cleanKey))) {
                       const val = row[key];
                       if (val !== undefined && val !== null && String(val).trim() !== '') {
                         return String(val).trim();
@@ -93,9 +107,14 @@ export default function ExcelUploadModal({ isOpen, onClose, onImportSuccess }) {
                 return '';
               };
 
-              const fullName = getVal(
-                'candidatename', 'name', 'studentname', 'fullname', 'candidate'
-              ) || 'Student';
+              let rawName = getVal(
+                'candidatename', 'nameofcandidate', 'studentname', 'nameofstudent', 
+                'fullname', 'name', 'candidate'
+              );
+              if (!rawName || rawName.toLowerCase() === 'candidate name' || rawName.toLowerCase() === 'student name' || rawName.toLowerCase() === 'name') {
+                rawName = '';
+              }
+              const fullName = rawName || 'Student';
 
               const prnNo = getVal(
                 'enrollno', 'enrolmentno', 'enrolment', 'enrollment', 'prnno', 'prn', 'rollno'

@@ -31,29 +31,6 @@ const DEFAULT_FEES_CONFIG = {
 // Default Sample Registered Students
 const DEFAULT_STUDENTS = [
   {
-    id: 'std_25612400241',
-    email: 'student25612400241@gmail.com',
-    fullName: 'Polytechnic Student',
-    rollNo: 'CE-2026-241',
-    prnNo: '25612400241',
-    mobile: '9876543210',
-    branch: 'Computer Engineering',
-    course: 'Polytechnic',
-    scheme: 'CE-K',
-    year: '2nd Year',
-    semester: '4th Semester',
-    educationDetails: {
-      course: 'Polytechnic',
-      scheme: 'CE-K',
-      branch: 'Computer Engineering',
-      year: '2nd Year',
-      semester: '4th Semester',
-      mobile: '9876543210',
-      collegeName: 'Netaji Polytechnic College'
-    },
-    registeredAt: '2026-07-20T10:30:00Z'
-  },
-  {
     id: 'std_101',
     email: 'sakshpatil@gmail.com',
     fullName: 'Sakshi Patil',
@@ -133,14 +110,7 @@ export const getStudents = () => {
   if (!saved) return DEFAULT_STUDENTS;
   try {
     const list = JSON.parse(saved);
-    if (!Array.isArray(list) || list.length === 0) return DEFAULT_STUDENTS;
-    // Merge default students if not present
-    DEFAULT_STUDENTS.forEach(def => {
-      if (!list.some(s => s.prnNo === def.prnNo)) {
-        list.push(def);
-      }
-    });
-    return list;
+    return Array.isArray(list) && list.length > 0 ? list : DEFAULT_STUDENTS;
   } catch (e) {
     return DEFAULT_STUDENTS;
   }

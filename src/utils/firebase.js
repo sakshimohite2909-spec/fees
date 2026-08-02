@@ -43,16 +43,20 @@ if (typeof window !== 'undefined') {
 export const syncStudentsToFirestore = async (studentsList) => {
   if (!studentsList || studentsList.length === 0) return;
   try {
-    const batch = writeBatch(db);
-    studentsList.forEach((std) => {
-      const docId = String(std.id || std.prnNo || `std_${Date.now()}`);
-      const docRef = doc(db, "students", docId);
-      batch.set(docRef, std, { merge: true });
-    });
-    await batch.commit();
-    console.log(`🔥 Firebase Success: ${studentsList.length} Excel student records synced to Firebase Firestore!`);
+    const CHUNK_SIZE = 450; // Firestore limits write batches to 500 max
+    for (let i = 0; i < studentsList.length; i += CHUNK_SIZE) {
+      const chunk = studentsList.slice(i, i + CHUNK_SIZE);
+      const batch = writeBatch(db);
+      chunk.forEach((std) => {
+        const docId = String(std.id || std.prnNo || `std_${Date.now()}_${Math.random()}`);
+        const docRef = doc(db, "students", docId);
+        batch.set(docRef, std, { merge: true });
+      });
+      await batch.commit();
+    }
+    console.log(`🔥 Firebase Success: ${studentsList.length} Excel student records synced to Firebase Firestore in chunks!`);
   } catch (error) {
-    console.warn("⚠️ Firebase Firestore sync notice:", error.message || error);
+    console.error("⚠️ Firebase Firestore sync error:", error.message || error);
   }
 };
 

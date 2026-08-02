@@ -1,6 +1,6 @@
-import { LogOut } from 'lucide-react';
+import { LogOut, ShieldCheck } from 'lucide-react';
 
-export default function Navbar({ currentUser, activeRole, onOpenAuth, onLogout }) {
+export default function Navbar({ currentUser, activeRole, isAdminAuthenticated, onOpenAuth, onLogout, onExitAdmin }) {
   return (
     <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs shadow-indigo-500/5 max-w-full">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
@@ -27,7 +27,27 @@ export default function Navbar({ currentUser, activeRole, onOpenAuth, onLogout }
 
           {/* User Account Controls & Logout Button */}
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
-            {currentUser && (
+            {activeRole === 'admin' && isAdminAuthenticated ? (
+              <div className="flex items-center gap-1.5 sm:gap-2.5 bg-indigo-50/90 px-2.5 py-1 sm:py-1.5 rounded-xl sm:rounded-2xl border border-indigo-200 shadow-2xs">
+                <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
+                <div className="text-right">
+                  <p className="text-xs sm:text-sm font-bold text-slate-900 leading-none">
+                    Admin Office
+                  </p>
+                  <p className="text-[10px] text-indigo-600 font-bold leading-tight mt-0.5 hidden sm:block">
+                    Authenticated
+                  </p>
+                </div>
+                <button
+                  onClick={onExitAdmin || onLogout}
+                  title="Logout Admin Portal"
+                  className="flex items-center gap-1 px-2.5 py-1 sm:py-1.5 rounded-xl bg-white hover:bg-rose-50 text-rose-700 font-extrabold text-xs border border-rose-200 transition-all cursor-pointer shrink-0 shadow-2xs"
+                >
+                  <LogOut className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                  <span className="hidden sm:inline">Logout Admin</span>
+                </button>
+              </div>
+            ) : currentUser ? (
               <div className="flex items-center gap-1.5 sm:gap-2.5 bg-slate-50/90 hover:bg-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs transition-all">
                 <div className="text-right max-w-[70px] sm:max-w-[150px] truncate">
                   <p className="text-xs sm:text-sm font-bold text-slate-900 leading-none truncate">
@@ -49,7 +69,7 @@ export default function Navbar({ currentUser, activeRole, onOpenAuth, onLogout }
                   <span className="hidden sm:inline">Logout</span>
                 </button>
               </div>
-            )}
+            ) : null}
           </div>
 
         </div>

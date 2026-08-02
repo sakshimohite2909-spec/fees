@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import AuthModal from './components/AuthModal';
 import StudentDashboard from './components/StudentDashboard';
 import AdminDashboard from './components/AdminDashboard';
+import AdminLogin from './components/AdminLogin';
 import RazorpayModal from './components/RazorpayModal';
 import InvoiceModal from './components/InvoiceModal';
 import { 
@@ -25,6 +26,10 @@ export default function App() {
     if (checkIsAdminPath()) return 'admin';
     const user = getCurrentUser();
     return user?.role || 'student';
+  });
+
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => {
+    return sessionStorage.getItem('edupay_admin_auth') === 'true';
   });
 
   const [currentUser, setLocalCurrentUser] = useState(null);
@@ -103,13 +108,26 @@ export default function App() {
     }
   };
 
+  const handleAdminLoginSuccess = (adminInfo) => {
+    setIsAdminAuthenticated(true);
+    sessionStorage.setItem('edupay_admin_auth', 'true');
+  };
+
+  const handleExitAdmin = () => {
+    setIsAdminAuthenticated(false);
+    sessionStorage.removeItem('edupay_admin_auth');
+    if (checkIsAdminPath()) {
+      window.history.pushState(null, '', '/');
+      setActiveRole('student');
+    }
+  };
+
   const handleLogout = () => {
     setLocalCurrentUser(null);
     setCurrentUser(null);
     setCurrentStep('mobile');
     if (checkIsAdminPath()) {
-      window.history.pushState(null, '', '/');
-      setActiveRole('student');
+      handleExitAdmin();
     }
   };
 
@@ -249,8 +267,10 @@ export default function App() {
       <Navbar
         currentUser={currentUser}
         activeRole={activeRole}
+        isAdminAuthenticated={isAdminAuthenticated}
         onOpenAuth={handleOpenAuth}
         onLogout={handleLogout}
+        onExitAdmin={handleExitAdmin}
       />
 
       {/* Main Container */}
@@ -268,6 +288,11 @@ export default function App() {
             onDeletePayment={handleDeletePayment}
             onOpenAuth={handleOpenAuth}
             onStepChange={(st) => setCurrentStep(st)}
+          />
+        ) : !isAdminAuthenticated ? (
+          <AdminLogin
+            onLoginSuccess={handleAdminLoginSuccess}
+            onBackToStudentPortal={handleExitAdmin}
           />
         ) : (
           <AdminDashboard

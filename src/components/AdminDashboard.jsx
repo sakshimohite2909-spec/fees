@@ -345,46 +345,46 @@ export default function AdminDashboard({
         </button>
       </div>
 
-      {/* Overview Analytics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Overview Analytics Cards (Compact 2x2 Grid on Mobile) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         
-        <div className="card-interactive p-4 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold border border-emerald-100 shrink-0">
-            <DollarSign className="w-5 h-5 text-emerald-600" />
+        <div className="card-interactive p-3 sm:p-4 flex items-center gap-2.5 sm:gap-4">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold border border-emerald-100 shrink-0">
+            <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
           </div>
-          <div>
-            <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Collected Revenue</p>
-            <p className="text-xl font-bold text-slate-900">₹{totalCollected.toLocaleString('en-IN')}</p>
-          </div>
-        </div>
-
-        <div className="card-interactive p-4 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold border border-amber-100 shrink-0">
-            <Clock className="w-5 h-5 text-amber-600" />
-          </div>
-          <div>
-            <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Pending Dues</p>
-            <p className="text-xl font-bold text-amber-600">₹{totalPending.toLocaleString('en-IN')}</p>
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider truncate">Collected</p>
+            <p className="text-xs sm:text-xl font-extrabold text-slate-900 truncate">₹{totalCollected.toLocaleString('en-IN')}</p>
           </div>
         </div>
 
-        <div className="card-interactive p-4 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold border border-indigo-100 shrink-0">
-            <Users className="w-5 h-5 text-indigo-600" />
+        <div className="card-interactive p-3 sm:p-4 flex items-center gap-2.5 sm:gap-4">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold border border-amber-100 shrink-0">
+            <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
           </div>
-          <div>
-            <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Registered Students</p>
-            <p className="text-xl font-bold text-slate-900">{totalStudents} Total</p>
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider truncate">Pending Dues</p>
+            <p className="text-xs sm:text-xl font-extrabold text-amber-600 truncate">₹{totalPending.toLocaleString('en-IN')}</p>
           </div>
         </div>
 
-        <div className="card-interactive p-4 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold border border-slate-200 shrink-0">
-            <CheckCircle className="w-5 h-5 text-slate-700" />
+        <div className="card-interactive p-3 sm:p-4 flex items-center gap-2.5 sm:gap-4">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold border border-indigo-100 shrink-0">
+            <Users className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
           </div>
-          <div>
-            <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Transactions</p>
-            <p className="text-xl font-bold text-slate-900">{payments.length} Paid</p>
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider truncate">Students</p>
+            <p className="text-xs sm:text-xl font-extrabold text-slate-900 truncate">{totalStudents} Total</p>
+          </div>
+        </div>
+
+        <div className="card-interactive p-3 sm:p-4 flex items-center gap-2.5 sm:gap-4">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold border border-slate-200 shrink-0">
+            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-slate-700" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider truncate">Paid Txns</p>
+            <p className="text-xs sm:text-xl font-extrabold text-slate-900 truncate">{payments.length} Paid</p>
           </div>
         </div>
 
@@ -392,44 +392,44 @@ export default function AdminDashboard({
 
       {/* MAIN STUDENT DIRECTORY VIEW */}
       <div className="space-y-6">
-        <div className="card-interactive p-5 sm:p-6">
+        <div className="card-interactive p-3.5 sm:p-6">
           
-          {/* Top Action Bar */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-5 pb-4 border-b border-slate-100">
+          {/* Top Action Bar (Compact 2-Column Grid on Mobile) */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 pb-4 border-b border-slate-100">
             <div>
-              <h3 className="text-base font-bold text-slate-900">Student Directory Excel Sheet</h3>
-              <p className="text-xs text-slate-500 font-medium">Name, Enrolment No, Scheme & Year records</p>
+              <h3 className="text-sm sm:text-base font-extrabold text-slate-900">Student Directory Excel Sheet</h3>
+              <p className="text-[11px] text-slate-500 font-medium">Name, Enrolment No, Scheme & Year records</p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full sm:w-auto">
               {/* 📥 Export Excel Report Button */}
               <button
                 type="button"
                 onClick={handleExportToExcel}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs transition-all cursor-pointer"
+                className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer"
               >
-                <Download className="w-4 h-4 text-white" />
-                <span>Export Excel (.xlsx)</span>
+                <Download className="w-3.5 h-3.5 text-white shrink-0" />
+                <span className="truncate">Export Excel</span>
               </button>
 
               {/* 📄 Upload Excel Sheet Button */}
               <button
                 type="button"
                 onClick={() => setIsExcelModalOpen(true)}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs shadow-xs transition-all cursor-pointer"
+                className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs transition-all cursor-pointer"
               >
-                <FileSpreadsheet className="w-4 h-4 text-white" />
-                <span>Upload Excel Sheet</span>
+                <FileSpreadsheet className="w-3.5 h-3.5 text-white shrink-0" />
+                <span className="truncate">Upload Excel</span>
               </button>
 
               {/* ➕ Add Student Manually Button */}
               <button
                 type="button"
                 onClick={() => setIsAddModalOpen(true)}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-semibold text-xs border border-slate-200 transition-all cursor-pointer"
+                className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-slate-100 text-slate-800 hover:bg-slate-200 font-bold text-xs border border-slate-200 transition-all cursor-pointer"
               >
-                <Plus className="w-4 h-4 text-slate-600" />
-                <span>Add Student</span>
+                <Plus className="w-3.5 h-3.5 text-slate-700 shrink-0" />
+                <span className="truncate">Add Student</span>
               </button>
 
               {/* 🗑️ Clear All Students Button */}
@@ -442,330 +442,424 @@ export default function AdminDashboard({
                     }
                   }}
                   title="Clear all student records"
-                  className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-xs border border-rose-200 transition-all cursor-pointer"
+                  className="flex items-center justify-center gap-1 px-3 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 transition-all cursor-pointer"
                 >
-                  <Trash2 className="w-4 h-4 text-rose-600" />
-                  <span>Clear Data</span>
+                  <Trash2 className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                  <span className="truncate">Clear Data</span>
                 </button>
               )}
 
-              </div>
+            </div>
+          </div>
+
+          {/* 🎓 Course Filter Tabs (Horizontal Touch Scroll on Mobile) */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5 mb-4 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200/80 shadow-inner overflow-x-auto no-scrollbar scroll-smooth">
+            <button
+              type="button"
+              onClick={() => setActiveCourseTab('all')}
+              className={`shrink-0 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-extrabold transition-all duration-300 cursor-pointer flex items-center gap-1.5 ${
+                activeCourseTab === 'all'
+                  ? 'bg-slate-900 text-white shadow-md shadow-slate-900/30 ring-2 ring-slate-900/20 scale-[1.02]'
+                  : 'bg-white/80 hover:bg-white text-slate-600 hover:text-slate-900 border border-slate-200/80 shadow-2xs'
+              }`}
+            >
+              <span>All Courses</span>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
+                activeCourseTab === 'all'
+                  ? 'bg-white/20 text-white backdrop-blur-xs border border-white/30'
+                  : 'bg-slate-200/80 text-slate-700'
+              }`}>
+                {validStudentsList.length}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveCourseTab('Polytechnic')}
+              className={`shrink-0 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-extrabold transition-all duration-300 cursor-pointer flex items-center gap-1.5 ${
+                activeCourseTab === 'Polytechnic'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/35 ring-2 ring-indigo-500/30 scale-[1.02]'
+                  : 'bg-white/80 hover:bg-white text-slate-700 hover:text-indigo-600 border border-slate-200/80 shadow-2xs'
+              }`}
+            >
+              <span>🎓 Polytechnic</span>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
+                activeCourseTab === 'Polytechnic'
+                  ? 'bg-white/25 text-white border border-white/30'
+                  : 'bg-indigo-50 text-indigo-700 border border-indigo-100'
+              }`}>
+                {polytechnicStudents.length}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveCourseTab('Pharmacy')}
+              className={`shrink-0 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-extrabold transition-all duration-300 cursor-pointer flex items-center gap-1.5 ${
+                activeCourseTab === 'Pharmacy'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/35 ring-2 ring-emerald-500/30 scale-[1.02]'
+                  : 'bg-white/80 hover:bg-white text-slate-700 hover:text-emerald-600 border border-slate-200/80 shadow-2xs'
+              }`}
+            >
+              <span>💊 Pharmacy</span>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
+                activeCourseTab === 'Pharmacy'
+                  ? 'bg-white/25 text-white border border-white/30'
+                  : 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+              }`}>
+                {pharmacyStudents.length}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveCourseTab('Engineering')}
+              className={`shrink-0 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-extrabold transition-all duration-300 cursor-pointer flex items-center gap-1.5 ${
+                activeCourseTab === 'Engineering'
+                  ? 'bg-purple-600 text-white shadow-md shadow-purple-600/35 ring-2 ring-purple-500/30 scale-[1.02]'
+                  : 'bg-white/80 hover:bg-white text-slate-700 hover:text-purple-600 border border-slate-200/80 shadow-2xs'
+              }`}
+            >
+              <span>⚙️ Engineering</span>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
+                activeCourseTab === 'Engineering'
+                  ? 'bg-white/25 text-white border border-white/30'
+                  : 'bg-purple-50 text-purple-700 border border-purple-100'
+              }`}>
+                {engineeringStudents.length}
+              </span>
+            </button>
+          </div>
+
+          {/* Filter & Search Toolbar */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 mb-4">
+            <div className="relative flex-1 w-full">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <input
+                type="text"
+                placeholder="Search by NAME, ENROLMENTNO, SCHEME..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
+              />
             </div>
 
-            {/* 🎓 Course Filter Tabs */}
-            <div className="flex flex-wrap items-center gap-2.5 mb-5 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200/80 shadow-inner">
-              <button
-                type="button"
-                onClick={() => setActiveCourseTab('all')}
-                className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-300 cursor-pointer flex items-center gap-2 ${
-                  activeCourseTab === 'all'
-                    ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/30 ring-2 ring-slate-900/20 scale-[1.02]'
-                    : 'bg-white/80 hover:bg-white text-slate-600 hover:text-slate-900 border border-slate-200/80 shadow-2xs'
-                }`}
-              >
-                <span>All Courses</span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
-                  activeCourseTab === 'all'
-                    ? 'bg-white/20 text-white backdrop-blur-xs border border-white/30'
-                    : 'bg-slate-200/80 text-slate-700'
-                }`}>
-                  {validStudentsList.length}
-                </span>
-              </button>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white w-full sm:w-auto"
+            >
+              <option value="all">All Fee Status</option>
+              <option value="paid">Fully Paid</option>
+              <option value="pending">Pending</option>
+            </select>
+          </div>
 
-              <button
-                type="button"
-                onClick={() => setActiveCourseTab('Polytechnic')}
-                className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-300 cursor-pointer flex items-center gap-2 ${
-                  activeCourseTab === 'Polytechnic'
-                    ? 'bg-gradient-to-r from-indigo-600 via-indigo-700 to-indigo-800 text-white shadow-lg shadow-indigo-600/35 ring-2 ring-indigo-500/30 scale-[1.02]'
-                    : 'bg-white/80 hover:bg-white text-slate-700 hover:text-indigo-600 border border-slate-200/80 shadow-2xs'
-                }`}
-              >
-                <span className="flex items-center gap-1.5">
-                  <span className="text-sm">🎓</span>
-                  <span>Polytechnic</span>
-                </span>
-                <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-black tracking-tight ${
-                  activeCourseTab === 'Polytechnic'
-                    ? 'bg-white/25 text-white backdrop-blur-xs border border-white/30 shadow-inner'
-                    : 'bg-indigo-50 text-indigo-700 border border-indigo-100/80'
-                }`}>
-                  {polytechnicStudents.length}
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveCourseTab('Pharmacy')}
-                className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-300 cursor-pointer flex items-center gap-2 ${
-                  activeCourseTab === 'Pharmacy'
-                    ? 'bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-800 text-white shadow-lg shadow-emerald-600/35 ring-2 ring-emerald-500/30 scale-[1.02]'
-                    : 'bg-white/80 hover:bg-white text-slate-700 hover:text-emerald-600 border border-slate-200/80 shadow-2xs'
-                }`}
-              >
-                <span className="flex items-center gap-1.5">
-                  <span className="text-sm">💊</span>
-                  <span>Pharmacy</span>
-                </span>
-                <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-black tracking-tight ${
-                  activeCourseTab === 'Pharmacy'
-                    ? 'bg-white/25 text-white backdrop-blur-xs border border-white/30 shadow-inner'
-                    : 'bg-emerald-50 text-emerald-700 border border-emerald-100/80'
-                }`}>
-                  {pharmacyStudents.length}
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveCourseTab('Engineering')}
-                className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-300 cursor-pointer flex items-center gap-2 ${
-                  activeCourseTab === 'Engineering'
-                    ? 'bg-gradient-to-r from-purple-600 via-purple-700 to-purple-800 text-white shadow-lg shadow-purple-600/35 ring-2 ring-purple-500/30 scale-[1.02]'
-                    : 'bg-white/80 hover:bg-white text-slate-700 hover:text-purple-600 border border-slate-200/80 shadow-2xs'
-                }`}
-              >
-                <span className="flex items-center gap-1.5">
-                  <span className="text-sm">⚙️</span>
-                  <span>Engineering</span>
-                </span>
-                <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-black tracking-tight ${
-                  activeCourseTab === 'Engineering'
-                    ? 'bg-white/25 text-white backdrop-blur-xs border border-white/30 shadow-inner'
-                    : 'bg-purple-50 text-purple-700 border border-purple-100/80'
-                }`}>
-                  {engineeringStudents.length}
-                </span>
-              </button>
-            </div>
-
-            {/* Filter & Search Toolbar */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4">
-              <div className="relative flex-1 w-full">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-                <input
-                  type="text"
-                  placeholder="Search by NAME, ENROLMENTNO, SCHEME..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
-                />
-              </div>
-
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white w-full sm:w-auto"
-              >
-                <option value="all">All Fee Status</option>
-                <option value="paid">Fully Paid</option>
-                <option value="pending">Pending</option>
-              </select>
-            </div>
-
-            {/* 🎯 FLOATING SELECTION BATCH ACTION BAR */}
-            {selectedStudentIds.length > 0 && (
-              <div className="mb-4 p-3 bg-purple-900 text-white rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xl animate-slide-down">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-xl bg-purple-500 text-white flex items-center justify-center font-bold text-xs">
-                    {selectedStudentIds.length}
-                  </div>
-                  <p className="text-xs font-extrabold text-white">
-                    {selectedStudentIds.length} Student(s) Selected from Directory
-                  </p>
+          {/* 🎯 FLOATING SELECTION BATCH ACTION BAR */}
+          {selectedStudentIds.length > 0 && (
+            <div className="mb-4 p-3 bg-purple-900 text-white rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xl animate-slide-down">
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-xl bg-purple-500 text-white flex items-center justify-center font-bold text-xs">
+                  {selectedStudentIds.length}
                 </div>
-
-                <div className="flex items-center gap-2.5 w-full sm:w-auto">
-                  <button
-                    type="button"
-                    onClick={() => handleOpenFeeModalForSelected(selectedStudentIds)}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold shadow-md transition-all cursor-pointer"
-                  >
-                    <Edit3 className="w-3.5 h-3.5" />
-                    <span>Set Fees for Selected Student(s)</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setSelectedStudentIds([])}
-                    className="flex-1 sm:flex-none px-3 py-2 rounded-xl bg-purple-800 hover:bg-purple-700 text-purple-200 text-xs font-semibold transition-all cursor-pointer"
-                  >
-                    Clear Selection
-                  </button>
-                </div>
+                <p className="text-xs font-extrabold text-white">
+                  {selectedStudentIds.length} Student(s) Selected from Directory
+                </p>
               </div>
-            )}
 
-            {/* Excel Sheet Table Grid */}
-            <div className="overflow-x-auto border border-slate-200 rounded-xl">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-700 font-bold uppercase border-b border-slate-200">
-                  <tr>
-                    <th className="py-3 px-3 w-10 text-center">
-                      <input
-                        type="checkbox"
-                        checked={isAllFilteredSelected}
-                        onChange={handleToggleSelectAllTable}
-                        className="rounded border-slate-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
-                      />
-                    </th>
-                    <th className="py-3 px-3">SRNO</th>
-                    <th className="py-3 px-3">ENROLMENTNO</th>
-                    <th className="py-3 px-3">NAME</th>
-                    <th className="py-3 px-3">SCHEME</th>
-                    <th className="py-3 px-3">YEAR / SEMESTER</th>
-                    <th className="py-3 px-3 text-right">TOTAL PAID</th>
-                    <th className="py-3 px-3 text-right">PENDING DUES</th>
-                    <th className="py-3 px-3 text-right">ACTION</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium">
-                  {filteredStudents.length === 0 ? (
-                    <tr>
-                      <td colSpan="9" className="text-center py-8 text-slate-400 font-medium bg-slate-50">
-                        No student records found in database. Click "Upload Excel Sheet" or "Add Student".
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredStudents.map((std, idx) => {
-                      const isSelected = selectedStudentIds.includes(std.id);
-                      const stdPayments = payments.filter(p => 
-                        (std.id && p.studentId === std.id) || 
-                        (std.prnNo && std.prnNo !== 'N/A' && p.prnNo === std.prnNo) || 
-                        (std.rollNo && std.rollNo !== 'N/A' && p.rollNo === std.rollNo)
-                      );
-                      const totalTuitionPaidForStd = stdPayments
-                        .filter(p => p.feeType === 'tuitionFee' && p.status === 'PAID')
-                        .reduce((sum, p) => sum + (p.amount || 0), 0);
-                      const totalExamPaidForStd = stdPayments
-                        .filter(p => p.feeType === 'examFee' && p.status === 'PAID')
-                        .reduce((sum, p) => sum + (p.amount || 0), 0);
-                      const totalBacklogPaidForStd = stdPayments
-                        .filter(p => p.feeType === 'backlogFee' && p.status === 'PAID')
-                        .reduce((sum, p) => sum + (p.amount || 0), 0);
+              <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => handleOpenFeeModalForSelected(selectedStudentIds)}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold shadow-md transition-all cursor-pointer"
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                  <span>Set Fees for Selected Student(s)</span>
+                </button>
 
-                      const reqTuitionFee = std.customFees?.tuitionFee ?? feesConfig.tuitionFee ?? 45000;
-                      const reqExamFee = std.customFees?.examFee ?? feesConfig.examFee ?? 2500;
-                      const reqBacklogFee = std.customFees?.backlogFee ?? feesConfig.backlogFee ?? 0;
+                <button
+                  type="button"
+                  onClick={() => setSelectedStudentIds([])}
+                  className="flex-1 sm:flex-none px-3 py-2 rounded-xl bg-purple-800 hover:bg-purple-700 text-purple-200 text-xs font-semibold transition-all cursor-pointer"
+                >
+                  Clear Selection
+                </button>
+              </div>
+            </div>
+          )}
 
-                      const totalRequiredForStd = reqTuitionFee + reqExamFee + reqBacklogFee;
-                      const totalPaidForStd = totalTuitionPaidForStd + totalExamPaidForStd + totalBacklogPaidForStd;
-                      const pendingDuesForStd = Math.max(0, totalRequiredForStd - totalPaidForStd);
+          {/* 📱 MOBILE STUDENT CARDS VIEW (< md screens) */}
+          <div className="block md:hidden space-y-3">
+            {filteredStudents.length === 0 ? (
+              <div className="text-center py-8 text-slate-400 font-medium bg-slate-50 rounded-2xl border border-slate-200 p-4">
+                No student records found in database. Click "Upload Excel" or "Add Student".
+              </div>
+            ) : (
+              filteredStudents.map((std, idx) => {
+                const isSelected = selectedStudentIds.includes(std.id);
+                const stdPayments = payments.filter(p => 
+                  (std.id && p.studentId === std.id) || 
+                  (std.prnNo && std.prnNo !== 'N/A' && p.prnNo === std.prnNo) || 
+                  (std.rollNo && std.rollNo !== 'N/A' && p.rollNo === std.rollNo)
+                );
+                const totalTuitionPaidForStd = stdPayments
+                  .filter(p => p.feeType === 'tuitionFee' && p.status === 'PAID')
+                  .reduce((sum, p) => sum + (p.amount || 0), 0);
+                const totalExamPaidForStd = stdPayments
+                  .filter(p => p.feeType === 'examFee' && p.status === 'PAID')
+                  .reduce((sum, p) => sum + (p.amount || 0), 0);
+                const totalBacklogPaidForStd = stdPayments
+                  .filter(p => p.feeType === 'backlogFee' && p.status === 'PAID')
+                  .reduce((sum, p) => sum + (p.amount || 0), 0);
 
-                      const hasCustomFees = std.customFees !== undefined;
+                const reqTuitionFee = std.customFees?.tuitionFee ?? feesConfig.tuitionFee ?? 45000;
+                const reqExamFee = std.customFees?.examFee ?? feesConfig.examFee ?? 2500;
+                const reqBacklogFee = std.customFees?.backlogFee ?? feesConfig.backlogFee ?? 0;
 
-                      return (
-                        <tr 
-                          key={std.id ? `${std.id}_${idx}` : idx} 
-                          className={`transition-colors ${
-                            isSelected ? 'bg-purple-50/60' : 'hover:bg-slate-50/60'
-                          }`}
+                const totalRequiredForStd = reqTuitionFee + reqExamFee + reqBacklogFee;
+                const totalPaidForStd = totalTuitionPaidForStd + totalExamPaidForStd + totalBacklogPaidForStd;
+                const pendingDuesForStd = Math.max(0, totalRequiredForStd - totalPaidForStd);
+
+                return (
+                  <div 
+                    key={std.id ? `${std.id}_mob_${idx}` : idx}
+                    className={`p-3.5 rounded-2xl border transition-all ${
+                      isSelected ? 'bg-purple-50/90 border-purple-300 shadow-sm' : 'bg-white border-slate-200/90 shadow-2xs'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => handleToggleStudentRow(std.id)}
+                          className="rounded border-slate-300 text-purple-600 focus:ring-purple-500 cursor-pointer w-4 h-4 mt-0.5"
+                        />
+                        <span className="font-mono text-xs font-bold text-slate-400">#{idx + 1}</span>
+                        <p className="font-extrabold text-xs text-slate-900">{std.fullName}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => onDeleteStudent(std.id)}
+                        className="p-1 text-slate-400 hover:text-rose-600 rounded-lg"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-1.5 text-[10px] mb-2.5">
+                      <span className="font-mono font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-100">
+                        PRN: {std.prnNo || 'N/A'}
+                      </span>
+                      <span className="font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">
+                        {std.scheme || std.course || 'Polytechnic'}
+                      </span>
+                      <span className="font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
+                        {std.year || '2nd Year'} ({std.semester || '4th Sem'})
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                      <div>
+                        <p className="text-[10px] font-semibold text-slate-400 uppercase">Paid Amount</p>
+                        <p className="text-xs font-black text-emerald-700 font-mono">₹{totalPaidForStd.toLocaleString('en-IN')}</p>
+                      </div>
+
+                      {pendingDuesForStd > 0 ? (
+                        <button
+                          type="button"
+                          onClick={() => handleOpenFeeDetail(std)}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 font-extrabold text-[11px]"
                         >
-                          {/* CHECKBOX */}
-                          <td className="py-3 px-3 text-center">
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              onChange={() => handleToggleStudentRow(std.id)}
-                              className="rounded border-slate-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
-                            />
-                          </td>
+                          <Clock className="w-3 h-3 text-rose-600" />
+                          <span>Pending (₹{pendingDuesForStd.toLocaleString('en-IN')})</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleOpenFeeDetail(std)}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-extrabold text-[11px]"
+                        >
+                          <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Fully Paid</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
 
-                          {/* SRNO */}
-                          <td className="py-3 px-3">
-                            <span className="font-mono font-bold text-slate-700">{idx + 1}</span>
-                          </td>
+          {/* 💻 DESKTOP EXCEL SHEET TABLE GRID (>= md screens) */}
+          <div className="hidden md:block overflow-x-auto border border-slate-200 rounded-xl">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50 text-slate-700 font-bold uppercase border-b border-slate-200">
+                <tr>
+                  <th className="py-3 px-3 w-10 text-center">
+                    <input
+                      type="checkbox"
+                      checked={isAllFilteredSelected}
+                      onChange={handleToggleSelectAllTable}
+                      className="rounded border-slate-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                    />
+                  </th>
+                  <th className="py-3 px-3">SRNO</th>
+                  <th className="py-3 px-3">ENROLMENTNO</th>
+                  <th className="py-3 px-3">NAME</th>
+                  <th className="py-3 px-3">SCHEME</th>
+                  <th className="py-3 px-3">YEAR / SEMESTER</th>
+                  <th className="py-3 px-3 text-right">TOTAL PAID</th>
+                  <th className="py-3 px-3 text-right">PENDING DUES</th>
+                  <th className="py-3 px-3 text-right">ACTION</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-medium">
+                {filteredStudents.length === 0 ? (
+                  <tr>
+                    <td colSpan="9" className="text-center py-8 text-slate-400 font-medium bg-slate-50">
+                      No student records found in database. Click "Upload Excel Sheet" or "Add Student".
+                    </td>
+                  </tr>
+                ) : (
+                  filteredStudents.map((std, idx) => {
+                    const isSelected = selectedStudentIds.includes(std.id);
+                    const stdPayments = payments.filter(p => 
+                      (std.id && p.studentId === std.id) || 
+                      (std.prnNo && std.prnNo !== 'N/A' && p.prnNo === std.prnNo) || 
+                      (std.rollNo && std.rollNo !== 'N/A' && p.rollNo === std.rollNo)
+                    );
+                    const totalTuitionPaidForStd = stdPayments
+                      .filter(p => p.feeType === 'tuitionFee' && p.status === 'PAID')
+                      .reduce((sum, p) => sum + (p.amount || 0), 0);
+                    const totalExamPaidForStd = stdPayments
+                      .filter(p => p.feeType === 'examFee' && p.status === 'PAID')
+                      .reduce((sum, p) => sum + (p.amount || 0), 0);
+                    const totalBacklogPaidForStd = stdPayments
+                      .filter(p => p.feeType === 'backlogFee' && p.status === 'PAID')
+                      .reduce((sum, p) => sum + (p.amount || 0), 0);
 
-                          {/* ENROLMENTNO */}
-                          <td className="py-3 px-3">
-                            <span className="font-mono font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-100">
-                              {std.prnNo || 'N/A'}
-                            </span>
-                          </td>
+                    const reqTuitionFee = std.customFees?.tuitionFee ?? feesConfig.tuitionFee ?? 45000;
+                    const reqExamFee = std.customFees?.examFee ?? feesConfig.examFee ?? 2500;
+                    const reqBacklogFee = std.customFees?.backlogFee ?? feesConfig.backlogFee ?? 0;
 
-                          {/* NAME */}
-                          <td className="py-3 px-3">
-                            <div className="flex items-center gap-1.5">
-                              <p className="font-semibold text-slate-900">{std.fullName}</p>
-                              {hasCustomFees && (
-                                <span className="bg-purple-100 text-purple-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded">
-                                  Custom Fee
-                                </span>
-                              )}
-                            </div>
-                          </td>
+                    const totalRequiredForStd = reqTuitionFee + reqExamFee + reqBacklogFee;
+                    const totalPaidForStd = totalTuitionPaidForStd + totalExamPaidForStd + totalBacklogPaidForStd;
+                    const pendingDuesForStd = Math.max(0, totalRequiredForStd - totalPaidForStd);
 
-                          {/* SCHEME (Course / Scheme Code) */}
-                          <td className="py-3 px-3">
-                            <span className="font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded text-[11px] border border-indigo-100/80">
-                              {std.scheme || std.educationDetails?.scheme || std.course || std.educationDetails?.course || 'Polytechnic'}
-                            </span>
-                          </td>
+                    const hasCustomFees = std.customFees !== undefined;
 
-                          {/* YEAR & SEMESTER */}
-                          <td className="py-3 px-3">
-                            <div className="flex flex-col text-[11px]">
-                              <span className="font-bold text-slate-800">
-                                {std.year || std.educationDetails?.year || '2nd Year'}
+                    return (
+                      <tr 
+                        key={std.id ? `${std.id}_${idx}` : idx} 
+                        className={`transition-colors ${
+                          isSelected ? 'bg-purple-50/60' : 'hover:bg-slate-50/60'
+                        }`}
+                      >
+                        {/* CHECKBOX */}
+                        <td className="py-3 px-3 text-center">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => handleToggleStudentRow(std.id)}
+                            className="rounded border-slate-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                          />
+                        </td>
+
+                        {/* SRNO */}
+                        <td className="py-3 px-3">
+                          <span className="font-mono font-bold text-slate-700">{idx + 1}</span>
+                        </td>
+
+                        {/* ENROLMENTNO */}
+                        <td className="py-3 px-3">
+                          <span className="font-mono font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-100">
+                            {std.prnNo || 'N/A'}
+                          </span>
+                        </td>
+
+                        {/* NAME */}
+                        <td className="py-3 px-3">
+                          <div className="flex items-center gap-1.5">
+                            <p className="font-semibold text-slate-900">{std.fullName}</p>
+                            {hasCustomFees && (
+                              <span className="bg-purple-100 text-purple-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded">
+                                Custom Fee
                               </span>
-                              <span className="text-[10px] font-extrabold text-indigo-600">
-                                {std.semester || std.educationDetails?.semester || '4th Semester'}
-                              </span>
-                            </div>
-                          </td>
-
-                          {/* TOTAL PAID */}
-                          <td className="py-3 px-3 text-right font-extrabold text-emerald-700 font-mono text-xs">
-                            ₹{totalPaidForStd.toLocaleString('en-IN')}
-                          </td>
-
-                          {/* PENDING DUES */}
-                          <td className="py-3 px-3 text-right">
-                            {pendingDuesForStd > 0 ? (
-                              <button
-                                type="button"
-                                onClick={() => handleOpenFeeDetail(std)}
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200/90 font-extrabold text-[11px] transition-all cursor-pointer shadow-2xs group"
-                                title="Click to view detailed fee breakdown"
-                              >
-                                <Clock className="w-3 h-3 text-rose-600 group-hover:scale-110 transition-transform" />
-                                <span>Pending (₹{pendingDuesForStd.toLocaleString('en-IN')})</span>
-                              </button>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={() => handleOpenFeeDetail(std)}
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-extrabold text-[11px] transition-all cursor-pointer shadow-2xs group"
-                                title="Click to view payment receipts and fee breakdown"
-                              >
-                                <CheckCircle className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
-                                <span>Fully Paid</span>
-                              </button>
                             )}
-                          </td>
+                          </div>
+                        </td>
 
-                          {/* Actions */}
-                          <td className="py-3 px-3 text-right">
-                            <div className="flex items-center justify-end gap-1">
-                              <button
-                                type="button"
-                                onClick={() => onDeleteStudent(std.id)}
-                                title="Delete Record"
-                                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </td>
+                        {/* SCHEME (Course / Scheme Code) */}
+                        <td className="py-3 px-3">
+                          <span className="font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded text-[11px] border border-indigo-100/80">
+                            {std.scheme || std.educationDetails?.scheme || std.course || std.educationDetails?.course || 'Polytechnic'}
+                          </span>
+                        </td>
 
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
+                        {/* YEAR & SEMESTER */}
+                        <td className="py-3 px-3">
+                          <div className="flex flex-col text-[11px]">
+                            <span className="font-bold text-slate-800">
+                              {std.year || std.educationDetails?.year || '2nd Year'}
+                            </span>
+                            <span className="text-[10px] font-extrabold text-indigo-600">
+                              {std.semester || std.educationDetails?.semester || '4th Semester'}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* TOTAL PAID */}
+                        <td className="py-3 px-3 text-right font-extrabold text-emerald-700 font-mono text-xs">
+                          ₹{totalPaidForStd.toLocaleString('en-IN')}
+                        </td>
+
+                        {/* PENDING DUES */}
+                        <td className="py-3 px-3 text-right">
+                          {pendingDuesForStd > 0 ? (
+                            <button
+                              type="button"
+                              onClick={() => handleOpenFeeDetail(std)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200/90 font-extrabold text-[11px] transition-all cursor-pointer shadow-2xs group"
+                              title="Click to view detailed fee breakdown"
+                            >
+                              <Clock className="w-3 h-3 text-rose-600 group-hover:scale-110 transition-transform" />
+                              <span>Pending (₹{pendingDuesForStd.toLocaleString('en-IN')})</span>
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleOpenFeeDetail(std)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-extrabold text-[11px] transition-all cursor-pointer shadow-2xs group"
+                              title="Click to view payment receipts and fee breakdown"
+                            >
+                              <CheckCircle className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
+                              <span>Fully Paid</span>
+                            </button>
+                          )}
+                        </td>
+
+                        {/* Actions */}
+                        <td className="py-3 px-3 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              type="button"
+                              onClick={() => onDeleteStudent(std.id)}
+                              title="Delete Record"
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
 
             {/* Record count indicator below table */}
             <div className="mt-4 pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">

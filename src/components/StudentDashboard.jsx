@@ -364,95 +364,109 @@ export default function StudentDashboard({
             </h1>
           </div>
 
-          {/* Centered Floating Verification Card (Directly Overlaid on Campus Image) */}
-          <div className="relative z-10 w-full max-w-md my-auto py-6">
-            <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/90">
-              <form onSubmit={handleEnrolmentNumberSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-800 mb-2 flex items-center gap-1.5">
-                    <Hash className="w-4 h-4 text-indigo-600" />
-                    <span>Enter Enrolment Number (PRN No) *</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. 25612400241 or 20240325001192"
-                    value={enrolmentSearchInput}
-                    onChange={(e) => {
-                      setEnrolmentSearchInput(e.target.value);
-                      if (enrolmentError) setEnrolmentError('');
-                    }}
-                    className="w-full pl-4 pr-4 py-3.5 rounded-2xl border-2 border-slate-200 text-sm font-black text-slate-900 focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-600 bg-white shadow-sm transition-all placeholder:font-normal placeholder:text-slate-400"
-                  />
-                  {enrolmentError && (
-                    <p className="mt-1.5 text-xs font-bold text-rose-600">{enrolmentError}</p>
-                  )}
+          {/* Form Container (Directly Overlaid on Campus Image WITHOUT white card container) */}
+          <div className="relative z-10 w-full max-w-md my-auto py-4 space-y-5">
+            <form onSubmit={handleEnrolmentNumberSubmit} className="space-y-4">
+              
+              {/* Institute Type (Feepayr Style) */}
+              <div>
+                <label className="block text-sm font-black text-white mb-2 tracking-wide drop-shadow-sm">
+                  Institute Type
+                </label>
+                <div className="relative">
+                  <select
+                    className="w-full px-4 py-3.5 rounded-xl border border-white/80 bg-white text-slate-900 font-extrabold text-sm focus:ring-4 focus:ring-lime-400/40 focus:outline-none shadow-lg cursor-pointer appearance-none"
+                    defaultValue="College"
+                  >
+                    <option value="College">Netaji Polytechnic College (Polytechnic / Pharmacy / Engineering)</option>
+                  </select>
+                  <div className="pointer-events-none absolute right-4 top-4 text-slate-600 font-bold text-xs">▼</div>
                 </div>
-
-                <button
-                  type="submit"
-                  disabled={!enrolmentSearchInput.trim() || !isValidEnrolment(enrolmentSearchInput) || isSearchingDb}
-                  className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-extrabold text-xs sm:text-sm shadow-xl shadow-indigo-600/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSearchingDb ? (
-                    <>
-                      <Loader2 className="w-4.5 h-4.5 text-white animate-spin" />
-                      <span>Checking Database...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Verify Enrolment Number</span>
-                      <ArrowRight className="w-4.5 h-4.5 text-white" />
-                    </>
-                  )}
-                </button>
-              </form>
-
-              <div className="pt-4 mt-4 border-t border-slate-100 space-y-3">
-                <p className="text-center text-xs text-slate-500 font-semibold">
-                  Don't have an Enrolment Number?
-                </p>
-                <button
-                  type="button"
-                  onClick={handleConfirmRegisterNewStudent}
-                  className="w-full font-extrabold text-indigo-700 hover:text-indigo-900 flex items-center justify-center gap-2 py-3 rounded-2xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 transition-all cursor-pointer text-xs"
-                >
-                  <UserPlus className="w-4 h-4 text-indigo-600" />
-                  <span>Register as New Student</span>
-                </button>
               </div>
 
-              {notFoundEnrolment && (
-                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-slate-800 space-y-2 mt-4 animate-slide-up">
-                  <div className="flex items-start justify-between gap-2.5">
-                    <div className="flex items-start gap-2">
-                      <AlertCircle className="w-4.5 h-4.5 text-amber-600 shrink-0 mt-0.5" />
-                      <div className="space-y-1">
-                        <h4 className="text-xs font-black text-slate-900">Enrolment No Not Found ("{notFoundEnrolment}")</h4>
-                        <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
-                          No matching record found in database. Please check your Enrolment Number or register below.
-                        </p>
-                        <button
-                          type="button"
-                          onClick={handleConfirmRegisterNewStudent}
-                          className="mt-1 text-[11px] font-extrabold text-indigo-700 hover:text-indigo-900 bg-indigo-100/90 hover:bg-indigo-200 px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs"
-                        >
-                          <UserPlus className="w-3.5 h-3.5 text-indigo-600" />
-                          <span>Register "{notFoundEnrolment}" Now</span>
-                        </button>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setNotFoundEnrolment(null)}
-                      className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-amber-100 cursor-pointer"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              )}
+              {/* Enrolment Input Box */}
+              <div>
+                <label className="block text-sm font-black text-white mb-2 tracking-wide drop-shadow-sm flex items-center gap-1.5">
+                  <Hash className="w-4 h-4 text-lime-400" />
+                  <span>Enter Enrolment Number (PRN No) *</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 25612400241 or 20240325001192"
+                  value={enrolmentSearchInput}
+                  onChange={(e) => {
+                    setEnrolmentSearchInput(e.target.value);
+                    if (enrolmentError) setEnrolmentError('');
+                  }}
+                  className="w-full px-4 py-3.5 rounded-xl border border-white/80 bg-white text-slate-900 font-black text-sm focus:ring-4 focus:ring-lime-400/40 focus:outline-none shadow-lg placeholder:font-normal placeholder:text-slate-400"
+                />
+                {enrolmentError && (
+                  <p className="mt-1.5 text-xs font-black text-rose-300 drop-shadow-md">⚠️ {enrolmentError}</p>
+                )}
+              </div>
+
+              {/* Submit Button (Feepayr Lime Green Style) */}
+              <button
+                type="submit"
+                disabled={!enrolmentSearchInput.trim() || !isValidEnrolment(enrolmentSearchInput) || isSearchingDb}
+                className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-gradient-to-r from-lime-500 to-emerald-500 hover:from-lime-600 hover:to-emerald-600 active:scale-[0.99] text-slate-950 font-black text-sm shadow-xl shadow-lime-500/25 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSearchingDb ? (
+                  <>
+                    <Loader2 className="w-4.5 h-4.5 text-slate-950 animate-spin" />
+                    <span>Checking Database...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Verify Enrolment Number</span>
+                    <ArrowRight className="w-4.5 h-4.5 text-slate-950" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            <div className="pt-3 space-y-2.5">
+              <button
+                type="button"
+                onClick={handleConfirmRegisterNewStudent}
+                className="w-full font-black text-white hover:text-lime-300 flex items-center justify-center gap-2 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/25 backdrop-blur-md transition-all cursor-pointer text-xs shadow-md"
+              >
+                <UserPlus className="w-4 h-4 text-lime-400" />
+                <span>Register as New Student</span>
+              </button>
             </div>
+
+            {notFoundEnrolment && (
+              <div className="p-4 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-amber-400/60 text-white space-y-2 animate-slide-up shadow-2xl">
+                <div className="flex items-start justify-between gap-2.5">
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="w-4.5 h-4.5 text-amber-400 shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <h4 className="text-xs font-black text-amber-300">Enrolment No Not Found ("{notFoundEnrolment}")</h4>
+                      <p className="text-[11px] text-slate-300 font-medium leading-relaxed">
+                        No matching record found in database. Please check your Enrolment Number or register below.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={handleConfirmRegisterNewStudent}
+                        className="mt-1 text-[11px] font-black text-slate-950 bg-lime-400 hover:bg-lime-500 px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5 transition-all cursor-pointer shadow-md"
+                      >
+                        <UserPlus className="w-3.5 h-3.5 text-slate-950" />
+                        <span>Register "{notFoundEnrolment}" Now</span>
+                      </button>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setNotFoundEnrolment(null)}
+                    className="p-1 rounded-lg text-slate-400 hover:text-white cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Bottom Feepayr-style Info Pill */}

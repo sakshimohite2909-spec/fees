@@ -356,12 +356,6 @@ export default function StudentDashboard({
               <GraduationCap className="w-3.5 h-3.5 text-indigo-300" />
               <span>Netaji Polytechnic College • Dhule</span>
             </span>
-            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight drop-shadow-md">
-              Start Paying College <br className="hidden sm:inline" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-sky-200 to-emerald-300">
-                Fees Online Now!
-              </span>
-            </h1>
           </div>
 
           {/* Form Container (Directly Overlaid on Campus Image WITHOUT white card container) */}

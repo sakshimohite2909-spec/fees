@@ -367,22 +367,6 @@ export default function StudentDashboard({
           {/* Form Container (Directly Overlaid on Campus Image WITHOUT white card container) */}
           <div className="relative z-10 w-full max-w-md my-auto py-4 space-y-5">
             <form onSubmit={handleEnrolmentNumberSubmit} className="space-y-4">
-              
-              {/* Institute Type (Feepayr Style) */}
-              <div>
-                <label className="block text-sm font-black text-white mb-2 tracking-wide drop-shadow-sm">
-                  Institute Type
-                </label>
-                <div className="relative">
-                  <select
-                    className="w-full px-4 py-3.5 rounded-xl border border-white/80 bg-white text-slate-900 font-extrabold text-sm focus:ring-4 focus:ring-lime-400/40 focus:outline-none shadow-lg cursor-pointer appearance-none"
-                    defaultValue="College"
-                  >
-                    <option value="College">Netaji Polytechnic College (Polytechnic / Pharmacy / Engineering)</option>
-                  </select>
-                  <div className="pointer-events-none absolute right-4 top-4 text-slate-600 font-bold text-xs">▼</div>
-                </div>
-              </div>
 
               {/* Enrolment Input Box */}
               <div>

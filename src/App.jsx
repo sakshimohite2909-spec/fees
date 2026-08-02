@@ -313,9 +313,9 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 py-6 mt-12">
-        <div className="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 font-medium">
-          <p>© 2026 EduPay College Fee Management System. Integrated with Razorpay Payment Gateway & Excel Import.</p>
+      <footer className={`${isHomeScreen ? 'bg-slate-950 text-slate-400 border-t border-slate-800/80 py-5' : 'bg-white text-slate-500 border-t border-slate-200 py-6 mt-12'}`}>
+        <div className="max-w-7xl mx-auto px-4 text-center text-xs font-medium">
+          <p>© 2026 EduPay College Fee Management System • Netaji Polytechnic College, Dhule.</p>
         </div>
       </footer>
 

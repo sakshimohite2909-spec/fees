@@ -340,7 +340,7 @@ export default function StudentDashboard({
       
       {/* 🔢 STEP 1: ENROLMENT NUMBER (PRN) SEARCH INPUT (Full Screen Campus Overlay - Feepayr Style) */}
       {step === 'mobile' && (
-        <div className="relative w-full min-h-[calc(100vh-64px)] flex flex-col justify-between items-center px-4 py-8 sm:p-12 bg-slate-950 overflow-hidden animate-fadeIn">
+        <div className="relative w-full min-h-[calc(100vh-130px)] flex flex-col justify-between items-center px-4 py-6 sm:py-10 bg-slate-950 overflow-hidden animate-fadeIn">
           
           {/* 100% Full Screen Campus Background Image */}
           <img 

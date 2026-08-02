@@ -370,8 +370,7 @@ export default function StudentDashboard({
 
               {/* Enrolment Input Box */}
               <div>
-                <label className="block text-sm font-black text-white mb-2 tracking-wide drop-shadow-sm flex items-center gap-1.5">
-                  <Hash className="w-4 h-4 text-lime-400" />
+                <label className="block text-sm font-black text-white mb-2 tracking-wide drop-shadow-sm">
                   <span>Enter Enrolment Number (PRN No) *</span>
                 </label>
                 <input
@@ -390,11 +389,11 @@ export default function StudentDashboard({
                 )}
               </div>
 
-              {/* Submit Button (Feepayr Lime Green Style) */}
+              {/* Submit Button (Feepayr Solid Bright Lime Style) */}
               <button
                 type="submit"
                 disabled={!enrolmentSearchInput.trim() || !isValidEnrolment(enrolmentSearchInput) || isSearchingDb}
-                className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-gradient-to-r from-lime-500 to-emerald-500 hover:from-lime-600 hover:to-emerald-600 active:scale-[0.99] text-slate-950 font-black text-sm shadow-xl shadow-lime-500/25 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-2 py-3.5 sm:py-4 rounded-xl bg-lime-400 hover:bg-lime-300 active:scale-[0.99] text-slate-950 font-black text-sm sm:text-base shadow-xl shadow-lime-400/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border border-lime-300"
               >
                 {isSearchingDb ? (
                   <>
